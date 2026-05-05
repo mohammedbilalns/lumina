@@ -50,8 +50,7 @@ export class AuthService {
 
     const { accessToken, refreshToken } = await this.generateTokens(user.id);
 
-    const refreshTokenHash = await this.passwordService.hash(refreshToken);
-    await this.authRepository.udpateRefreshToken(user.id, refreshTokenHash);
+    this.persistRefreshToken(user.id, refreshToken);
 
     return {
       message: 'Signup successful',
@@ -61,7 +60,7 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const user = await this.authRepository.findByCredential(dto.credential);
-    if (!user) throw new UnauthorizedException('Invalid credential');
+    if (!user) throw new UnauthorizedException('Invalid credentials');
 
     if (!user.isActive) {
       throw new ForbiddenException('Your account has been blocked');
@@ -72,13 +71,12 @@ export class AuthService {
       dto.password,
     );
 
-    if (!isValid) throw new UnauthorizedException('Invalid password');
+    if (!isValid) throw new UnauthorizedException('Invalid credentials');
 
     const { accessToken, refreshToken } = await this.generateTokens(user.id);
 
-    const refreshTokenHash = await this.passwordService.hash(refreshToken);
+    this.persistRefreshToken(user.id, refreshToken);
 
-    await this.authRepository.udpateRefreshToken(user.id, refreshTokenHash);
     return {
       message: 'Login successful',
       ...AuthMapper.toAuthResponse(user, accessToken, refreshToken),
@@ -125,9 +123,7 @@ export class AuthService {
     if (!isValidToken) throw new UnauthorizedException('Invalid token');
 
     const { accessToken, refreshToken } = await this.generateTokens(user.id);
-    const refreshTokenHash = await this.passwordService.hash(refreshToken);
-
-    await this.authRepository.udpateRefreshToken(user.id, refreshTokenHash);
+    this.persistRefreshToken(user.id, refreshToken);
     return {
       message: 'Refresh token successful',
       ...AuthMapper.toAuthResponse(user, accessToken, refreshToken),
@@ -141,5 +137,11 @@ export class AuthService {
     ]);
 
     return { accessToken, refreshToken };
+  }
+
+  private async persistRefreshToken(userId: string, refreshToken: string) {
+    const hash = await this.passwordService.hash(refreshToken);
+
+    await this.authRepository.udpateRefreshToken(userId, hash);
   }
 }
