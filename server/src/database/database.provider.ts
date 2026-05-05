@@ -2,6 +2,7 @@ import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { Provider } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import * as schema from "./schemas/"
 
 export const databaseProvider: Provider = {
   provide: "DATABASE",
@@ -18,6 +19,8 @@ export const databaseProvider: Provider = {
       ssl: true,
     });
 
-    return drizzle(client);
+    return drizzle(client, {
+      schema
+    });
   },
 };
