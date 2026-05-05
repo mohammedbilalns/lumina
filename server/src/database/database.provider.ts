@@ -14,7 +14,9 @@ export const databaseProvider: Provider = {
         "DATABASE_URL",
       );
 
-    const client = postgres(dbUrl);
+    const client = postgres(dbUrl, {
+      ssl: true,
+    });
 
     return drizzle(client);
   },
