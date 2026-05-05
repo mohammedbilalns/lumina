@@ -7,9 +7,22 @@ import { CategoriesModule } from './categories/categories.module';
 import { PreferencesModule } from './preferences/preferences.module';
 import { ArticlesModule } from './articles/articles.module';
 import { ReactionsModule } from './reactions/reactions.module';
+import { ConfigModule } from '@nestjs/config';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, CategoriesModule, PreferencesModule, ArticlesModule, ReactionsModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    DatabaseModule,
+    AuthModule,
+    UsersModule,
+    CategoriesModule,
+    PreferencesModule,
+    ArticlesModule,
+    ReactionsModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
