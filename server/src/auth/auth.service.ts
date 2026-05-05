@@ -11,6 +11,9 @@ import { PasswordService } from './password.service';
 import { AuthMapper } from './mappers/auth.mapper';
 import { LoginDto } from './dto/login.dto';
 import { LogoutDto } from './dto/logout.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { JwtPayload } from './types/jwt-payload.type';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +21,7 @@ export class AuthService {
     private readonly authRepository: AuthRepository,
     private readonly jwtService: JwtService,
     private readonly passwordService: PasswordService,
+    private readonly configService: ConfigService,
   ) {}
 
   async signup(dto: SignupDto) {
@@ -44,10 +48,7 @@ export class AuthService {
       passwordHash,
     });
 
-    const { accessToken, refreshToken } = await this.generateTokens(
-      user.id,
-      user.email,
-    );
+    const { accessToken, refreshToken } = await this.generateTokens(user.id);
 
     const refreshTokenHash = await this.passwordService.hash(refreshToken);
     await this.authRepository.udpateRefreshToken(user.id, refreshTokenHash);
@@ -73,10 +74,7 @@ export class AuthService {
 
     if (!isValid) throw new UnauthorizedException('Invalid password');
 
-    const { accessToken, refreshToken } = await this.generateTokens(
-      user.id,
-      user.email,
-    );
+    const { accessToken, refreshToken } = await this.generateTokens(user.id);
 
     const refreshTokenHash = await this.passwordService.hash(refreshToken);
 
@@ -91,11 +89,55 @@ export class AuthService {
     await this.authRepository.udpateRefreshToken(dto.userId, '');
   }
 
+  async refreshToken(dto: RefreshTokenDto) {
+    let payload: JwtPayload;
 
-  private async generateTokens(userId: string, email: string) {
+    try {
+      payload = await this.jwtService.verifyAsync<JwtPayload>(
+        dto.refreshToken,
+        {
+          secret: this.configService.get('JWT_SECRET'),
+        },
+      );
+    } catch (err) {
+      throw new UnauthorizedException('Invalid token');
+    }
+
+    const user = await this.authRepository.findById(payload.sub);
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    if (!user.isActive) {
+      throw new ForbiddenException('Account blocked');
+    }
+
+    if (!user.refreshToken) {
+      throw new UnauthorizedException('Session expired');
+    }
+
+    const isValidToken = await this.passwordService.verify(
+      user?.refreshToken,
+      dto.refreshToken,
+    );
+
+    if (!isValidToken) throw new UnauthorizedException('Invalid token');
+
+    const { accessToken, refreshToken } = await this.generateTokens(user.id);
+    const refreshTokenHash = await this.passwordService.hash(refreshToken);
+
+    await this.authRepository.udpateRefreshToken(user.id, refreshTokenHash);
+    return {
+      message: 'Refresh token successful',
+      ...AuthMapper.toAuthResponse(user, accessToken, refreshToken),
+    };
+  }
+
+  private async generateTokens(userId: string) {
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync({ sub: userId, email }),
-      this.jwtService.signAsync({ sub: userId, email }),
+      this.jwtService.signAsync({ sub: userId }),
+      this.jwtService.signAsync({ sub: userId }),
     ]);
 
     return { accessToken, refreshToken };

@@ -11,6 +11,12 @@ export class AuthRepository {
     private readonly db: Database,
   ) {}
 
+  async findById(id: string) {
+    return this.db.query.users.findFirst({
+      where: eq(users.id, id),
+    });
+  }
+
   async findByEmailOrPhone(email: string, phone: string) {
     return this.db.query.users.findFirst({
       where: or(

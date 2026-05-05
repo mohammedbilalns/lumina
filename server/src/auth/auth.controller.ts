@@ -1,8 +1,16 @@
-import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
-import type { Response } from 'express';
+import type { Response, Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { JwtGuard } from './guards/jwt/jwt.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
@@ -72,6 +80,34 @@ export class AuthController {
     response.clearCookie('refreshToken');
 
     return { message: 'Logged out successfully' };
+  }
+
+  @Post('refresh-token')
+  async refreshToken(
+    @Req()
+    request: Request,
+
+    @Res({
+      passthrough: true,
+    })
+    response: Response,
+  ) {
+    const refreshToken = request.cookies['refreshToken'];
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('Invalid token');
+    }
+
+    const result = await this.authService.refreshToken({
+      refreshToken,
+    });
+
+    this.setRefreshCookie(result.refreshToken, response);
+    return {
+      message: 'Refresh token successful',
+      accessToken: result.accessToken,
+      user: result.user,
+    };
   }
 
   private setRefreshCookie(refreshToken: string, res: Response) {
