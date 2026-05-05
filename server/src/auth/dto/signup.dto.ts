@@ -1,4 +1,13 @@
-import { IsDateString, IsEmail, IsNotEmpty, IsPhoneNumber, IsString, Matches, MaxLength, MinLength} from "class-validator"
+import {
+  IsDateString,
+  IsEmail,
+  IsNotEmpty,
+  IsPhoneNumber,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class SignupDto {
   @IsString()
@@ -9,7 +18,6 @@ export class SignupDto {
     message: 'First name can only contain letters',
   })
   firstName: string;
-
 
   @IsString()
   @IsNotEmpty()
@@ -24,7 +32,7 @@ export class SignupDto {
   @IsNotEmpty()
   email: string;
 
-  @IsPhoneNumber("IN")
+  @IsPhoneNumber('IN')
   phone: string;
 
   @IsDateString()
@@ -33,12 +41,9 @@ export class SignupDto {
   @IsString()
   @MinLength(8)
   @MaxLength(32)
-  @Matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/,
-    {
-      message:
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/, {
+    message:
       'Password must contain uppercase, lowercase, number, and special character',
-    },
-  )
+  })
   password: string;
 }

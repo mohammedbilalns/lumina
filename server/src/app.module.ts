@@ -21,7 +21,7 @@ import { DatabaseModule } from './database/database.module';
     CategoriesModule,
     PreferencesModule,
     ArticlesModule,
-    ReactionsModule
+    ReactionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

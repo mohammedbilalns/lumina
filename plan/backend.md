@@ -19,3 +19,6 @@
 - what is guard in nestjs 
 - whare are gaurds and what is ExectionContext in gurds 
 - CreateParamDecorator
+- Body decoratory 
+- Res decoration 
+- passthrough in REs decorator 
