@@ -1,0 +1,15 @@
+layout {
+  pane split_direction="horizontal" {
+    pane name="frontend" {
+      command "npm"
+      args "run" "dev"
+      cwd "~/my_projects/machine_task1/client"
+    }
+
+    pane name="backend" {
+      command "npm"
+      args "run" "start:dev"
+      cwd "~/my_projects/machine_task1/server"
+    }
+  }
+}
