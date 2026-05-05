@@ -6,7 +6,7 @@ import type { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { JwtGuard } from './guards/jwt/jwt.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
-import { type  JwtPayload } from './types/jwt-payload.type';
+import { type JwtPayload } from './types/jwt-payload.type';
 
 @Controller('auth')
 export class AuthController {
@@ -61,14 +61,15 @@ export class AuthController {
     user: JwtPayload,
 
     @Res({
-    passthrough: true,
+      passthrough: true,
     })
     response: Response,
   ) {
+    await this.authService.logout({
+      userId: user.sub,
+    });
 
-    await this.authService.logout(user.sub)
-
-    response.clearCookie("refreshToken")
+    response.clearCookie('refreshToken');
 
     return { message: 'Logged out successfully' };
   }

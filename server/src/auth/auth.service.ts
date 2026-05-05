@@ -10,6 +10,7 @@ import { SignupDto } from './dto/signup.dto';
 import { PasswordService } from './password.service';
 import { AuthMapper } from './mappers/auth.mapper';
 import { LoginDto } from './dto/login.dto';
+import { LogoutDto } from './dto/logout.dto';
 
 @Injectable()
 export class AuthService {
@@ -86,9 +87,10 @@ export class AuthService {
     };
   }
 
-  async logout(userId: string) {
-    await this.authRepository.udpateRefreshToken(userId, '');
+  async logout(dto: LogoutDto) {
+    await this.authRepository.udpateRefreshToken(dto.userId, '');
   }
+
 
   private async generateTokens(userId: string, email: string) {
     const [accessToken, refreshToken] = await Promise.all([
