@@ -23,6 +23,24 @@ export class AuthRepository {
     })
   }
 
+  async findByCredential(
+    credential: string,
+  ) {
+    return this.db.query.users.findFirst({
+      where: or(
+        eq(
+          users.email,
+          credential,
+        ),
+
+        eq(
+          users.phone,
+          credential,
+        ),
+      ),
+    });
+  }
+
   async createUser(
     data: SignupDto & {
       passwordHash: string

@@ -1,9 +1,10 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthRepository } from './auth.repository';
 import { JwtService } from '@nestjs/jwt';
 import { SignupDto } from './dto/signup.dto';
 import { PasswordService } from './password.service';
 import { AuthMapper } from './mappers/auth.mapper';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -30,7 +31,7 @@ export class AuthService {
 
     const passwordHash = await this.passwordService.hash(dto.password) 
 
-  
+
     const user =  await this.authRepository.createUser({
       ...dto,
       dateOfBirth: dto.dateOfBirth,
@@ -43,6 +44,28 @@ export class AuthService {
     )
 
     return { message: "Signup successful", ...AuthMapper.toAuthReponse(user,accessToken)}
+  }
+
+  async login(dto: LoginDto){
+
+    const user = await this.authRepository.findByCredential(dto.credential)
+    if(!user) throw new UnauthorizedException("Invalid credential")
+
+    if(!user.isActive){
+      throw new ForbiddenException("Your account has been blocked")
+    }
+
+    const isValid = await this.passwordService.verify(user.passwordHash, dto.password)
+
+    if(!isValid) throw new UnauthorizedException("Invalid password")
+
+    const accessToken = await this.generateAccessToken(user.id, user.email)
+
+    return {
+      message: "Login successful",
+      ...AuthMapper.toAuthReponse(user,accessToken)
+    }
+
   }
 
 
