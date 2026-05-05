@@ -15,6 +15,6 @@ export const users = pgTable(
     dateOfBirth: timestamp("date_of_birth").notNull(),
     passwordHash: varchar("password_hash", {length:  100}).notNull(),
     isActive: boolean("is_active").default(true).notNull(),
-    updateddAt : timestamp("updatedd_at").defaultNow().notNull(),
+    updatedAt : timestamp("updated_at").defaultNow().notNull(),
   }
 )
