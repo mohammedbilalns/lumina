@@ -16,21 +16,35 @@ export class AuthService {
   ){}
 
   async signup(dto: SignupDto){
-    const [existingUserWithEmail, existingUserWithPhone] = await Promise.all([
-      this.authRepository.findByEmail(dto.email),
-      this.authRepository.findByPhone(dto.phone)
-    ])
 
-    if(existingUserWithEmail){
-      throw new ConflictException("Email already exists")
-    }
+    const existingUser =
+      await this.authRepository
+      .findByEmailOrPhone(
+        dto.email,
+        dto.phone,
+      );
 
-    if(existingUserWithPhone){
-      throw new ConflictException("Phone number already exists")
+    if (existingUser) {
+      if (
+        existingUser.email ===
+          dto.email
+      ) {
+        throw new ConflictException(
+          "Email already exists",
+        );
+      }
+
+      if (
+        existingUser.phone ===
+          dto.phone
+      ) {
+        throw new ConflictException(
+          "Phone number already exists",
+        );
+      }
     }
 
     const passwordHash = await this.passwordService.hash(dto.password) 
-
 
     const user =  await this.authRepository.createUser({
       ...dto,
@@ -38,12 +52,9 @@ export class AuthService {
       passwordHash
     })
 
-    const accessToken = await this.generateAccessToken(
-      user.id,
-      user.email
-    )
 
-    return { message: "Signup successful", ...AuthMapper.toAuthReponse(user,accessToken)}
+    const {accessToken, refreshToken} = await this.generateTokens(user.id, user.email)
+    return { message: "Signup successful", ...AuthMapper.toAuthResponse(user,accessToken,refreshToken)}
   }
 
   async login(dto: LoginDto){
@@ -59,20 +70,24 @@ export class AuthService {
 
     if(!isValid) throw new UnauthorizedException("Invalid password")
 
-    const accessToken = await this.generateAccessToken(user.id, user.email)
+    const {accessToken, refreshToken} = await this.generateTokens(user.id, user.email)
+
 
     return {
       message: "Login successful",
-      ...AuthMapper.toAuthReponse(user,accessToken)
+      ...AuthMapper.toAuthResponse(user,accessToken,refreshToken)
     }
 
   }
 
+  private async generateTokens(userId: string, email: string){
 
-  private async generateAccessToken(userId: string, email: string){
-    return this.jwtService.signAsync({
-      sub: userId,
-      email
-    })
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync({sub: userId, email}),
+      this.jwtService.signAsync({sub: userId, email}),
+    ])
+ 
+    return {accessToken, refreshToken}
   }
+
 }

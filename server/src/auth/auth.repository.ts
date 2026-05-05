@@ -11,16 +11,24 @@ export class AuthRepository {
     private readonly db: Database
   ){}
 
-  async findByEmail(email: string){
-    return this.db.query.users.findFirst({
-      where: eq(users.email, email)
-    })
-  }
 
-  async findByPhone(phone: string){
+  async findByEmailOrPhone(
+    email: string,
+    phone: string,
+  ) {
     return this.db.query.users.findFirst({
-      where: eq(users.phone, phone)
-    })
+      where: or(
+        eq(
+          users.email,
+          email,
+        ),
+
+        eq(
+          users.phone,
+          phone,
+        ),
+      ),
+    });
   }
 
   async findByCredential(

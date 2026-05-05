@@ -1,12 +1,14 @@
 import { User } from "src/database/database.types";
 
 export class AuthMapper {
-  static toAuthReponse(
+  static toAuthResponse(
     user: User,
-    accessToken: string
+    accessToken: string,
+    refreshToken: string
   ){
     return {
       accessToken,
+      refreshToken,
       user: {
         id: user.id,
         firstName: user.firstName,
