@@ -42,4 +42,13 @@ export class AuthRepository {
       .returning();
     return user;
   }
+
+  async udpateRefreshToken(userId: string, refreshTokenHash: string) {
+    await this.db
+      .update(users)
+      .set({
+        refreshToken: refreshTokenHash,
+      })
+      .where(eq(users.id, userId));
+  }
 }

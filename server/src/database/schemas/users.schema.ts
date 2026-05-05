@@ -12,6 +12,7 @@ export const users = pgTable('users', {
   phone: varchar('phone', { length: 20 }).unique(),
   dateOfBirth: timestamp('date_of_birth').notNull(),
   passwordHash: varchar('password_hash', { length: 100 }).notNull(),
+  refreshToken: varchar('refresh_token', { length: 255 }),
   isActive: boolean('is_active').default(true).notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

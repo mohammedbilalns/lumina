@@ -47,6 +47,10 @@ export class AuthService {
       user.id,
       user.email,
     );
+
+    const refreshTokenHash = await this.passwordService.hash(refreshToken);
+    await this.authRepository.udpateRefreshToken(user.id, refreshTokenHash);
+
     return {
       message: 'Signup successful',
       ...AuthMapper.toAuthResponse(user, accessToken, refreshToken),
@@ -73,10 +77,17 @@ export class AuthService {
       user.email,
     );
 
+    const refreshTokenHash = await this.passwordService.hash(refreshToken);
+
+    await this.authRepository.udpateRefreshToken(user.id, refreshTokenHash);
     return {
       message: 'Login successful',
       ...AuthMapper.toAuthResponse(user, accessToken, refreshToken),
     };
+  }
+
+  async logout(userId: string) {
+    await this.authRepository.udpateRefreshToken(userId, '');
   }
 
   private async generateTokens(userId: string, email: string) {
