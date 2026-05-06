@@ -14,10 +14,9 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
-
-  describe("test", () => {
+  describe('test', () => {
     it("should return 'test success'", () => {
-      expect(appController.test()).toBe("test success")
-    })
-  })
+      expect(appController.test()).toBe('test success');
+    });
+  });
 });
