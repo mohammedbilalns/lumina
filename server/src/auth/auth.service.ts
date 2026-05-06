@@ -1,6 +1,5 @@
 import {
   ConflictException,
-  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -14,6 +13,7 @@ import { LogoutDto } from './dto/logout.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtPayload } from './types/jwt-payload.type';
 import { ConfigService } from '@nestjs/config';
+import { UserValidationService } from 'src/users/user-validation.service';
 
 @Injectable()
 export class AuthService {
@@ -22,6 +22,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly passwordService: PasswordService,
     private readonly configService: ConfigService,
+    private readonly userValidationService: UserValidationService,
   ) {}
 
   async signup(dto: SignupDto) {
@@ -59,12 +60,9 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const user = await this.userRepository.findByCredential(dto.credential);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+    let user = await this.userRepository.findByCredential(dto.credential);
 
-    if (!user.isActive) {
-      throw new ForbiddenException('Your account has been blocked');
-    }
+    user = this.userValidationService.validateActiveUser(user);
 
     const isValid = await this.passwordService.verify(
       user.passwordHash,
@@ -101,15 +99,9 @@ export class AuthService {
       throw new UnauthorizedException('Invalid token');
     }
 
-    const user = await this.userRepository.findById(payload.sub);
+    let user = await this.userRepository.findById(payload.sub);
 
-    if (!user) {
-      throw new UnauthorizedException('Invalid refresh token');
-    }
-
-    if (!user.isActive) {
-      throw new ForbiddenException('Account blocked');
-    }
+    user = this.userValidationService.validateActiveUser(user);
 
     if (!user.refreshToken) {
       throw new UnauthorizedException('Session expired');

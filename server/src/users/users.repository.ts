@@ -12,6 +12,12 @@ interface UserCreationData {
   passwordHash: string;
 }
 
+interface UpdateUserData {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+}
+
 @Injectable()
 export class UsersRepository {
   constructor(
@@ -57,6 +63,15 @@ export class UsersRepository {
     return user;
   }
 
+  async updateUser(userId: string, data: UpdateUserData) {
+    const [user] = await this.db
+      .update(users)
+      .set({ ...data, dateOfBirth: new Date(data.dateOfBirth) })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
   async udpateRefreshToken(userId: string, refreshTokenHash: string) {
     await this.db
       .update(users)
@@ -64,5 +79,15 @@ export class UsersRepository {
         refreshToken: refreshTokenHash,
       })
       .where(eq(users.id, userId));
+  }
+
+  async updatePassword(userId: string, passwordHash: string) {
+    await this.db
+      .update(users)
+      .set({
+        passwordHash,
+      })
+      .where(eq(users.id, userId))
+      .returning();
   }
 }

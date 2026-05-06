@@ -10,6 +10,10 @@ import {
 export class UpdateProfileDto {
   @IsString()
   @IsNotEmpty()
+  userId: string;
+
+  @IsString()
+  @IsNotEmpty()
   @MinLength(2)
   @MaxLength(30)
   @Matches(/^[a-zA-Z\s]+$/, {
