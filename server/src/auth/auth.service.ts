@@ -50,7 +50,7 @@ export class AuthService {
 
     const { accessToken, refreshToken } = await this.generateTokens(user.id);
 
-    this.persistRefreshToken(user.id, refreshToken);
+    await this.persistRefreshToken(user.id, refreshToken);
 
     return {
       message: 'Signup successful',
@@ -75,7 +75,7 @@ export class AuthService {
 
     const { accessToken, refreshToken } = await this.generateTokens(user.id);
 
-    this.persistRefreshToken(user.id, refreshToken);
+    await this.persistRefreshToken(user.id, refreshToken);
 
     return {
       message: 'Login successful',
@@ -123,7 +123,7 @@ export class AuthService {
     if (!isValidToken) throw new UnauthorizedException('Invalid token');
 
     const { accessToken, refreshToken } = await this.generateTokens(user.id);
-    this.persistRefreshToken(user.id, refreshToken);
+    await this.persistRefreshToken(user.id, refreshToken);
     return {
       message: 'Refresh token successful',
       ...AuthMapper.toAuthResponse(user, accessToken, refreshToken),
