@@ -1,0 +1,2 @@
+ALTER TABLE "articles"
+ADD COLUMN "likes_count" integer DEFAULT 0 NOT NULL;

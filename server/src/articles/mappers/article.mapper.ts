@@ -8,6 +8,7 @@ export class ArticleMapper {
       description: article.description,
       content: article.content,
       featuredImage: article.featuredImage,
+      likesCount: article.likesCount,
       createdAt: article.createdAt,
       updatedAt: article.updatedAt,
       author: {
