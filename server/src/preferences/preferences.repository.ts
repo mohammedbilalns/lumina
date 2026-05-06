@@ -14,27 +14,67 @@ export class PreferencesRepository {
   async fetchUserPreferences(userId: string) {
     return await this.db.query.userPreferences.findMany({
       where: eq(userPreferences.userId, userId),
+
+      with: {
+        category: {
+          columns: {
+            id: true,
+            name: true,
+            slug: true,
+          }
+        }
+      }
     });
+
   }
 
-  async saveUserPreferences(userId: string, preferences: string[]) {
-    this.db.transaction(
-      async (tx) => {
-        await tx
-        .delete(userPreferences)
-        .where(eq(userPreferences.userId, userId));
 
-        if(preferences.length == 0) {
-          return []
-        }
+  async saveUserPreferences(
+    userId: string,
 
-        return tx.insert(userPreferences).values(
-          preferences.map((categoryId) => ({
-            userId,
-            categoryId
-          }))
-        )
-      }
-    )
+    categoryIds:
+    string[],
+  ) {
+    return this.db
+      .transaction(
+        async (tx) => {
+
+          await tx
+          .delete(
+            userPreferences,
+          )
+          .where(
+            eq(
+              userPreferences
+              .userId,
+              userId,
+            ),
+          );
+
+          if (
+            categoryIds
+              .length ===
+              0
+          ) {
+            return [];
+          }
+
+          return tx
+            .insert(
+              userPreferences,
+            )
+            .values(
+              categoryIds.map(
+                (
+                  categoryId,
+                ) => ({
+                    userId,
+                    categoryId,
+                  }),
+              ),
+            )
+            .returning();
+        },
+      );
   }
 }
