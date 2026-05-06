@@ -8,6 +8,7 @@ export const articles = pgTable('articles', {
   title: text('title').notNull(),
   description: text('description').notNull(),
   content: text('content').notNull(),
+  featuredImage: text('featured_image').notNull(),
   authorId: uuid('author_id')
     .references(() => users.id)
     .notNull(),
