@@ -2,10 +2,24 @@ import { Injectable, Inject } from '@nestjs/common';
 import { eq, or } from 'drizzle-orm';
 import { type Database } from 'src/database/database.types';
 import { users } from 'src/database/schemas';
-import { SignupDto } from './dto/signup.dto';
+
+interface UserCreationData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  passwordHash: string;
+}
+
+interface UpdateUserData {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+}
 
 @Injectable()
-export class AuthRepository {
+export class UsersRepository {
   constructor(
     @Inject('DATABASE')
     private readonly db: Database,
@@ -38,13 +52,22 @@ export class AuthRepository {
   }
 
   async createUser(
-    data: SignupDto & {
+    data: UserCreationData & {
       passwordHash: string;
     },
   ) {
     const [user] = await this.db
       .insert(users)
       .values({ ...data, dateOfBirth: new Date(data.dateOfBirth) })
+      .returning();
+    return user;
+  }
+
+  async updateUser(userId: string, data: UpdateUserData) {
+    const [user] = await this.db
+      .update(users)
+      .set({ ...data, dateOfBirth: new Date(data.dateOfBirth) })
+      .where(eq(users.id, userId))
       .returning();
     return user;
   }
@@ -56,5 +79,15 @@ export class AuthRepository {
         refreshToken: refreshTokenHash,
       })
       .where(eq(users.id, userId));
+  }
+
+  async updatePassword(userId: string, passwordHash: string) {
+    await this.db
+      .update(users)
+      .set({
+        passwordHash,
+      })
+      .where(eq(users.id, userId))
+      .returning();
   }
 }

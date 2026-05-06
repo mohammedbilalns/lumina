@@ -1,31 +1,34 @@
 import {
   ConflictException,
-  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthRepository } from './auth.repository';
+import { UsersRepository } from 'src/users/users.repository';
 import { JwtService } from '@nestjs/jwt';
 import { SignupDto } from './dto/signup.dto';
-import { PasswordService } from './password.service';
+import { PasswordService } from '../security/password.service';
 import { AuthMapper } from './mappers/auth.mapper';
 import { LoginDto } from './dto/login.dto';
 import { LogoutDto } from './dto/logout.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtPayload } from './types/jwt-payload.type';
 import { ConfigService } from '@nestjs/config';
+import { UserValidationService } from 'src/users/user-validation.service';
+import { TokenService } from './token.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly authRepository: AuthRepository,
+    private readonly userRepository: UsersRepository,
     private readonly jwtService: JwtService,
     private readonly passwordService: PasswordService,
     private readonly configService: ConfigService,
+    private readonly userValidationService: UserValidationService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async signup(dto: SignupDto) {
-    const existingUser = await this.authRepository.findByEmailOrPhone(
+    const existingUser = await this.userRepository.findByEmailOrPhone(
       dto.email,
       dto.phone,
     );
@@ -42,29 +45,24 @@ export class AuthService {
 
     const passwordHash = await this.passwordService.hash(dto.password);
 
-    const user = await this.authRepository.createUser({
+    const user = await this.userRepository.createUser({
       ...dto,
       dateOfBirth: dto.dateOfBirth,
       passwordHash,
     });
 
-    const { accessToken, refreshToken } = await this.generateTokens(user.id);
+    const { accessToken, refreshToken } =
+      await this.tokenService.generateTokens(user.id);
 
-    this.persistRefreshToken(user.id, refreshToken);
+    await this.persistRefreshToken(user.id, refreshToken);
 
-    return {
-      message: 'Signup successful',
-      ...AuthMapper.toAuthResponse(user, accessToken, refreshToken),
-    };
+    return AuthMapper.toAuthResponse(user, accessToken, refreshToken);
   }
 
   async login(dto: LoginDto) {
-    const user = await this.authRepository.findByCredential(dto.credential);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+    let user = await this.userRepository.findByCredential(dto.credential);
 
-    if (!user.isActive) {
-      throw new ForbiddenException('Your account has been blocked');
-    }
+    user = this.userValidationService.validateActiveUser(user);
 
     const isValid = await this.passwordService.verify(
       user.passwordHash,
@@ -73,18 +71,16 @@ export class AuthService {
 
     if (!isValid) throw new UnauthorizedException('Invalid credentials');
 
-    const { accessToken, refreshToken } = await this.generateTokens(user.id);
+    const { accessToken, refreshToken } =
+      await this.tokenService.generateTokens(user.id);
 
-    this.persistRefreshToken(user.id, refreshToken);
+    await this.persistRefreshToken(user.id, refreshToken);
 
-    return {
-      message: 'Login successful',
-      ...AuthMapper.toAuthResponse(user, accessToken, refreshToken),
-    };
+    return AuthMapper.toAuthResponse(user, accessToken, refreshToken);
   }
 
   async logout(dto: LogoutDto) {
-    await this.authRepository.udpateRefreshToken(dto.userId, '');
+    await this.userRepository.udpateRefreshToken(dto.userId, '');
   }
 
   async refreshToken(dto: RefreshTokenDto) {
@@ -101,15 +97,9 @@ export class AuthService {
       throw new UnauthorizedException('Invalid token');
     }
 
-    const user = await this.authRepository.findById(payload.sub);
+    let user = await this.userRepository.findById(payload.sub);
 
-    if (!user) {
-      throw new UnauthorizedException('Invalid refresh token');
-    }
-
-    if (!user.isActive) {
-      throw new ForbiddenException('Account blocked');
-    }
+    user = this.userValidationService.validateActiveUser(user);
 
     if (!user.refreshToken) {
       throw new UnauthorizedException('Session expired');
@@ -122,36 +112,15 @@ export class AuthService {
 
     if (!isValidToken) throw new UnauthorizedException('Invalid token');
 
-    const { accessToken, refreshToken } = await this.generateTokens(user.id);
-    this.persistRefreshToken(user.id, refreshToken);
-    return {
-      message: 'Refresh token successful',
-      ...AuthMapper.toAuthResponse(user, accessToken, refreshToken),
-    };
-  }
-
-  private async generateTokens(userId: string) {
-    const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(
-        { sub: userId },
-        {
-          secret: this.configService.get('ACCESS_TOKEN_SECRET'),
-        },
-      ),
-      this.jwtService.signAsync(
-        { sub: userId },
-        {
-          secret: this.configService.get('REFRESH_TOKEN_SECRET'),
-        },
-      ),
-    ]);
-
-    return { accessToken, refreshToken };
+    const { accessToken, refreshToken } =
+      await this.tokenService.generateTokens(user.id);
+    await this.persistRefreshToken(user.id, refreshToken);
+    return AuthMapper.toAuthResponse(user, accessToken, refreshToken);
   }
 
   private async persistRefreshToken(userId: string, refreshToken: string) {
     const hash = await this.passwordService.hash(refreshToken);
 
-    await this.authRepository.udpateRefreshToken(userId, hash);
+    await this.userRepository.udpateRefreshToken(userId, hash);
   }
 }
