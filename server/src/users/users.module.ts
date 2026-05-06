@@ -6,7 +6,7 @@ import { UserValidationService } from './user-validation.service';
 import { SecurityModule } from 'src/security/security.module';
 
 @Module({
-  imports: [ SecurityModule],
+  imports: [SecurityModule],
   controllers: [UsersController],
   providers: [UsersService, UsersRepository, UserValidationService],
   exports: [UsersRepository, UserValidationService],
