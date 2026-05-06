@@ -12,7 +12,7 @@ import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import type { Response, Request } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { JwtGuard } from './guards/jwt/jwt.guard';
+import { JwtGuard } from '../security/guards/jwt/jwt.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { type JwtPayload } from './types/jwt-payload.type';
 
@@ -25,40 +25,44 @@ export class AuthController {
 
   @Post('signup')
   async signup(
-    @Body() dto: SignupDto,
+    @Body() data: SignupDto,
 
     @Res({
       passthrough: true,
     })
     response: Response,
   ) {
-    const result = await this.authService.signup(dto);
+    const result = await this.authService.signup(data);
 
     this.setRefreshCookie(result.refreshToken, response);
 
     return {
-      message: result.message,
-      accessToken: result.accessToken,
-      user: result.user,
+      message: 'Signup successful',
+      data: {
+        accessToken: result.accessToken,
+        user: result.user,
+      },
     };
   }
 
   @Post('login')
   async login(
-    @Body() dto: LoginDto,
+    @Body() data: LoginDto,
 
     @Res({
       passthrough: true,
     })
     response: Response,
   ) {
-    const result = await this.authService.login(dto);
+    const result = await this.authService.login(data);
     this.setRefreshCookie(result.refreshToken, response);
 
     return {
-      message: result.message,
-      accessToken: result.accessToken,
-      user: result.user,
+      message: 'Login successful',
+      data: {
+        accessToken: result.accessToken,
+        user: result.user,
+      },
     };
   }
 
@@ -105,8 +109,10 @@ export class AuthController {
     this.setRefreshCookie(result.refreshToken, response);
     return {
       message: 'Refresh token successful',
-      accessToken: result.accessToken,
-      user: result.user,
+      data: {
+        accessToken: result.accessToken,
+        user: result.user,
+      },
     };
   }
 

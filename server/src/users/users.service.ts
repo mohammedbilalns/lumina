@@ -4,7 +4,7 @@ import { GetProfileDto } from './dtos/get-profile.dto';
 import { UserMapper } from './mappers/user.mapper';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { UserValidationService } from './user-validation.service';
-import { PasswordService } from 'src/auth/password.service';
+import { PasswordService } from 'src/security/password.service';
 import { ChangePasswordDto } from './dtos/change-password.dto';
 
 @Injectable()

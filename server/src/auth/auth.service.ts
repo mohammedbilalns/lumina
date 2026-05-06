@@ -6,7 +6,7 @@ import {
 import { UsersRepository } from 'src/users/users.repository';
 import { JwtService } from '@nestjs/jwt';
 import { SignupDto } from './dto/signup.dto';
-import { PasswordService } from './password.service';
+import { PasswordService } from '../security/password.service';
 import { AuthMapper } from './mappers/auth.mapper';
 import { LoginDto } from './dto/login.dto';
 import { LogoutDto } from './dto/logout.dto';
@@ -14,6 +14,7 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtPayload } from './types/jwt-payload.type';
 import { ConfigService } from '@nestjs/config';
 import { UserValidationService } from 'src/users/user-validation.service';
+import { TokenService } from './token.service';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +24,7 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly configService: ConfigService,
     private readonly userValidationService: UserValidationService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async signup(dto: SignupDto) {
@@ -49,14 +51,12 @@ export class AuthService {
       passwordHash,
     });
 
-    const { accessToken, refreshToken } = await this.generateTokens(user.id);
+    const { accessToken, refreshToken } =
+      await this.tokenService.generateTokens(user.id);
 
     await this.persistRefreshToken(user.id, refreshToken);
 
-    return {
-      message: 'Signup successful',
-      ...AuthMapper.toAuthResponse(user, accessToken, refreshToken),
-    };
+    return AuthMapper.toAuthResponse(user, accessToken, refreshToken);
   }
 
   async login(dto: LoginDto) {
@@ -71,14 +71,12 @@ export class AuthService {
 
     if (!isValid) throw new UnauthorizedException('Invalid credentials');
 
-    const { accessToken, refreshToken } = await this.generateTokens(user.id);
+    const { accessToken, refreshToken } =
+      await this.tokenService.generateTokens(user.id);
 
     await this.persistRefreshToken(user.id, refreshToken);
 
-    return {
-      message: 'Login successful',
-      ...AuthMapper.toAuthResponse(user, accessToken, refreshToken),
-    };
+    return AuthMapper.toAuthResponse(user, accessToken, refreshToken);
   }
 
   async logout(dto: LogoutDto) {
@@ -114,31 +112,10 @@ export class AuthService {
 
     if (!isValidToken) throw new UnauthorizedException('Invalid token');
 
-    const { accessToken, refreshToken } = await this.generateTokens(user.id);
+    const { accessToken, refreshToken } =
+      await this.tokenService.generateTokens(user.id);
     await this.persistRefreshToken(user.id, refreshToken);
-    return {
-      message: 'Refresh token successful',
-      ...AuthMapper.toAuthResponse(user, accessToken, refreshToken),
-    };
-  }
-
-  private async generateTokens(userId: string) {
-    const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(
-        { sub: userId },
-        {
-          secret: this.configService.get('ACCESS_TOKEN_SECRET'),
-        },
-      ),
-      this.jwtService.signAsync(
-        { sub: userId },
-        {
-          secret: this.configService.get('REFRESH_TOKEN_SECRET'),
-        },
-      ),
-    ]);
-
-    return { accessToken, refreshToken };
+    return AuthMapper.toAuthResponse(user, accessToken, refreshToken);
   }
 
   private async persistRefreshToken(userId: string, refreshToken: string) {
