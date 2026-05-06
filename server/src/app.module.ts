@@ -10,6 +10,7 @@ import { ReactionsModule } from './reactions/reactions.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { SecurityModule } from './security/security.module';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { SecurityModule } from './security/security.module';
     ArticlesModule,
     ReactionsModule,
     SecurityModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
