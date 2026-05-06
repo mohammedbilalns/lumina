@@ -4,7 +4,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthRepository } from './auth.repository';
+import { UsersRepository } from 'src/users/users.repository';
 import { JwtService } from '@nestjs/jwt';
 import { SignupDto } from './dto/signup.dto';
 import { PasswordService } from './password.service';
@@ -18,14 +18,14 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly authRepository: AuthRepository,
+    private readonly userRepository: UsersRepository,
     private readonly jwtService: JwtService,
     private readonly passwordService: PasswordService,
     private readonly configService: ConfigService,
   ) {}
 
   async signup(dto: SignupDto) {
-    const existingUser = await this.authRepository.findByEmailOrPhone(
+    const existingUser = await this.userRepository.findByEmailOrPhone(
       dto.email,
       dto.phone,
     );
@@ -42,7 +42,7 @@ export class AuthService {
 
     const passwordHash = await this.passwordService.hash(dto.password);
 
-    const user = await this.authRepository.createUser({
+    const user = await this.userRepository.createUser({
       ...dto,
       dateOfBirth: dto.dateOfBirth,
       passwordHash,
@@ -59,7 +59,7 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const user = await this.authRepository.findByCredential(dto.credential);
+    const user = await this.userRepository.findByCredential(dto.credential);
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
     if (!user.isActive) {
@@ -84,7 +84,7 @@ export class AuthService {
   }
 
   async logout(dto: LogoutDto) {
-    await this.authRepository.udpateRefreshToken(dto.userId, '');
+    await this.userRepository.udpateRefreshToken(dto.userId, '');
   }
 
   async refreshToken(dto: RefreshTokenDto) {
@@ -101,7 +101,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid token');
     }
 
-    const user = await this.authRepository.findById(payload.sub);
+    const user = await this.userRepository.findById(payload.sub);
 
     if (!user) {
       throw new UnauthorizedException('Invalid refresh token');
@@ -152,6 +152,6 @@ export class AuthService {
   private async persistRefreshToken(userId: string, refreshToken: string) {
     const hash = await this.passwordService.hash(refreshToken);
 
-    await this.authRepository.udpateRefreshToken(userId, hash);
+    await this.userRepository.udpateRefreshToken(userId, hash);
   }
 }

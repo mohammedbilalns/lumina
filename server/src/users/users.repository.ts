@@ -2,10 +2,18 @@ import { Injectable, Inject } from '@nestjs/common';
 import { eq, or } from 'drizzle-orm';
 import { type Database } from 'src/database/database.types';
 import { users } from 'src/database/schemas';
-import { SignupDto } from './dto/signup.dto';
+
+interface UserCreationData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  passwordHash: string;
+}
 
 @Injectable()
-export class AuthRepository {
+export class UsersRepository {
   constructor(
     @Inject('DATABASE')
     private readonly db: Database,
@@ -38,7 +46,7 @@ export class AuthRepository {
   }
 
   async createUser(
-    data: SignupDto & {
+    data: UserCreationData & {
       passwordHash: string;
     },
   ) {
