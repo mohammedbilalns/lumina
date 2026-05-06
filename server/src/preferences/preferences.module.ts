@@ -8,6 +8,6 @@ import { UsersModule } from 'src/users/users.module';
 @Module({
   imports: [SecurityModule, UsersModule],
   controllers: [PreferencesController],
-  providers: [PreferencesService,PreferencesRepository]
+  providers: [PreferencesService, PreferencesRepository],
 })
 export class PreferencesModule {}

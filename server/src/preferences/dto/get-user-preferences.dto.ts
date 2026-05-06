@@ -4,5 +4,4 @@ export class GetUserPreferencesDto {
   @IsString()
   @IsNotEmpty()
   userId: string;
-
 }

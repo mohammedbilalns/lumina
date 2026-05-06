@@ -1,4 +1,10 @@
-import { ArrayNotEmpty, IsArray, IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class SaveUserPreferencesDto {
   @IsString()
@@ -7,12 +13,8 @@ export class SaveUserPreferencesDto {
 
   @IsArray()
   @ArrayNotEmpty()
-  @IsUUID(
-    "4",
-    {
-      each: true,
-    },
-  )
+  @IsUUID('4', {
+    each: true,
+  })
   categoryids: string[];
-
 }

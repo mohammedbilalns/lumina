@@ -9,8 +9,8 @@ export type User = InferSelectModel<typeof users>;
 
 export type Category = InferSelectModel<typeof categories>;
 
-export type UserPreferences = InferSelectModel<typeof userPreferences >;
+export type UserPreferences = InferSelectModel<typeof userPreferences>;
 
 export type UserPreferencesWithCategory = UserPreferences & {
-  category: Category
-}
+  category: Category;
+};

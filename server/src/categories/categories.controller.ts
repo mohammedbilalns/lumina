@@ -3,10 +3,7 @@ import { CategoriesService } from './categories.service';
 
 @Controller('categories')
 export class CategoriesController {
-
-  constructor(
-    private readonly CategoriesService: CategoriesService,
-  ){}
+  constructor(private readonly CategoriesService: CategoriesService) {}
 
   @Get()
   async getCategories() {
@@ -14,10 +11,9 @@ export class CategoriesController {
 
     return {
       message: 'Categories fetched successfully',
-      data :{
+      data: {
         categories: result.categories,
-      }
-    }
+      },
+    };
   }
 }
-

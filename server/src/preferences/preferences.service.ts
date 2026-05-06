@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PreferencesRepository } from './preferences.repository';
 import { GetUserPreferencesDto } from './dto/get-user-preferences.dto';
 import { UserPreferencesMapper } from './mappers/user-preferences.mapper';
@@ -12,12 +12,14 @@ export class PreferencesService {
     private readonly preferencesRepository: PreferencesRepository,
     private readonly userRepository: UsersRepository,
     private readonly userValidationService: UserValidationService,
-  ){}
+  ) {}
 
   async getUserPreferences(dto: GetUserPreferencesDto) {
-    const preferences = await this.preferencesRepository.fetchUserPreferences(dto.userId);
+    const preferences = await this.preferencesRepository.fetchUserPreferences(
+      dto.userId,
+    );
 
-    if(!preferences) {
+    if (!preferences) {
       throw new NotFoundException('User preferences not found');
     }
 
@@ -25,10 +27,12 @@ export class PreferencesService {
   }
 
   async saveUserPreferences(dto: SaveUserPreferencesDto) {
-
     const user = await this.userRepository.findById(dto.userId);
-    this.userValidationService.validateActiveUser(user)
+    this.userValidationService.validateActiveUser(user);
 
-    await this.preferencesRepository.saveUserPreferences(dto.userId, dto.categoryids);
+    await this.preferencesRepository.saveUserPreferences(
+      dto.userId,
+      dto.categoryids,
+    );
   }
 }
