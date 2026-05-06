@@ -132,8 +132,18 @@ export class AuthService {
 
   private async generateTokens(userId: string) {
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync({ sub: userId }),
-      this.jwtService.signAsync({ sub: userId }),
+      this.jwtService.signAsync(
+        { sub: userId },
+        {
+          secret: this.configService.get('ACCESS_TOKEN_SECRET'),
+        },
+      ),
+      this.jwtService.signAsync(
+        { sub: userId },
+        {
+          secret: this.configService.get('REFRESH_TOKEN_SECRET'),
+        },
+      ),
     ]);
 
     return { accessToken, refreshToken };
