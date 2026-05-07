@@ -15,6 +15,8 @@ import { ConfigService } from '@nestjs/config';
 import { JwtGuard } from '../security/guards/jwt/jwt.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { type JwtPayload } from './types/jwt-payload.type';
+import { VerifySignupOtpDto } from './dto/verify-signup-otp.dto';
+import { ResendSignupOtpDto } from './dto/resend-signup-otp.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -24,15 +26,25 @@ export class AuthController {
   ) {}
 
   @Post('signup')
-  async signup(
-    @Body() data: SignupDto,
+  async signup(@Body() data: SignupDto) {
+    const result = await this.authService.signup(data);
+
+    return {
+      message: 'OTP sent to your email',
+      data: result,
+    };
+  }
+
+  @Post('signup/verify-otp')
+  async verifySignupOtp(
+    @Body() data: VerifySignupOtpDto,
 
     @Res({
       passthrough: true,
     })
     response: Response,
   ) {
-    const result = await this.authService.signup(data);
+    const result = await this.authService.verifySignupOtp(data);
 
     this.setRefreshCookie(result.refreshToken, response);
 
@@ -42,6 +54,16 @@ export class AuthController {
         accessToken: result.accessToken,
         user: result.user,
       },
+    };
+  }
+
+  @Post('signup/resend-otp')
+  async resendSignupOtp(@Body() data: ResendSignupOtpDto) {
+    const result = await this.authService.resendSignupOtp(data);
+
+    return {
+      message: 'OTP resent to your email',
+      data: result,
     };
   }
 
@@ -96,7 +118,7 @@ export class AuthController {
     })
     response: Response,
   ) {
-    const refreshToken = request.cookies['refreshToken'];
+    const refreshToken = request.cookies['refreshToken'] as string | undefined;
 
     if (!refreshToken) {
       throw new UnauthorizedException('Invalid token');

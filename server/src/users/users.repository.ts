@@ -10,12 +10,25 @@ interface UserCreationData {
   phone: string;
   dateOfBirth: string;
   passwordHash: string;
+  otpHash?: string;
+  otpAttempts?: number;
+  otpExpiresAt?: Date;
+  isVerified?: boolean;
 }
 
 interface UpdateUserData {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
+}
+
+interface UpdateSignupUserData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  passwordHash: string;
 }
 
 @Injectable()
@@ -28,6 +41,18 @@ export class UsersRepository {
   async findById(id: string) {
     return this.db.query.users.findFirst({
       where: eq(users.id, id),
+    });
+  }
+
+  async findByEmail(email: string) {
+    return this.db.query.users.findFirst({
+      where: eq(users.email, email),
+    });
+  }
+
+  async findByPhone(phone: string) {
+    return this.db.query.users.findFirst({
+      where: eq(users.phone, phone),
     });
   }
 
@@ -58,8 +83,35 @@ export class UsersRepository {
   ) {
     const [user] = await this.db
       .insert(users)
-      .values({ ...data, dateOfBirth: new Date(data.dateOfBirth) })
+      .values({
+        ...data,
+        dateOfBirth: new Date(data.dateOfBirth),
+      })
       .returning();
+    return user;
+  }
+
+  async updateSignupOtp(
+    userId: string,
+    data: {
+      otpHash: string | null;
+      otpAttempts: number;
+      otpExpiresAt: Date | null;
+      isVerified?: boolean;
+    },
+  ) {
+    const [user] = await this.db
+      .update(users)
+      .set({
+        otpHash: data.otpHash,
+        otpAttempts: data.otpAttempts,
+        otpExpiresAt: data.otpExpiresAt,
+        isVerified: data.isVerified,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+
     return user;
   }
 
@@ -69,6 +121,20 @@ export class UsersRepository {
       .set({ ...data, dateOfBirth: new Date(data.dateOfBirth) })
       .where(eq(users.id, userId))
       .returning();
+    return user;
+  }
+
+  async updateSignupUser(userId: string, data: UpdateSignupUserData) {
+    const [user] = await this.db
+      .update(users)
+      .set({
+        ...data,
+        dateOfBirth: new Date(data.dateOfBirth),
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+
     return user;
   }
 
@@ -82,12 +148,15 @@ export class UsersRepository {
   }
 
   async updatePassword(userId: string, passwordHash: string) {
-    await this.db
+    const [user] = await this.db
       .update(users)
       .set({
         passwordHash,
+        updatedAt: new Date(),
       })
       .where(eq(users.id, userId))
       .returning();
+
+    return user;
   }
 }

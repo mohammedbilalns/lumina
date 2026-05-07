@@ -16,6 +16,10 @@ export class UserValidationService {
       throw new ForbiddenException('Your account has been blocked');
     }
 
+    if (!user.isVerified) {
+      throw new ForbiddenException('Please verify your email to continue');
+    }
+
     return user;
   }
 }

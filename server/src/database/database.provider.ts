@@ -13,7 +13,7 @@ export const databaseProvider: Provider = {
     const dbUrl = configService.getOrThrow<string>('DATABASE_URL');
 
     const client = postgres(dbUrl, {
-      ssl: true,
+      ssl: false,
     });
 
     return drizzle(client, {
