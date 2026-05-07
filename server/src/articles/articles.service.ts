@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ArticlesRepository } from './articles.repository';
 import { UsersRepository } from 'src/users/users.repository';
 import { UserValidationService } from 'src/users/user-validation.service';
@@ -120,7 +124,11 @@ export class ArticlesService {
 
     return {
       articles: ArticleMapper.toArticleListResponse(items),
-      pagination: ArticleMapper.toPaginationResponse(dto.page, dto.limit, total),
+      pagination: ArticleMapper.toPaginationResponse(
+        dto.page,
+        dto.limit,
+        total,
+      ),
     };
   }
 
@@ -128,15 +136,20 @@ export class ArticlesService {
     await this.validateActiveUser(dto.userId);
     this.validatePagination(dto.page, dto.limit);
 
-    const { items, total } = await this.articlesRepository.listByUserPreferences(
-      dto.userId,
-      dto.page,
-      dto.limit,
-    );
+    const { items, total } =
+      await this.articlesRepository.listByUserPreferences(
+        dto.userId,
+        dto.page,
+        dto.limit,
+      );
 
     return {
       articles: ArticleMapper.toArticleListResponse(items),
-      pagination: ArticleMapper.toPaginationResponse(dto.page, dto.limit, total),
+      pagination: ArticleMapper.toPaginationResponse(
+        dto.page,
+        dto.limit,
+        total,
+      ),
     };
   }
 

@@ -48,7 +48,11 @@ export class ReactionsService {
       throw new BadRequestException('You cannot block your own article');
     }
 
-    await this.reactionsRepository.saveReaction(dto.userId, dto.articleId, 'BLOCKED');
+    await this.reactionsRepository.saveReaction(
+      dto.userId,
+      dto.articleId,
+      'BLOCKED',
+    );
   }
 
   private async validateActiveUser(userId: string) {

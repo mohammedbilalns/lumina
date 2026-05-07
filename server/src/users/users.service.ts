@@ -24,9 +24,9 @@ export class UsersService {
   }
 
   async updateUserProfile(dto: UpdateProfileDto) {
-    let user = await this.userRepository.findById(dto.userId);
-
-    user = this.userValidationService.validateActiveUser(user);
+    this.userValidationService.validateActiveUser(
+      await this.userRepository.findById(dto.userId),
+    );
 
     const updatedUser = await this.userRepository.updateUser(dto.userId, {
       firstName: dto.firstName,
@@ -50,6 +50,8 @@ export class UsersService {
       throw new UnauthorizedException('Invalid password');
     }
 
-    await this.userRepository.updatePassword(user.id, dto.newPassword);
+    const passwordHash = await this.passwordService.hash(dto.newPassword);
+
+    await this.userRepository.updatePassword(user.id, passwordHash);
   }
 }

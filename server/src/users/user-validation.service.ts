@@ -8,16 +8,12 @@ import { User } from 'src/database/database.types';
 @Injectable()
 export class UserValidationService {
   validateActiveUser(user: User | undefined): User {
-    if (!user) {
+    if (!user || !user.isVerified) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
     if (!user.isActive) {
       throw new ForbiddenException('Your account has been blocked');
-    }
-
-    if (!user.isVerified) {
-      throw new ForbiddenException('Please verify your email to continue');
     }
 
     return user;
