@@ -32,13 +32,16 @@ export class SignupDto {
   @IsNotEmpty()
   email: string;
 
+  @IsNotEmpty()
   @IsPhoneNumber('IN')
   phone: string;
 
+  @IsNotEmpty()
   @IsDateString()
   dateOfBirth: string;
 
   @IsString()
+  @IsNotEmpty()
   @MinLength(8)
   @MaxLength(32)
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/, {

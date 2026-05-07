@@ -15,6 +15,13 @@
       "when": 1777983755016,
       "tag": "0001_material_warpath",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778087677664,
+      "tag": "0002_overconfident_texas_twister",
+      "breakpoints": true
     }
   ]
 }

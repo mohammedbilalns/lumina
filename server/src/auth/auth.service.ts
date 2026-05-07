@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
@@ -28,6 +29,10 @@ export class AuthService {
   ) {}
 
   async signup(dto: SignupDto) {
+    if (!dto?.email || !dto?.phone || !dto?.password) {
+      throw new BadRequestException('Invalid signup payload');
+    }
+
     const existingUser = await this.userRepository.findByEmailOrPhone(
       dto.email,
       dto.phone,
