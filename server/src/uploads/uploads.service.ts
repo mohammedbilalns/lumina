@@ -44,10 +44,20 @@ export class UploadsService {
     return {
       uploadUrl,
       key,
+      fileUrl: this.getPublicUrl(key),
       expiresIn: 300,
       method: 'PUT',
       contentType: dto.contentType,
     };
+  }
+
+  private getPublicUrl(objectKey: string) {
+    const safeKey = objectKey
+      .split('/')
+      .map((segment) => encodeURIComponent(segment))
+      .join('/');
+
+    return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${safeKey}`;
   }
 
   private buildObjectKey(

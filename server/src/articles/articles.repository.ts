@@ -23,7 +23,7 @@ interface CreateArticleData {
   title: string;
   description: string;
   content: string;
-  featuredImage: string;
+  featuredImage?: string | null;
   authorId: string;
   categoryId: string;
 }
@@ -32,7 +32,7 @@ interface UpdateArticleData {
   title?: string;
   description?: string;
   content?: string;
-  featuredImage?: string;
+  featuredImage?: string | null;
   categoryId?: string;
 }
 

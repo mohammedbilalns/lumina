@@ -32,7 +32,7 @@ export class ArticlesService {
       title: dto.title,
       description: this.generateDescription(dto.content),
       content: dto.content,
-      featuredImage: dto.featuredImage,
+      featuredImage: dto.featuredImage?.trim() || null,
       authorId: dto.userId,
       categoryId: dto.categoryId,
     });
@@ -85,7 +85,10 @@ export class ArticlesService {
           dto.content ?? existingArticle.content,
         ),
         content: dto.content ?? existingArticle.content,
-        featuredImage: dto.featuredImage ?? existingArticle.featuredImage,
+        featuredImage:
+          dto.featuredImage === undefined
+            ? existingArticle.featuredImage
+            : dto.featuredImage.trim() || null,
         categoryId,
       },
     );

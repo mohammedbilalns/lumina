@@ -1,5 +1,6 @@
 import {
   IsNotEmpty,
+  IsOptional,
   IsString,
   IsUUID,
   MaxLength,
@@ -23,8 +24,8 @@ export class CreateArticleDto {
   content: string;
 
   @IsString()
-  @IsNotEmpty()
-  featuredImage: string;
+  @IsOptional()
+  featuredImage?: string;
 
   @IsUUID('4')
   categoryId: string;
