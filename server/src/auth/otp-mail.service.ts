@@ -23,7 +23,8 @@ export class OtpMailService {
         text: `Hi ${firstName}, your OTP is ${otp}. It expires in 10 minutes.`,
         html: `<p>Hi ${firstName},</p><p>Your OTP is <strong>${otp}</strong>.</p><p>It expires in 10 minutes.</p>`,
       });
-    } catch {
+    } catch(err) {
+      console.log('error sending mail', err );
       throw new InternalServerErrorException('Unable to send OTP email');
     }
   }

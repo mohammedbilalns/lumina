@@ -2,8 +2,16 @@ import { User, Phone, Mail, Calendar, Lock, Save, Tag } from 'lucide-react'
 import { Navbar } from '#/components/Navbar'
 
 const ALL_INTERESTS = [
-  "Technology", "Design", "Psychology", "Self Improvement", "Web3",
-  "Engineering", "Science", "Productivity", "Marketing", "Business"
+  'Technology',
+  'Design',
+  'Psychology',
+  'Self Improvement',
+  'Web3',
+  'Engineering',
+  'Science',
+  'Productivity',
+  'Marketing',
+  'Business',
 ]
 
 export function SettingsPage() {
@@ -13,8 +21,12 @@ export function SettingsPage() {
 
       <main className="container mx-auto px-6 py-12 max-w-4xl">
         <div className="mb-10">
-          <h1 className="text-3xl font-serif font-medium mb-2 text-[#0b2226]">Account Settings</h1>
-          <p className="text-slate-500">Manage your personal information, security, and preferences.</p>
+          <h1 className="text-3xl font-serif font-medium mb-2 text-[#0b2226]">
+            Account Settings
+          </h1>
+          <p className="text-slate-500">
+            Manage your personal information, security, and preferences.
+          </p>
         </div>
 
         <div className="space-y-10">
@@ -25,30 +37,38 @@ export function SettingsPage() {
                 <User className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-xl font-serif font-medium text-[#0b2226]">Personal Information</h2>
-                <p className="text-sm text-slate-500">Update your basic profile details.</p>
+                <h2 className="text-xl font-serif font-medium text-[#0b2226]">
+                  Personal Information
+                </h2>
+                <p className="text-sm text-slate-500">
+                  Update your basic profile details.
+                </p>
               </div>
             </div>
 
-            <form className="space-y-6" onSubmit={e => e.preventDefault()}>
+            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-700">First Name</label>
+                  <label className="text-sm font-medium text-slate-700">
+                    First Name
+                  </label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       defaultValue="John"
                       className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
                     />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-700">Last Name</label>
+                  <label className="text-sm font-medium text-slate-700">
+                    Last Name
+                  </label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       defaultValue="Doe"
                       className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
                     />
@@ -58,11 +78,13 @@ export function SettingsPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-700">Email Address</label>
+                  <label className="text-sm font-medium text-slate-700">
+                    Email Address
+                  </label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input 
-                      type="email" 
+                    <input
+                      type="email"
                       defaultValue="john.doe@example.com"
                       disabled
                       className="w-full bg-slate-50 border border-[#EAEAEA] rounded-md py-2.5 pl-10 pr-4 text-sm text-slate-500 placeholder:text-slate-400 focus:outline-none transition-all disabled:opacity-70 disabled:cursor-not-allowed"
@@ -70,11 +92,13 @@ export function SettingsPage() {
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-700">Phone Number</label>
+                  <label className="text-sm font-medium text-slate-700">
+                    Phone Number
+                  </label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input 
-                      type="tel" 
+                    <input
+                      type="tel"
                       defaultValue="+1 (555) 000-0000"
                       disabled
                       className="w-full bg-slate-50 border border-[#EAEAEA] rounded-md py-2.5 pl-10 pr-4 text-sm text-slate-500 placeholder:text-slate-400 focus:outline-none transition-all disabled:opacity-70 disabled:cursor-not-allowed"
@@ -84,11 +108,13 @@ export function SettingsPage() {
               </div>
 
               <div className="space-y-1.5 sm:w-1/2 sm:pr-3">
-                <label className="text-sm font-medium text-slate-700">Date of Birth</label>
+                <label className="text-sm font-medium text-slate-700">
+                  Date of Birth
+                </label>
                 <div className="relative">
                   <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
-                  <input 
-                    type="date" 
+                  <input
+                    type="date"
                     defaultValue="1995-08-15"
                     className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 pl-10 pr-4 text-sm text-slate-900 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all cursor-pointer"
                   />
@@ -111,18 +137,27 @@ export function SettingsPage() {
                 <Lock className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-xl font-serif font-medium text-[#0b2226]">Security</h2>
-                <p className="text-sm text-slate-500">Update your password to keep your account secure.</p>
+                <h2 className="text-xl font-serif font-medium text-[#0b2226]">
+                  Security
+                </h2>
+                <p className="text-sm text-slate-500">
+                  Update your password to keep your account secure.
+                </p>
               </div>
             </div>
 
-            <form className="space-y-6 max-w-lg" onSubmit={e => e.preventDefault()}>
+            <form
+              className="space-y-6 max-w-lg"
+              onSubmit={(e) => e.preventDefault()}
+            >
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-slate-700">Current Password</label>
+                <label className="text-sm font-medium text-slate-700">
+                  Current Password
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input 
-                    type="password" 
+                  <input
+                    type="password"
                     placeholder="Enter current password"
                     className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
                   />
@@ -130,11 +165,13 @@ export function SettingsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-slate-700">New Password</label>
+                <label className="text-sm font-medium text-slate-700">
+                  New Password
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input 
-                    type="password" 
+                  <input
+                    type="password"
                     placeholder="Enter new password"
                     className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
                   />
@@ -142,11 +179,13 @@ export function SettingsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-slate-700">Confirm New Password</label>
+                <label className="text-sm font-medium text-slate-700">
+                  Confirm New Password
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input 
-                    type="password" 
+                  <input
+                    type="password"
                     placeholder="Confirm new password"
                     className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
                   />
@@ -169,20 +208,25 @@ export function SettingsPage() {
                 <Tag className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-xl font-serif font-medium text-[#0b2226]">Article Preferences</h2>
-                <p className="text-sm text-slate-500">Select the topics you're most interested in to personalize your feed.</p>
+                <h2 className="text-xl font-serif font-medium text-[#0b2226]">
+                  Article Preferences
+                </h2>
+                <p className="text-sm text-slate-500">
+                  Select the topics you're most interested in to personalize
+                  your feed.
+                </p>
               </div>
             </div>
 
             <div className="flex flex-wrap gap-3 mt-4">
               {ALL_INTERESTS.map((interest, i) => {
-                const isSelected = i % 3 === 0 || i === 1 || i === 4;
+                const isSelected = i % 3 === 0 || i === 1 || i === 4
                 return (
                   <button
                     key={interest}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all border ${
-                      isSelected 
-                        ? 'bg-[#0b2226] text-white border-[#0b2226]' 
+                      isSelected
+                        ? 'bg-[#0b2226] text-white border-[#0b2226]'
                         : 'bg-white text-slate-600 border-[#EAEAEA] hover:bg-slate-50'
                     }`}
                   >
@@ -199,7 +243,6 @@ export function SettingsPage() {
               </button>
             </div>
           </section>
-
         </div>
       </main>
     </div>

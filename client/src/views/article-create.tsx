@@ -8,8 +8,12 @@ export function ArticleCreatePage() {
 
       <main className="container mx-auto px-6 py-12 max-w-4xl">
         <div className="mb-10">
-          <h1 className="text-3xl font-serif font-medium mb-2 text-[#0b2226]">Create New Article</h1>
-          <p className="text-slate-500">Share your ideas with the Lumina community.</p>
+          <h1 className="text-3xl font-serif font-medium mb-2 text-[#0b2226]">
+            Create New Article
+          </h1>
+          <p className="text-slate-500">
+            Share your ideas with the Lumina community.
+          </p>
         </div>
 
         <div className="bg-white border border-[#EAEAEA] rounded-xl p-6 sm:p-10 shadow-sm">

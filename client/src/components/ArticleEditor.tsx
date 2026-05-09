@@ -20,20 +20,21 @@ export function ArticleEditor({ mode, initialData }: ArticleEditorProps) {
     content: initialData?.content || '<p>Start writing your story here...</p>',
     editorProps: {
       attributes: {
-        class: 'prose prose-slate max-w-none focus:outline-none min-h-[300px] p-4 bg-white border border-[#EAEAEA] rounded-md font-sans text-slate-900',
+        class:
+          'prose prose-slate max-w-none focus:outline-none min-h-[300px] p-4 bg-white border border-[#EAEAEA] rounded-md font-sans text-slate-900',
       },
     },
   })
 
   return (
-    <form className="space-y-6" onSubmit={e => e.preventDefault()}>
+    <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
       {/* Title */}
       <div className="space-y-2">
         <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
           <Type className="w-4 h-4 text-slate-500" /> Article Name
         </label>
-        <input 
-          type="text" 
+        <input
+          type="text"
           defaultValue={initialData?.title}
           placeholder="Enter a captivating title..."
           className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 px-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all font-serif text-lg"
@@ -45,7 +46,7 @@ export function ArticleEditor({ mode, initialData }: ArticleEditorProps) {
         <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
           <Layout className="w-4 h-4 text-slate-500" /> Description
         </label>
-        <textarea 
+        <textarea
           defaultValue={initialData?.description}
           placeholder="Write a short summary or description of the article..."
           rows={3}
@@ -59,11 +60,13 @@ export function ArticleEditor({ mode, initialData }: ArticleEditorProps) {
           <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
             <Hash className="w-4 h-4 text-slate-500" /> Category
           </label>
-          <select 
-            defaultValue={initialData?.category || ""}
+          <select
+            defaultValue={initialData?.category || ''}
             className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 px-4 text-slate-900 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all appearance-none cursor-pointer"
           >
-            <option value="" disabled>Select a category</option>
+            <option value="" disabled>
+              Select a category
+            </option>
             <option value="Technology">Technology</option>
             <option value="Design">Design</option>
             <option value="Psychology">Psychology</option>
@@ -77,8 +80,8 @@ export function ArticleEditor({ mode, initialData }: ArticleEditorProps) {
           <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
             <Tag className="w-4 h-4 text-slate-500" /> Tags
           </label>
-          <input 
-            type="text" 
+          <input
+            type="text"
             defaultValue={initialData?.tags}
             placeholder="e.g. React, UI/UX (comma separated)"
             className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 px-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
@@ -92,8 +95,8 @@ export function ArticleEditor({ mode, initialData }: ArticleEditorProps) {
           <ImageIcon className="w-4 h-4 text-slate-500" /> Cover Image URL
         </label>
         <div className="flex gap-4">
-          <input 
-            type="url" 
+          <input
+            type="url"
             defaultValue={initialData?.imageUrl}
             placeholder="https://images.unsplash.com/photo-..."
             className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 px-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"

@@ -50,16 +50,17 @@ export function ArticlePage() {
           <h1 className="text-4xl md:text-5xl font-serif font-medium text-[#0b2226] mb-6 leading-tight">
             The Architecture of Tomorrow's Web
           </h1>
-          
+
           <p className="text-xl text-slate-500 mb-8 leading-relaxed font-serif">
-            Exploring how server components and edge computing are reshaping the way we build and deliver user interfaces in the modern era.
+            Exploring how server components and edge computing are reshaping the
+            way we build and deliver user interfaces in the modern era.
           </p>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between border-t border-b border-[#EAEAEA] py-6 gap-6">
             <div className="flex items-center gap-4">
-              <img 
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100" 
-                alt="Elena Rodriguez" 
+              <img
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100"
+                alt="Elena Rodriguez"
                 className="w-12 h-12 rounded-full object-cover border border-[#EAEAEA]"
               />
               <div>
@@ -82,7 +83,10 @@ export function ArticlePage() {
                 <ThumbsDown className="w-4 h-4" />
               </button>
               <div className="w-px h-6 bg-[#EAEAEA] mx-2"></div>
-              <button className="flex items-center gap-1.5 px-3 py-2 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="Block Author">
+              <button
+                className="flex items-center gap-1.5 px-3 py-2 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                title="Block Author"
+              >
                 <ShieldAlert className="w-4 h-4" />
               </button>
               <button className="flex items-center gap-1.5 px-3 py-2 rounded-md text-slate-400 hover:bg-slate-50 transition-colors">
@@ -94,9 +98,9 @@ export function ArticlePage() {
 
         {/* Article Cover Image */}
         <figure className="mb-16 rounded-xl overflow-hidden border border-[#EAEAEA]">
-          <img 
-            src="https://images.unsplash.com/photo-1620121692029-d088224ddc74?auto=format&fit=crop&q=80&w=1200" 
-            alt="Article Cover" 
+          <img
+            src="https://images.unsplash.com/photo-1620121692029-d088224ddc74?auto=format&fit=crop&q=80&w=1200"
+            alt="Article Cover"
             className="w-full h-auto object-cover aspect-[21/9]"
           />
         </figure>
@@ -105,7 +109,6 @@ export function ArticlePage() {
         <div className="text-lg leading-relaxed text-[#111111]">
           <EditorContent editor={editor} />
         </div>
-
       </main>
     </div>
   )
