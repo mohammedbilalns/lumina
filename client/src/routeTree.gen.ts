@@ -10,13 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as MyArticlesRouteImport } from './routes/my-articles'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ArticleIdRouteImport } from './routes/article.$id'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyArticlesRoute = MyArticlesRouteImport.update({
+  id: '/my-articles',
+  path: '/my-articles',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -34,39 +41,71 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ArticleIdRoute = ArticleIdRouteImport.update({
+  id: '/article/$id',
+  path: '/article/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
+  '/my-articles': typeof MyArticlesRoute
   '/settings': typeof SettingsRoute
+  '/article/$id': typeof ArticleIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
+  '/my-articles': typeof MyArticlesRoute
   '/settings': typeof SettingsRoute
+  '/article/$id': typeof ArticleIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
+  '/my-articles': typeof MyArticlesRoute
   '/settings': typeof SettingsRoute
+  '/article/$id': typeof ArticleIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/dashboard' | '/settings'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/my-articles'
+    | '/settings'
+    | '/article/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard' | '/settings'
-  id: '__root__' | '/' | '/auth' | '/dashboard' | '/settings'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/my-articles'
+    | '/settings'
+    | '/article/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/my-articles'
+    | '/settings'
+    | '/article/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   DashboardRoute: typeof DashboardRoute
+  MyArticlesRoute: typeof MyArticlesRoute
   SettingsRoute: typeof SettingsRoute
+  ArticleIdRoute: typeof ArticleIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -76,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-articles': {
+      id: '/my-articles'
+      path: '/my-articles'
+      fullPath: '/my-articles'
+      preLoaderRoute: typeof MyArticlesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -99,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/article/$id': {
+      id: '/article/$id'
+      path: '/article/$id'
+      fullPath: '/article/$id'
+      preLoaderRoute: typeof ArticleIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -106,7 +159,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   DashboardRoute: DashboardRoute,
+  MyArticlesRoute: MyArticlesRoute,
   SettingsRoute: SettingsRoute,
+  ArticleIdRoute: ArticleIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

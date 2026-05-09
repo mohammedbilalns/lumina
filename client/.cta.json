@@ -12,10 +12,5 @@
   "routerOnly": false,
   "version": 1,
   "framework": "react",
-  "chosenAddOns": [
-    "eslint",
-    "netlify",
-    "tanstack-query",
-    "form"
-  ]
+  "chosenAddOns": ["eslint", "netlify", "tanstack-query", "form"]
 }

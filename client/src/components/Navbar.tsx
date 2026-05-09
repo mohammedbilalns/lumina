@@ -13,8 +13,8 @@ export function Navbar() {
 
         <div className="hidden md:flex flex-1 max-w-md mx-8 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-          <input 
-            type="text" 
+          <input
+            type="text"
             placeholder="Search stories, topics, or writers..."
             className="w-full bg-white/5 border border-white/10 rounded-full py-2 pl-10 pr-4 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
           />

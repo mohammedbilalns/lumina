@@ -2,8 +2,16 @@ import { User, Phone, Mail, Calendar, Lock, Save, Tag } from 'lucide-react'
 import { Navbar } from '#/components/Navbar'
 
 const ALL_INTERESTS = [
-  "Technology", "Design", "Psychology", "Self Improvement", "Web3",
-  "Engineering", "Science", "Productivity", "Marketing", "Business"
+  'Technology',
+  'Design',
+  'Psychology',
+  'Self Improvement',
+  'Web3',
+  'Engineering',
+  'Science',
+  'Productivity',
+  'Marketing',
+  'Business',
 ]
 
 export function SettingsPage() {
@@ -14,7 +22,9 @@ export function SettingsPage() {
       <main className="container mx-auto px-6 py-12 max-w-4xl">
         <div className="mb-10">
           <h1 className="text-3xl font-bold mb-2">Account Settings</h1>
-          <p className="text-slate-400">Manage your personal information, security, and preferences.</p>
+          <p className="text-slate-400">
+            Manage your personal information, security, and preferences.
+          </p>
         </div>
 
         <div className="space-y-10">
@@ -26,29 +36,35 @@ export function SettingsPage() {
               </div>
               <div>
                 <h2 className="text-xl font-bold">Personal Information</h2>
-                <p className="text-sm text-slate-400">Update your basic profile details.</p>
+                <p className="text-sm text-slate-400">
+                  Update your basic profile details.
+                </p>
               </div>
             </div>
 
-            <form className="space-y-6" onSubmit={e => e.preventDefault()}>
+            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-300">First Name</label>
+                  <label className="text-sm font-medium text-slate-300">
+                    First Name
+                  </label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       defaultValue="John"
                       className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
                     />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-300">Last Name</label>
+                  <label className="text-sm font-medium text-slate-300">
+                    Last Name
+                  </label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       defaultValue="Doe"
                       className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
                     />
@@ -58,11 +74,13 @@ export function SettingsPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-300">Email Address</label>
+                  <label className="text-sm font-medium text-slate-300">
+                    Email Address
+                  </label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                    <input 
-                      type="email" 
+                    <input
+                      type="email"
                       defaultValue="john.doe@example.com"
                       disabled
                       className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -70,11 +88,13 @@ export function SettingsPage() {
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-300">Phone Number</label>
+                  <label className="text-sm font-medium text-slate-300">
+                    Phone Number
+                  </label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                    <input 
-                      type="tel" 
+                    <input
+                      type="tel"
                       defaultValue="+1 (555) 000-0000"
                       disabled
                       className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -84,11 +104,13 @@ export function SettingsPage() {
               </div>
 
               <div className="space-y-1.5 sm:w-1/2 sm:pr-3">
-                <label className="text-sm font-medium text-slate-300">Date of Birth</label>
+                <label className="text-sm font-medium text-slate-300">
+                  Date of Birth
+                </label>
                 <div className="relative">
                   <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none z-10" />
-                  <input 
-                    type="date" 
+                  <input
+                    type="date"
                     defaultValue="1995-08-15"
                     className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-50 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                   />
@@ -112,17 +134,24 @@ export function SettingsPage() {
               </div>
               <div>
                 <h2 className="text-xl font-bold">Security</h2>
-                <p className="text-sm text-slate-400">Update your password to keep your account secure.</p>
+                <p className="text-sm text-slate-400">
+                  Update your password to keep your account secure.
+                </p>
               </div>
             </div>
 
-            <form className="space-y-6 max-w-lg" onSubmit={e => e.preventDefault()}>
+            <form
+              className="space-y-6 max-w-lg"
+              onSubmit={(e) => e.preventDefault()}
+            >
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-slate-300">Current Password</label>
+                <label className="text-sm font-medium text-slate-300">
+                  Current Password
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                  <input 
-                    type="password" 
+                  <input
+                    type="password"
                     placeholder="Enter current password"
                     className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
                   />
@@ -130,11 +159,13 @@ export function SettingsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-slate-300">New Password</label>
+                <label className="text-sm font-medium text-slate-300">
+                  New Password
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                  <input 
-                    type="password" 
+                  <input
+                    type="password"
                     placeholder="Enter new password"
                     className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
                   />
@@ -142,11 +173,13 @@ export function SettingsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-slate-300">Confirm New Password</label>
+                <label className="text-sm font-medium text-slate-300">
+                  Confirm New Password
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                  <input 
-                    type="password" 
+                  <input
+                    type="password"
                     placeholder="Confirm new password"
                     className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
                   />
@@ -170,19 +203,22 @@ export function SettingsPage() {
               </div>
               <div>
                 <h2 className="text-xl font-bold">Article Preferences</h2>
-                <p className="text-sm text-slate-400">Select the topics you're most interested in to personalize your feed.</p>
+                <p className="text-sm text-slate-400">
+                  Select the topics you're most interested in to personalize
+                  your feed.
+                </p>
               </div>
             </div>
 
             <div className="flex flex-wrap gap-3 mt-8">
               {ALL_INTERESTS.map((interest, i) => {
-                const isSelected = i % 3 === 0 || i === 1 || i === 4;
+                const isSelected = i % 3 === 0 || i === 1 || i === 4
                 return (
                   <button
                     key={interest}
                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border ${
-                      isSelected 
-                        ? 'bg-blue-500/20 text-blue-300 border-blue-500/30 hover:bg-blue-500/30' 
+                      isSelected
+                        ? 'bg-blue-500/20 text-blue-300 border-blue-500/30 hover:bg-blue-500/30'
                         : 'bg-white/5 text-slate-400 border-white/10 hover:bg-white/10 hover:text-slate-200'
                     }`}
                   >
@@ -199,7 +235,6 @@ export function SettingsPage() {
               </button>
             </div>
           </section>
-
         </div>
       </main>
     </div>
