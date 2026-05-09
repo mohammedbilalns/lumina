@@ -7,14 +7,15 @@
   "tailwind": true,
   "addOnOptions": {},
   "envVarValues": {},
-  "git": false,
+  "git": true,
   "install": true,
   "routerOnly": false,
   "version": 1,
   "framework": "react",
   "chosenAddOns": [
     "eslint",
-    "shadcn",
-    "tanstack-query"
+    "netlify",
+    "tanstack-query",
+    "form"
   ]
 }
