@@ -1,9 +1,26 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { BookOpen, ArrowLeft } from 'lucide-react'
+import { LoginForm } from '@/features/authentication/components/login-form'
+import { SignupForm } from '@/features/authentication/components/signup-form'
+import { OtpForm } from '@/features/authentication/components/otp-form'
+
+type AuthMode = 'login' | 'signup' | 'otp'
 
 export function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true)
+  const [mode, setMode] = useState<AuthMode>('login')
+
+  const titles = {
+    login: 'Welcome back',
+    signup: 'Create your account',
+    otp: 'Login with OTP',
+  }
+
+  const descriptions = {
+    login: 'Enter your details to access your account.',
+    signup: 'Join Lumina to discover and share insights.',
+    otp: 'Enter your email or phone number to receive a verification code.',
+  }
 
   return (
     <div className="min-h-screen bg-[#FBFBFA] font-sans selection:bg-[#f8cb5b]/30 flex flex-col items-center justify-center p-6">
@@ -21,101 +38,30 @@ export function AuthPage() {
             <BookOpen className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-3xl font-serif font-medium text-[#0b2226] mb-2 text-center">
-            {isLogin ? 'Welcome back' : 'Create your account'}
+            {titles[mode]}
           </h1>
           <p className="text-slate-500 text-center">
-            {isLogin
-              ? 'Enter your details to access your account.'
-              : 'Join Lumina to discover and share insights.'}
+            {descriptions[mode]}
           </p>
         </div>
 
         <div className="bg-white border border-[#EAEAEA] rounded-xl shadow-sm p-8">
-          <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-            {!isLogin && (
-              <>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-slate-700">
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Elena"
-                      className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-slate-700">
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Rodriguez"
-                      className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-700">
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    placeholder="+1 (555) 000-0000"
-                    className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-slate-700">
-                    Date of Birth
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
-                  />
-                </div>
-              </>
-            )}
-
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700">
-                Email Address
-              </label>
-              <input
-                type="email"
-                placeholder="elena.rodriguez@example.com"
-                className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700">
-                Password
-              </label>
-              <input
-                type="password"
-                placeholder="Min. 8 characters"
-                className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
-              />
-            </div>
-
-            <button className="w-full bg-[#0b2226] text-white font-medium py-3 rounded-md hover:bg-[#13383d] transition-colors mt-2">
-              {isLogin ? 'Sign In' : 'Create Account'}
-            </button>
-          </form>
-
-          <div className="mt-6 text-center text-sm text-slate-500">
-            {isLogin ? "Don't have an account? " : 'Already have an account? '}
-            <button
-              onClick={() => setIsLogin(!isLogin)}
-              className="font-medium text-[#0b2226] hover:underline"
-            >
-              {isLogin ? 'Sign up' : 'Log in'}
-            </button>
-          </div>
+          {mode === 'login' && (
+            <LoginForm 
+              onSwitchToSignup={() => setMode('signup')} 
+              onSwitchToOtp={() => setMode('otp')} 
+            />
+          )}
+          {mode === 'signup' && (
+            <SignupForm 
+              onSwitchToLogin={() => setMode('login')} 
+            />
+          )}
+          {mode === 'otp' && (
+            <OtpForm 
+              onSwitchToLogin={() => setMode('login')} 
+            />
+          )}
         </div>
       </div>
     </div>
