@@ -1,244 +1,127 @@
-import { ArrowRight, BookOpen, Compass, PenTool, Sparkles } from 'lucide-react'
+import { ArrowRight, Compass } from 'lucide-react'
+import { Navbar } from '#/components/Navbar'
+import { Link } from '@tanstack/react-router'
 
 export function Landing() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 font-sans selection:bg-indigo-500/30">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-white/5 bg-slate-950/80 backdrop-blur-md">
-        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold tracking-tight">Lumina</span>
-          </div>
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-            <a href="#" className="hover:text-white transition-colors">
-              Discover
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              Trending
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              Topics
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              Writers
-            </a>
-          </nav>
-          <div className="flex items-center gap-4">
-            <button className="text-sm font-medium text-slate-300 hover:text-white transition-colors">
-              Sign In
-            </button>
-            <button className="text-sm font-medium bg-white text-slate-950 px-4 py-2 rounded-full hover:bg-slate-200 transition-colors">
-              Get Started
-            </button>
-          </div>
+    <div className="min-h-screen bg-white text-[#111111] font-sans selection:bg-[#f8cb5b]/30">
+      <Navbar />
+
+      {/* Main Content */}
+      <main className="container mx-auto px-6 pt-16 pb-32 max-w-6xl">
+        
+        {/* Section Header */}
+        <div className="flex items-center gap-2 mb-8 text-slate-500">
+          <Compass className="w-5 h-5" />
+          <span className="font-semibold text-sm uppercase tracking-wide">Featured Guides</span>
         </div>
-      </header>
 
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
-        {/* Background glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/20 rounded-full blur-[120px] pointer-events-none" />
+        {/* Hero Banner Card */}
+        <div className="bg-[#13383d] rounded-[2rem] p-10 md:p-16 relative overflow-hidden shadow-sm flex items-center min-h-[360px]">
+          {/* Subtle Background Pattern / Graphics */}
+          <div className="absolute right-0 top-0 bottom-0 w-1/2 opacity-20 md:opacity-100 pointer-events-none flex justify-end">
+             {/* Mocking the compass graphic from Nova with CSS shapes */}
+             <div className="relative w-96 h-full flex items-center justify-center">
+                <div className="absolute w-64 h-64 border-4 border-emerald-400/30 rounded-full"></div>
+                <div className="absolute w-48 h-48 border-[12px] border-[#0b2226] rounded-full"></div>
+                <div className="absolute w-2 h-32 bg-emerald-400 rotate-45 transform origin-center"></div>
+                <div className="absolute w-2 h-32 bg-white -rotate-[135deg] transform origin-center"></div>
+                <div className="w-8 h-8 rounded-full bg-[#f8cb5b] z-10 shadow-lg"></div>
+             </div>
+          </div>
 
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sm text-indigo-300 mb-8 backdrop-blur-sm">
-              <Sparkles className="w-4 h-4" />
-              <span>Introducing the new reading experience</span>
-            </div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-tight mb-6">
-              Where ideas <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
-                illuminate
-              </span>{' '}
-              the future.
+          <div className="relative z-10 max-w-2xl">
+            <h1 className="text-4xl md:text-5xl font-serif text-white font-medium tracking-tight mb-4 leading-tight">
+              Looking for top-tier reading resources?
             </h1>
-            <p className="text-lg md:text-xl text-slate-400 mb-10 leading-relaxed max-w-2xl mx-auto">
-              Discover stories, thinking, and expertise from writers on any
-              topic. A modern space for readers and creators to connect through
-              profound ideas.
+            <p className="text-lg text-emerald-50/70 mb-10">
+              Download insightful guides written from an expert's perspective.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full font-semibold text-white hover:opacity-90 transition-opacity flex items-center justify-center gap-2 group shadow-lg shadow-indigo-500/25">
-                Start Reading
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
-              <button className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 rounded-full font-semibold text-white hover:bg-white/10 transition-colors flex items-center justify-center gap-2 backdrop-blur-sm">
-                <PenTool className="w-4 h-4" />
-                Start Writing
-              </button>
-            </div>
+            <Link to="/dashboard" className="inline-flex items-center gap-2 bg-white text-[#13383d] font-medium px-6 py-3 rounded-md hover:bg-slate-100 transition-colors">
+              Explore <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
-      </section>
 
-      {/* Trending Section */}
-      <section className="py-24 bg-slate-900/50">
-        <div className="container mx-auto px-6 max-w-7xl">
-          <div className="flex items-center justify-between mb-12">
-            <h2 className="text-3xl font-bold flex items-center gap-3">
-              <Compass className="w-8 h-8 text-indigo-400" />
-              Trending on Lumina
-            </h2>
-            <a
-              href="#"
-              className="text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1 group"
-            >
-              View all{' '}
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </a>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Article Card 1 */}
-            <article className="group relative bg-slate-950/80 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:border-indigo-500/50 transition-colors shadow-xl">
-              <div className="aspect-[16/9] overflow-hidden">
-                <img
-                  src="https://images.unsplash.com/photo-1620121692029-d088224ddc74?auto=format&fit=crop&q=80&w=800"
-                  alt="Article Cover"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100"
-                    alt="Author"
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
-                  <div className="text-sm">
-                    <p className="font-medium text-slate-200">
-                      Elena Rodriguez
-                    </p>
-                    <p className="text-slate-500">Oct 24 • 5 min read</p>
-                  </div>
+        {/* Minimal Article Grid */}
+        <div className="mt-24">
+          <h2 className="text-2xl font-serif font-medium text-[#0b2226] mb-8">Latest Publications</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[1, 2, 3].map((item) => (
+              <article key={item} className="group cursor-pointer">
+                <div className="aspect-[4/3] rounded-xl overflow-hidden mb-4 border border-[#EAEAEA]">
+                  <img src={`https://images.unsplash.com/photo-${item === 1 ? '1618005182384-a83a8bd57fbe' : item === 2 ? '1550745165-9bc0b252726f' : '1484480974693-6ca0a78fb36b'}?auto=format&fit=crop&q=80&w=800`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Cover" />
                 </div>
-                <h3 className="text-xl font-bold mb-2 group-hover:text-indigo-400 transition-colors line-clamp-2">
-                  The Architecture of Tomorrow's Web
-                </h3>
-                <p className="text-slate-400 text-sm line-clamp-2">
-                  Exploring how server components and edge computing are
-                  reshaping the way we build and deliver user interfaces in the
-                  modern era.
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-indigo-500/10 text-indigo-300 text-xs font-medium rounded-full border border-indigo-500/20">
-                    Engineering
-                  </span>
-                  <span className="px-3 py-1 bg-white/5 text-slate-300 text-xs font-medium rounded-full border border-white/10">
-                    Web3
-                  </span>
-                </div>
-              </div>
-            </article>
-
-            {/* Article Card 2 */}
-            <article className="group relative bg-slate-950/80 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:border-purple-500/50 transition-colors shadow-xl">
-              <div className="aspect-[16/9] overflow-hidden">
-                <img
-                  src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800"
-                  alt="Article Cover"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <img
-                    src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=100"
-                    alt="Author"
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
-                  <div className="text-sm">
-                    <p className="font-medium text-slate-200">Marcus Chen</p>
-                    <p className="text-slate-500">Oct 22 • 8 min read</p>
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold mb-2 group-hover:text-purple-400 transition-colors line-clamp-2">
-                  Minimalism in Digital Design
-                </h3>
-                <p className="text-slate-400 text-sm line-clamp-2">
-                  Why subtracting the obvious and adding the meaningful leads to
-                  products that people genuinely love using every day.
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-purple-500/10 text-purple-300 text-xs font-medium rounded-full border border-purple-500/20">
-                    Design
-                  </span>
-                  <span className="px-3 py-1 bg-white/5 text-slate-300 text-xs font-medium rounded-full border border-white/10">
-                    UX
-                  </span>
-                </div>
-              </div>
-            </article>
-
-            {/* Article Card 3 */}
-            <article className="group relative bg-slate-950/80 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:border-blue-500/50 transition-colors shadow-xl sm:hidden lg:block">
-              <div className="aspect-[16/9] overflow-hidden">
-                <img
-                  src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800"
-                  alt="Article Cover"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <img
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100"
-                    alt="Author"
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
-                  <div className="text-sm">
-                    <p className="font-medium text-slate-200">Sarah Jenkins</p>
-                    <p className="text-slate-500">Oct 20 • 12 min read</p>
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors line-clamp-2">
-                  The Neuroscience of Habit
-                </h3>
-                <p className="text-slate-400 text-sm line-clamp-2">
-                  A deep dive into how our brains wire routines and how we can
-                  effectively reprogram our daily behaviors for success.
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-blue-500/10 text-blue-300 text-xs font-medium rounded-full border border-blue-500/20">
-                    Psychology
-                  </span>
-                  <span className="px-3 py-1 bg-white/5 text-slate-300 text-xs font-medium rounded-full border border-white/10">
-                    Science
-                  </span>
-                </div>
-              </div>
-            </article>
+                <span className="text-xs font-semibold text-[#13383d] tracking-wide uppercase">Design</span>
+                <h3 className="text-lg font-serif font-medium mt-2 mb-2 text-[#0b2226] group-hover:text-[#13383d] transition-colors leading-snug">The Psychology of Minimalist Interfaces</h3>
+                <p className="text-sm text-slate-500 line-clamp-2">Understanding why stripping away the obvious adds so much meaning to user experience and daily tools.</p>
+              </article>
+            ))}
           </div>
         </div>
-      </section>
+      </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 bg-slate-950 py-12">
-        <div className="container mx-auto px-6 max-w-7xl">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2 text-slate-400">
-              <div className="w-6 h-6 rounded bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                <BookOpen className="w-3.5 h-3.5 text-white" />
-              </div>
-              <span className="font-semibold text-slate-200">Lumina</span>
-              <span>© {new Date().getFullYear()}</span>
+      <footer className="bg-[#0b2226] text-white py-20 border-t border-[#0b2226]">
+        <div className="container mx-auto px-6 max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-16">
+          {/* Subscribe Section */}
+          <div className="max-w-md">
+            <h2 className="text-3xl font-serif font-medium mb-4">Subscribe to Lumina Dispatch</h2>
+            <p className="text-slate-400 mb-8">A weekly digest of latest news, articles and resources</p>
+            
+            <form className="flex gap-4 mb-6" onSubmit={e => e.preventDefault()}>
+              <input 
+                type="email" 
+                placeholder="Your Email Address"
+                className="flex-1 bg-white border border-transparent rounded-md py-3 px-4 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#f8cb5b]"
+              />
+              <button className="bg-[#f8cb5b] text-[#0b2226] font-semibold px-6 py-3 rounded-md hover:bg-[#f2c94c] transition-colors whitespace-nowrap">
+                Subscribe
+              </button>
+            </form>
+
+            <p className="text-xs text-slate-500 leading-relaxed">
+              By continuing, you agree to Lumina's <a href="#" className="text-slate-300 hover:text-white transition-colors">Terms of Use</a> and <a href="#" className="text-slate-300 hover:text-white transition-colors">Privacy Policy</a>
+            </p>
+          </div>
+
+          {/* Links Section */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 lg:pl-12">
+            <div>
+              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-6 flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-indigo-500/30 border border-indigo-400"></span>
+                Topics
+              </h4>
+              <ul className="space-y-4 text-sm text-slate-300">
+                <li><a href="#" className="hover:text-white transition-colors">Technology</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Design</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Psychology</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Science</a></li>
+              </ul>
             </div>
-            <div className="flex gap-6 text-sm text-slate-500">
-              <a href="#" className="hover:text-white transition-colors">
-                Terms
-              </a>
-              <a href="#" className="hover:text-white transition-colors">
-                Privacy
-              </a>
-              <a href="#" className="hover:text-white transition-colors">
-                About
-              </a>
-              <a href="#" className="hover:text-white transition-colors">
-                Contact
-              </a>
+            <div>
+              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-6 flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-emerald-500/30 border border-emerald-400"></span>
+                Platform
+              </h4>
+              <ul className="space-y-4 text-sm text-slate-300">
+                <li><a href="#" className="hover:text-white transition-colors">Writers</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Readers</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Guidelines</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-6 flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-amber-500/30 border border-amber-400"></span>
+                Company
+              </h4>
+              <ul className="space-y-4 text-sm text-slate-300">
+                <li><a href="#" className="hover:text-white transition-colors">About</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
+              </ul>
             </div>
           </div>
         </div>

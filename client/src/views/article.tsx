@@ -25,46 +25,46 @@ export function ArticlePage() {
     editable: false,
     editorProps: {
       attributes: {
-        class: 'prose prose-invert prose-indigo max-w-none focus:outline-none',
+        class: 'prose prose-slate max-w-none focus:outline-none font-sans',
       },
     },
   })
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 font-sans selection:bg-indigo-500/30 pb-20">
+    <div className="min-h-screen bg-white text-[#111111] font-sans selection:bg-[#f8cb5b]/30 pb-20">
       <Navbar />
 
-      <main className="container mx-auto px-6 py-12 max-w-3xl">
+      <main className="container mx-auto px-6 py-16 max-w-3xl">
         {/* Article Header */}
-        <header className="mb-10">
-          <div className="flex items-center gap-2 mb-6">
-            <span className="px-3 py-1 bg-indigo-500/10 text-indigo-300 text-xs font-medium rounded-full border border-indigo-500/20">
+        <header className="mb-12">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="text-xs font-semibold text-[#13383d] uppercase tracking-wider">
               Technology
             </span>
-            <span className="px-3 py-1 bg-white/5 text-slate-300 text-xs font-medium rounded-full border border-white/10">
+            <span className="w-1 h-1 rounded-full bg-[#EAEAEA]"></span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
               Web Development
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-6 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-serif font-medium text-[#0b2226] mb-6 leading-tight">
             The Architecture of Tomorrow's Web
           </h1>
-
-          <p className="text-xl text-slate-400 mb-8 leading-relaxed">
-            Exploring how server components and edge computing are reshaping the
-            way we build and deliver user interfaces in the modern era.
+          
+          <p className="text-xl text-slate-500 mb-8 leading-relaxed font-serif">
+            Exploring how server components and edge computing are reshaping the way we build and deliver user interfaces in the modern era.
           </p>
 
-          <div className="flex items-center justify-between border-t border-b border-white/10 py-6 mb-8 flex-wrap gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-t border-b border-[#EAEAEA] py-6 gap-6">
             <div className="flex items-center gap-4">
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100"
-                alt="Elena Rodriguez"
-                className="w-12 h-12 rounded-full object-cover"
+              <img 
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100" 
+                alt="Elena Rodriguez" 
+                className="w-12 h-12 rounded-full object-cover border border-[#EAEAEA]"
               />
               <div>
-                <p className="font-bold text-slate-200">Elena Rodriguez</p>
-                <div className="flex items-center gap-2 text-sm text-slate-400">
+                <p className="font-semibold text-[#0b2226]">Elena Rodriguez</p>
+                <div className="flex items-center gap-2 text-sm text-slate-500">
                   <span>Oct 24, 2023</span>
                   <span>•</span>
                   <span>5 min read</span>
@@ -73,25 +73,19 @@ export function ArticlePage() {
             </div>
 
             {/* Interaction Buttons (Like, Dislike, Block) */}
-            <div className="flex items-center gap-3">
-              <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 transition-colors border border-indigo-500/20">
+            <div className="flex items-center gap-2">
+              <button className="flex items-center gap-1.5 px-3 py-2 rounded-md bg-white border border-[#EAEAEA] hover:bg-slate-50 text-slate-600 transition-colors">
                 <ThumbsUp className="w-4 h-4" />
                 <span className="text-sm font-medium">1.2k</span>
               </button>
-              <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition-colors border border-white/5">
+              <button className="flex items-center gap-1.5 px-3 py-2 rounded-md bg-white border border-[#EAEAEA] hover:bg-slate-50 text-slate-600 transition-colors">
                 <ThumbsDown className="w-4 h-4" />
               </button>
-              <div className="w-px h-6 bg-white/10 mx-1"></div>
-              <button
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors border border-transparent hover:border-red-500/20"
-                title="Block Author"
-              >
+              <div className="w-px h-6 bg-[#EAEAEA] mx-2"></div>
+              <button className="flex items-center gap-1.5 px-3 py-2 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="Block Author">
                 <ShieldAlert className="w-4 h-4" />
-                <span className="text-sm font-medium hidden sm:inline">
-                  Block
-                </span>
               </button>
-              <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-slate-400 hover:bg-white/10 transition-colors">
+              <button className="flex items-center gap-1.5 px-3 py-2 rounded-md text-slate-400 hover:bg-slate-50 transition-colors">
                 <MoreHorizontal className="w-4 h-4" />
               </button>
             </div>
@@ -99,18 +93,19 @@ export function ArticlePage() {
         </header>
 
         {/* Article Cover Image */}
-        <figure className="mb-12 rounded-2xl overflow-hidden shadow-2xl">
-          <img
-            src="https://images.unsplash.com/photo-1620121692029-d088224ddc74?auto=format&fit=crop&q=80&w=1200"
-            alt="Article Cover"
+        <figure className="mb-16 rounded-xl overflow-hidden border border-[#EAEAEA]">
+          <img 
+            src="https://images.unsplash.com/photo-1620121692029-d088224ddc74?auto=format&fit=crop&q=80&w=1200" 
+            alt="Article Cover" 
             className="w-full h-auto object-cover aspect-[21/9]"
           />
         </figure>
 
         {/* Tiptap Editor Content */}
-        <div className="bg-slate-900/40 backdrop-blur-sm border border-white/5 rounded-2xl p-8 sm:p-10 shadow-xl">
+        <div className="text-lg leading-relaxed text-[#111111]">
           <EditorContent editor={editor} />
         </div>
+
       </main>
     </div>
   )
