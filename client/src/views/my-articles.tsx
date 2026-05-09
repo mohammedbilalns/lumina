@@ -37,10 +37,10 @@ export function MyArticlesPage() {
             <h1 className="text-3xl font-bold mb-2">My Articles</h1>
             <p className="text-slate-400">Manage your published stories and drafts.</p>
           </div>
-          <button className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 text-white rounded-xl font-medium transition-all shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2 shrink-0">
+          <Link to="/article/create" className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 text-white rounded-xl font-medium transition-all shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2 shrink-0">
             <PenTool className="w-4 h-4" />
             Write a Story
-          </button>
+          </Link>
         </div>
 
         <div className="space-y-4">
@@ -83,10 +83,10 @@ export function MyArticlesPage() {
 
               {/* Actions */}
               <div className="flex items-center gap-2 shrink-0 border-t md:border-t-0 border-white/5 pt-4 md:pt-0 relative z-10">
-                <button className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-slate-200 rounded-lg transition-colors font-medium text-sm">
+                <Link to="/article/$id/edit" params={{ id: article.id.toString() }} className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-slate-200 rounded-lg transition-colors font-medium text-sm">
                   <Edit2 className="w-4 h-4" />
                   Edit
-                </button>
+                </Link>
                 <button className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors font-medium text-sm">
                   <Trash2 className="w-4 h-4" />
                   Delete
