@@ -1,0 +1,1 @@
+ALTER TABLE "articles" ALTER COLUMN "featured_image" DROP NOT NULL;

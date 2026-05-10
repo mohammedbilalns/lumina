@@ -27,6 +27,21 @@ export class PreferencesController {
     };
   }
 
+  @Get('status')
+  @UseGuards(JwtGuard)
+  async checkPreferencesStatus(
+    @CurrentUser()
+    user: JwtPayload,
+  ) {
+    const isConfigured = await this.preferencesService.checkPreferencesStatus(user.sub);
+    return {
+      message: 'Preferences status fetched successfully',
+      data: {
+        isConfigured,
+      },
+    };
+  }
+
   @Post()
   @UseGuards(JwtGuard)
   async saveUserPreferences(

@@ -36,6 +36,13 @@
       "when": 1778180000000,
       "tag": "0004_optional_featured_image",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1778406614997,
+      "tag": "0005_equal_selene",
+      "breakpoints": true
     }
   ]
 }

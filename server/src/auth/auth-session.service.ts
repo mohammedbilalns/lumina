@@ -50,7 +50,7 @@ export class AuthSessionService {
       payload = await this.jwtService.verifyAsync<JwtPayload>(
         dto.refreshToken,
         {
-          secret: this.configService.get('JWT_SECRET'),
+          secret: this.configService.get('REFRESH_TOKEN_SECRET'),
         },
       );
     } catch {

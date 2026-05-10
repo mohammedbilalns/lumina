@@ -26,6 +26,11 @@ export class PreferencesService {
     return { preferences: UserPreferencesMapper.toResponse(preferences) };
   }
 
+  async checkPreferencesStatus(userId: string): Promise<boolean> {
+    const preferences = await this.preferencesRepository.fetchUserPreferences(userId);
+    return !!preferences && preferences.length > 0;
+  }
+
   async saveUserPreferences(dto: SaveUserPreferencesDto) {
     const user = await this.userRepository.findById(dto.userId);
     this.userValidationService.validateActiveUser(user);
