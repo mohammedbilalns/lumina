@@ -1,44 +1,45 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Resend } from 'resend';
+import { BrevoClient } from '@getbrevo/brevo';
 
 @Injectable()
 export class OtpMailService {
-  private readonly resend: Resend;
+  private readonly brevoClient: BrevoClient;
   private readonly from: string;
 
   constructor(private readonly configService: ConfigService) {
-    const apiKey = this.configService.getOrThrow<string>('RESEND_API_KEY');
-
-    this.resend = new Resend(apiKey);
+    const apiKey = this.configService.getOrThrow<string>('BREVO_API_KEY');
+    
+    this.brevoClient = new BrevoClient({ apiKey });
     this.from = this.configService.getOrThrow<string>('MAIL_FROM');
   }
 
   async sendSignupOtp(email: string, firstName: string, otp: string) {
     try {
-      await this.resend.emails.send({
-        from: this.from,
-        to: email,
+      await this.brevoClient.transactionalEmails.sendTransacEmail({
         subject: 'Verify your signup OTP',
-        text: `Hi ${firstName}, your OTP is ${otp}. It expires in 10 minutes.`,
-        html: `<p>Hi ${firstName},</p><p>Your OTP is <strong>${otp}</strong>.</p><p>It expires in 10 minutes.</p>`,
+        htmlContent: `<p>Hi ${firstName},</p><p>Your OTP is <strong>${otp}</strong>.</p><p>It expires in 10 minutes.</p>`,
+        textContent: `Hi ${firstName}, your OTP is ${otp}. It expires in 10 minutes.`,
+        sender: { name: 'Lumina', email: this.from },
+        to: [{ email: email, name: firstName }],
       });
-    } catch(err) {
-      console.log('error sending mail', err );
+    } catch (err) {
+      console.error('Error sending mail via Brevo:', err);
       throw new InternalServerErrorException('Unable to send OTP email');
     }
   }
 
   async sendPasswordResetOtp(email: string, firstName: string, otp: string) {
     try {
-      await this.resend.emails.send({
-        from: this.from,
-        to: email,
+      await this.brevoClient.transactionalEmails.sendTransacEmail({
         subject: 'Reset your password OTP',
-        text: `Hi ${firstName}, your password reset OTP is ${otp}. It expires in 10 minutes.`,
-        html: `<p>Hi ${firstName},</p><p>Your password reset OTP is <strong>${otp}</strong>.</p><p>It expires in 10 minutes.</p>`,
+        htmlContent: `<p>Hi ${firstName},</p><p>Your password reset OTP is <strong>${otp}</strong>.</p><p>It expires in 10 minutes.</p>`,
+        textContent: `Hi ${firstName}, your password reset OTP is ${otp}. It expires in 10 minutes.`,
+        sender: { name: 'Lumina', email: this.from },
+        to: [{ email: email, name: firstName }],
       });
-    } catch {
+    } catch (err) {
+      console.error('Error sending password reset mail via Brevo:', err);
       throw new InternalServerErrorException('Unable to send OTP email');
     }
   }
