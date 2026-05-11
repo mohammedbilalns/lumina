@@ -18,6 +18,7 @@ export function ArticleEditor({ mode, initialData }: ArticleEditorProps) {
   const editor = useEditor({
     extensions: [StarterKit],
     content: initialData?.content || '<p>Start writing your story here...</p>',
+    immediatelyRender: false,
     editorProps: {
       attributes: {
         class:
