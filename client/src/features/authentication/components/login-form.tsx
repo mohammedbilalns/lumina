@@ -28,7 +28,10 @@ export function LoginForm({ onSwitchToSignup, onForgotPassword }: LoginFormProps
       setError(null)
       try {
         const response = await loginUser({ data: value })
-        authClient.setAccessToken(response.data.accessToken)
+        authClient.setSession({
+          user: response.data.user,
+          accessToken: response.data.accessToken,
+        })
         toast.success('Signed in successfully')
         
         setTimeout(() => {
@@ -127,7 +130,7 @@ export function LoginForm({ onSwitchToSignup, onForgotPassword }: LoginFormProps
             onClick={onSwitchToSignup}
             className="font-semibold text-[#0b2226] hover:underline"
           >
-            Sign up for free
+            Sign up 
           </button>
         </p>
       </form>

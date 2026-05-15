@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { verifySignupOtp, resendSignupOtp } from '../server/auth.functions'
 import { useNavigate } from '@tanstack/react-router'
 import { Loader2 } from 'lucide-react'
+import { authClient } from '@/utils/auth-client'
 
 interface OtpFormProps {
   email: string
@@ -39,7 +40,11 @@ export function OtpForm({ email, onSwitchToLogin, onSuccess }: OtpFormProps) {
     setError(null)
     setIsVerifying(true)
     try {
-      await verifySignupOtp({ data: { email, otp } })
+      const response = await verifySignupOtp({ data: { email, otp } })
+      authClient.setSession({
+        user: response.data.user,
+        accessToken: response.data.accessToken,
+      })
       toast.success('Verification successful!')
       
       if (onSuccess) {

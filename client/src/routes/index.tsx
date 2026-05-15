@@ -49,33 +49,44 @@ export function Landing() {
           </div>
         </div>
 
-        {/* Minimal Article Grid */}
         <div className="mt-24">
-          <h2 className="text-2xl font-serif font-medium text-[#0b2226] mb-8">
-            Latest Publications
+          <h2 className="mb-8 text-2xl font-serif font-medium text-[#0b2226]">
+            How the reading flow works
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((item) => (
-              <article key={item} className="group cursor-pointer">
-                <div className="aspect-4/3 rounded-xl overflow-hidden mb-4 border border-[#EAEAEA]">
-                  <img
-                    src={`https://images.unsplash.com/photo-${item === 1 ? '1618005182384-a83a8bd57fbe' : item === 2 ? '1550745165-9bc0b252726f' : '1484480974693-6ca0a78fb36b'}?auto=format&fit=crop&q=80&w=800`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    alt="Cover"
-                  />
-                </div>
-                <span className="text-xs font-semibold text-[#13383d] tracking-wide uppercase">
-                  Design
-                </span>
-                <h3 className="text-lg font-serif font-medium mt-2 mb-2 text-[#0b2226] group-hover:text-[#13383d] transition-colors leading-snug">
-                  The Psychology of Minimalist Interfaces
-                </h3>
-                <p className="text-sm text-slate-500 line-clamp-2">
-                  Understanding why stripping away the obvious adds so much
-                  meaning to user experience and daily tools.
-                </p>
-              </article>
-            ))}
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            <article className="rounded-2xl border border-[#EAEAEA] bg-[#FBFBFA] p-6">
+              <span className="text-xs font-semibold uppercase tracking-wide text-[#13383d]">
+                01
+              </span>
+              <h3 className="mt-3 mb-2 text-lg font-serif font-medium text-[#0b2226]">
+                Configure preferences
+              </h3>
+              <p className="text-sm leading-6 text-slate-500">
+                Pick categories once and the dashboard will fetch matching articles through the BFF layer.
+              </p>
+            </article>
+            <article className="rounded-2xl border border-[#EAEAEA] bg-[#FBFBFA] p-6">
+              <span className="text-xs font-semibold uppercase tracking-wide text-[#13383d]">
+                02
+              </span>
+              <h3 className="mt-3 mb-2 text-lg font-serif font-medium text-[#0b2226]">
+                Read personalized content
+              </h3>
+              <p className="text-sm leading-6 text-slate-500">
+                The dashboard excludes articles created by the current user and paginates the recommended feed.
+              </p>
+            </article>
+            <article className="rounded-2xl border border-[#EAEAEA] bg-[#FBFBFA] p-6">
+              <span className="text-xs font-semibold uppercase tracking-wide text-[#13383d]">
+                03
+              </span>
+              <h3 className="mt-3 mb-2 text-lg font-serif font-medium text-[#0b2226]">
+                Manage your own writing
+              </h3>
+              <p className="text-sm leading-6 text-slate-500">
+                Create, edit, delete, and paginate your own articles from one place without browser-direct API calls.
+              </p>
+            </article>
           </div>
         </div>
       </main>

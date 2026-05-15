@@ -1,99 +1,172 @@
-import { createFileRoute, redirect, Link, useRouteContext } from '@tanstack/react-router'
-import { checkPreferencesStatus } from '@/features/preferences/server/preferences.functions'
+import { Await, Link, createFileRoute, defer, redirect, useNavigate, useRouteContext } from '@tanstack/react-router'
+import { Search, Settings, Sparkles, X } from 'lucide-react'
+import { Suspense, useEffect, useState } from 'react'
 import { Navbar } from '#/components/navbar'
-import { Settings, Sparkles, X } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { Skeleton } from '#/components/skeleton'
+import { PaginationControls } from '#/features/articles/components/pagination-controls'
+import { articleRouteSearchSchema } from '#/features/articles/schemas/articles.schema'
+import { getPreferredArticles } from '#/features/articles/server/articles.functions'
 import { CategorySelection } from '@/features/preferences/components/category-selection'
-
-
+import { checkPreferencesStatus } from '@/features/preferences/server/preferences.functions'
 
 export const Route = createFileRoute('/dashboard')({
-  beforeLoad: async ({ context }) => {
+  validateSearch: articleRouteSearchSchema,
+  beforeLoad: ({ context }) => {
     if (!context.user) {
       throw redirect({ to: '/auth' })
     }
-    
-    let isPreferencesConfigured = false
-    try {
-      if (context.accessToken) {
-        const { data } = await checkPreferencesStatus({ data: { accessToken: context.accessToken } })
-        isPreferencesConfigured = data?.isConfigured || false
+  },
+  loaderDeps: ({ search }) => search,
+  loader: async ({ context, deps }) => {
+    if (!context.accessToken) {
+      return {
+        articlesPromise: defer(Promise.resolve({
+          articles: [],
+          pagination: { page: deps.page, limit: deps.limit, total: 0, totalPages: 0 },
+        })),
+        preferencesPromise: defer(Promise.resolve(false)),
       }
-    } catch (error) {
-      console.error('Failed to check preferences status:', error)
     }
 
+    const articlesPromise = getPreferredArticles({
+      data: {
+        accessToken: context.accessToken,
+        page: deps.page,
+        limit: deps.limit,
+        search: deps.search,
+      },
+    }).then(res => res.data)
+
+    const preferencesPromise = checkPreferencesStatus({
+      data: { accessToken: context.accessToken },
+    }).then(res => res.data?.isConfigured || false)
+      .catch(() => true)
+
     return {
-      isPreferencesConfigured
+      articlesPromise: defer(articlesPromise),
+      preferencesPromise: defer(preferencesPromise),
     }
   },
   component: DashboardPage,
 })
 
-
-// Dummy data
-const ARTICLES = [
-  {
-    id: 1,
-    title: 'The Future of Artificial Intelligence in Design',
-    excerpt:
-      'How AI tools are augmenting the creative process rather than replacing designers. A deep dive into generative UI.',
-    author: 'Sarah Jenkins',
-    date: 'Oct 24',
-    readTime: '6 min read',
-    category: 'Design',
-    image:
-      'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    id: 2,
-    title: 'Mastering React Server Components',
-    excerpt:
-      'Everything you need to know about the new rendering paradigm in modern React applications.',
-    author: 'Dan Abramov',
-    date: 'Oct 22',
-    readTime: '12 min read',
-    category: 'Technology',
-    image:
-      'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    id: 3,
-    title: 'The Psychology of Minimalist Interfaces',
-    excerpt:
-      'Why stripping away the obvious and adding the meaningful leads to products that people genuinely love using every day.',
-    author: 'Elena Rodriguez',
-    date: 'Oct 20',
-    readTime: '8 min read',
-    category: 'Psychology',
-    image:
-      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    id: 4,
-    title: 'Building Micro-Habits for Productivity',
-    excerpt:
-      'Small changes that compound over time to drastically improve your daily output.',
-    author: 'Marcus Chen',
-    date: 'Oct 18',
-    readTime: '5 min read',
-    category: 'Self Improvement',
-    image:
-      'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&q=80&w=800',
-  },
-]
-
-const INTERESTS = [
-  'All',
-  'Technology',
-  'Design',
-  'Psychology',
-  'Self Improvement',
-  'Web3',
-]
-
 export function DashboardPage() {
-  const { isPreferencesConfigured } = useRouteContext({ from: '/dashboard' })
+  const navigate = useNavigate({ from: '/dashboard' })
+  const searchParams = Route.useSearch()
+  const { articlesPromise, preferencesPromise } = Route.useLoaderData()
+  const [searchInput, setSearchInput] = useState(searchParams.search || '')
+
+  useEffect(() => {
+    setSearchInput(searchParams.search || '')
+  }, [searchParams.search])
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        search: searchInput || undefined,
+        page: 1,
+      }),
+    })
+  }
+
+  const clearSearch = () => {
+    setSearchInput('')
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        search: undefined,
+        page: 1,
+      }),
+    })
+  }
+
+  const handlePageChange = (page: number) => {
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        page,
+      }),
+    })
+  }
+
+  return (
+    <div className="min-h-screen bg-white text-[#111111] font-sans selection:bg-[#f8cb5b]/30 relative">
+      <Navbar />
+
+      <div className="container mx-auto px-6 py-12 flex justify-center">
+        <main className="w-full max-w-4xl">
+          <Suspense>
+            <Await promise={preferencesPromise}>
+              {(isPreferencesConfigured) => (
+                <DashboardPreferenceSection isPreferencesConfigured={isPreferencesConfigured} />
+              )}
+            </Await>
+          </Suspense>
+
+          <div className="mb-10">
+            <div className="mb-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <h1 className="text-3xl font-serif font-medium text-[#0b2226]">
+                Recommended for You
+              </h1>
+              <div className="flex items-center gap-2">
+                <form onSubmit={handleSearch} className="relative w-full sm:w-64">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search articles..."
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    className="w-full rounded-full border border-[#EAEAEA] bg-white py-2 pl-10 pr-10 text-sm focus:border-[#0b2226] focus:outline-none focus:ring-1 focus:ring-[#0b2226] transition-all"
+                  />
+                  {searchInput && (
+                    <button
+                      type="button"
+                      onClick={clearSearch}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </form>
+                <Suspense>
+                  <Await promise={preferencesPromise}>
+                    {(isPreferencesConfigured) => (
+                      <DashboardSettingsButton isPreferencesConfigured={isPreferencesConfigured} />
+                    )}
+                  </Await>
+                </Suspense>
+              </div>
+            </div>
+            <p className="text-slate-500">
+              Personalized articles that match your selected interests. Your own articles are excluded from this feed.
+            </p>
+          </div>
+
+          <Suspense fallback={<DashboardSkeletonContent />}>
+            <Await promise={articlesPromise}>
+              {({ articles, pagination }) => (
+                <Await promise={preferencesPromise}>
+                  {(isPreferencesConfigured) => (
+                    <DashboardArticlesList 
+                      articles={articles} 
+                      pagination={pagination} 
+                      isPreferencesConfigured={isPreferencesConfigured}
+                      handlePageChange={handlePageChange}
+                    />
+                  )}
+                </Await>
+              )}
+            </Await>
+          </Suspense>
+        </main>
+      </div>
+    </div>
+  )
+}
+
+function DashboardPreferenceSection({ isPreferencesConfigured }: { isPreferencesConfigured: boolean }) {
   const [showPreferenceModal, setShowPreferenceModal] = useState(!isPreferencesConfigured)
 
   useEffect(() => {
@@ -102,135 +175,169 @@ export function DashboardPage() {
     }
   }, [isPreferencesConfigured])
 
+  if (isPreferencesConfigured || showPreferenceModal) return null
+
   return (
-    <div className="min-h-screen bg-white text-[#111111] font-sans selection:bg-[#f8cb5b]/30 relative">
-      <Navbar />
-
-      <div className="container mx-auto px-6 py-12 flex justify-center">
-        <main className="w-full max-w-4xl">
-          {!isPreferencesConfigured && !showPreferenceModal && (
-            <div className="mb-12 p-6 rounded-2xl border border-[#0b2226]/20 bg-[#0b2226]/5 flex flex-col sm:flex-row items-center justify-between gap-6 animate-in fade-in slide-in-from-top-4 duration-700">
-              <div className="flex items-center gap-4 text-center sm:text-left">
-                <div className="w-12 h-12 rounded-xl bg-[#0b2226] flex items-center justify-center shrink-0 shadow-sm">
-                  <Sparkles className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-serif font-medium text-[#0b2226]">Personalize your experience</h3>
-                  <p className="text-slate-500 text-sm">Select your favorite topics to see more relevant articles.</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setShowPreferenceModal(true)}
-                className="bg-[#0b2226] text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-[#13383d] transition-all shadow-sm active:scale-95"
-              >
-                Configure Now
-              </button>
-            </div>
-          )}
-
-          <div className="mb-10">
-            <div className="flex items-center justify-between mb-2">
-              <h1 className="text-3xl font-serif font-medium text-[#0b2226]">
-                Recommended for You
-              </h1>
-              <button 
-                onClick={() => setShowPreferenceModal(true)}
-                className="p-2 text-slate-400 hover:text-[#0b2226] transition-colors rounded-lg hover:bg-slate-50"
-                title="Settings"
-              >
-                <Settings className="w-5 h-5" />
-              </button>
-            </div>
-            <p className="text-slate-500">
-              Based on your reading history and selected interests.
-            </p>
-          </div>
-
-          {/* Topics Filter */}
-          <div className="flex gap-2 overflow-x-auto pb-6 mb-8 scrollbar-hide">
-            {INTERESTS.map((interest, i) => (
-              <button
-                key={interest}
-                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  i === 0
-                    ? 'bg-[#0b2226] text-white'
-                    : 'bg-white text-slate-600 border border-[#EAEAEA] hover:bg-slate-50'
-                }`}
-              >
-                {interest}
-              </button>
-            ))}
-          </div>
-
-          {/* Articles List */}
-          <div className="space-y-8">
-            {ARTICLES.map((article) => (
-              <article
-                key={article.id}
-                className="group relative bg-white border border-[#EAEAEA] rounded-xl p-6 hover:shadow-sm transition-all flex flex-col-reverse sm:flex-row gap-8"
-              >
-                <Link
-                  to="/article/$id"
-                  params={{ id: article.id.toString() }}
-                  className="absolute inset-0 z-10"
-                >
-                  <span className="sr-only">View Article</span>
-                </Link>
-                <div className="flex-1 flex flex-col">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs font-semibold text-[#13383d] uppercase tracking-wider">
-                      {article.category}
-                    </span>
-                  </div>
-                  <h2 className="text-2xl font-serif font-medium mb-3 text-[#0b2226] group-hover:text-[#13383d] transition-colors line-clamp-2 leading-tight">
-                    {article.title}
-                  </h2>
-                  <p className="text-slate-500 text-sm mb-6 line-clamp-2 leading-relaxed">
-                    {article.excerpt}
-                  </p>
-
-                  <div className="flex items-center justify-between mt-auto">
-                    <div className="flex items-center gap-2 text-sm text-slate-500">
-                      <span className="font-medium text-slate-700">
-                        {article.author}
-                      </span>
-                      <span>•</span>
-                      <span>{article.date}</span>
-                      <span>•</span>
-                      <span>{article.readTime}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="w-full sm:w-56 h-48 sm:h-auto shrink-0 rounded-lg overflow-hidden border border-[#EAEAEA]">
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                </div>
-              </article>
-            ))}
-          </div>
-        </main>
+    <div className="mb-12 flex flex-col items-center justify-between gap-6 rounded-2xl border border-[#0b2226]/20 bg-[#0b2226]/5 p-6 text-center sm:flex-row sm:text-left">
+      <div className="flex items-center gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#0b2226] shadow-sm">
+          <Sparkles className="h-6 w-6 text-white" />
+        </div>
+        <div>
+          <h3 className="text-lg font-serif font-medium text-[#0b2226]">Personalize your experience</h3>
+          <p className="text-sm text-slate-500">Select your favorite topics to see relevant articles.</p>
+        </div>
       </div>
+      <button
+        onClick={() => setShowPreferenceModal(true)}
+        className="rounded-xl bg-[#0b2226] px-6 py-2.5 text-sm font-medium text-white transition-all hover:bg-[#13383d]"
+      >
+        Configure Now
+      </button>
 
-      {/* Preferences Modal Overlay */}
       {showPreferenceModal && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-10 bg-[#0b2226]/40 backdrop-blur-md animate-in fade-in duration-500">
-          <div className="w-full max-w-4xl bg-white rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.2)] p-8 sm:p-16 max-h-[95vh] overflow-y-auto relative animate-in zoom-in-95 slide-in-from-bottom-8 duration-700">
-            {isPreferencesConfigured && (
-              <button 
-                onClick={() => setShowPreferenceModal(false)}
-                className="absolute top-6 right-6 text-slate-400 hover:text-[#0b2226] transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            )}
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-[#0b2226]/40 p-4 backdrop-blur-md sm:p-10">
+          <div className="w-full max-w-3xl rounded-[2rem] border border-white/20 bg-white p-6 shadow-2xl sm:p-10">
             <CategorySelection onSuccess={() => setShowPreferenceModal(false)} />
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+function DashboardSettingsButton({ isPreferencesConfigured }: { isPreferencesConfigured: boolean }) {
+  const [showModal, setShowModal] = useState(false)
+
+  return (
+    <>
+      <button
+        onClick={() => setShowModal(true)}
+        className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-50 hover:text-[#0b2226]"
+        title="Preferences"
+      >
+        <Settings className="h-5 w-5" />
+      </button>
+
+      {showModal && (
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-[#0b2226]/40 p-4 backdrop-blur-md sm:p-10">
+          <div className="w-full max-w-3xl rounded-[2rem] border border-white/20 bg-white p-6 shadow-2xl sm:p-10">
+            <CategorySelection onSuccess={() => setShowModal(false)} />
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
+function DashboardArticlesList({ 
+  articles, 
+  pagination, 
+  isPreferencesConfigured,
+  handlePageChange
+}: { 
+  articles: any[], 
+  pagination: any, 
+  isPreferencesConfigured: boolean,
+  handlePageChange: (page: number) => void
+}) {
+  if (articles.length === 0) {
+    return (
+      <div className="rounded-2xl border border-dashed border-[#EAEAEA] bg-[#FBFBFA] px-8 py-16 text-center">
+        <h2 className="mb-3 text-2xl font-serif font-medium text-[#0b2226]">
+          No personalized articles yet
+        </h2>
+        <p className="mx-auto mb-8 max-w-lg text-sm leading-6 text-slate-500">
+          {isPreferencesConfigured
+            ? 'There are no matching articles for your current preferences yet.'
+            : 'Choose your preferred categories to start building a personalized reading feed.'}
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <div className="space-y-8">
+        {articles.map((article) => (
+          <article
+            key={article.id}
+            className="group relative flex flex-col-reverse gap-8 rounded-xl border border-[#EAEAEA] bg-white p-6 transition-all hover:shadow-sm sm:flex-row"
+          >
+            <Link
+              to="/article/$id"
+              params={{ id: article.id }}
+              className="absolute inset-0 z-10"
+            >
+              <span className="sr-only">View article</span>
+            </Link>
+            <div className="flex flex-1 flex-col">
+              <div className="mb-3 flex items-center gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wider text-[#13383d]">
+                  {article.category.name}
+                </span>
+              </div>
+              <h2 className="mb-3 line-clamp-2 text-2xl leading-tight font-serif font-medium text-[#0b2226] transition-colors group-hover:text-[#13383d]">
+                {article.title}
+              </h2>
+              <p className="mb-6 line-clamp-3 text-sm leading-relaxed text-slate-500">
+                {article.description}
+              </p>
+
+              <div className="mt-auto flex items-center justify-between">
+                <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                  <span className="font-medium text-slate-700">
+                    {article.author.firstName} {article.author.lastName}
+                  </span>
+                  <span>•</span>
+                  <span>{new Date(article.createdAt).toLocaleDateString()}</span>
+                  <span>•</span>
+                  <span>{article.likesCount} likes</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="h-48 w-full shrink-0 overflow-hidden rounded-lg border border-[#EAEAEA] bg-[#F7F6F3] sm:h-auto sm:w-56">
+              {article.featuredImage ? (
+                <img
+                  src={article.featuredImage}
+                  alt={article.title}
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              ) : (
+                <div className="flex h-full min-h-48 items-center justify-center px-6 text-center text-sm text-slate-400">
+                  No cover image
+                </div>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <PaginationControls pagination={pagination} onPageChange={handlePageChange} />
+    </>
+  )
+}
+
+function DashboardSkeletonContent() {
+  return (
+    <div className="space-y-8 mt-4">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="flex flex-col-reverse gap-8 rounded-xl border border-[#EAEAEA] p-6 sm:flex-row">
+          <div className="flex flex-1 flex-col">
+            <Skeleton className="mb-3 h-4 w-24" />
+            <Skeleton className="mb-3 h-8 w-full" />
+            <Skeleton className="mb-2 h-4 w-full" />
+            <Skeleton className="mb-6 h-4 w-3/4" />
+            <div className="mt-auto flex items-center gap-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-4 rounded-full" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+          </div>
+          <Skeleton className="h-48 w-full shrink-0 rounded-lg sm:h-40 sm:w-56" />
+        </div>
+      ))}
     </div>
   )
 }

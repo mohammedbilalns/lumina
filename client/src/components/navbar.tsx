@@ -2,6 +2,7 @@ import { BookOpen, Search, Settings, LogOut } from 'lucide-react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Route } from '../routes/__root'
 import { logoutUser } from '../features/authentication/server/auth.functions'
+import { authClient } from '../utils/auth-client'
 
 export function Navbar() {
   const { user } = Route.useRouteContext()
@@ -9,6 +10,7 @@ export function Navbar() {
 
   const handleLogout = async () => {
     await logoutUser()
+    authClient.clearSession()
     navigate({ to: '/auth' })
   }
 

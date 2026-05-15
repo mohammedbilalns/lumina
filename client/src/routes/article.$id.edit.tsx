@@ -1,44 +1,102 @@
-import { createFileRoute,useParams } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate, useRouter } from '@tanstack/react-router'
+import { useState } from 'react'
+import { toast } from 'sonner'
 import { Navbar } from '#/components/navbar'
 import { ArticleEditor } from '#/features/articles/components/article-editor'
-
+import { getArticle, updateArticle } from '#/features/articles/server/articles.functions'
+import { getCategories } from '#/features/preferences/server/preferences.functions'
+import { callAuthorized } from '#/utils/auth-client'
 
 export const Route = createFileRoute('/article/$id/edit')({
-  component: EditArtcleComponent,
+  beforeLoad: ({ context }) => {
+    if (!context.user) {
+      throw redirect({ to: '/auth' })
+    }
+  },
+  loader: async ({ params, context }) => {
+    if (!context.accessToken) {
+      throw redirect({ to: '/auth' })
+    }
+
+    const [articleResponse, categoriesResponse] = await Promise.all([
+      getArticle({
+        data: {
+          articleId: params.id,
+          accessToken: context.accessToken,
+        },
+      }),
+      getCategories(),
+    ])
+
+    if (articleResponse.data.article.author.id !== context.user?.id) {
+      throw redirect({ to: '/my-articles' })
+    }
+
+    return {
+      article: articleResponse.data.article,
+      categories: categoriesResponse.data.categories,
+    }
+  },
+  component: EditArticleComponent,
 })
 
+function EditArticleComponent() {
+  const navigate = useNavigate()
+  const router = useRouter()
+  const { article, categories } = Route.useLoaderData()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-function EditArtcleComponent() {
-  const { id } = useParams({ strict: false })
+  const handleSubmit = async (data: {
+    title: string
+    content: string
+    featuredImage: string
+    categoryId: string
+  }) => {
+    setIsSubmitting(true)
 
-  const dummyInitialData = {
-    title: 'Understanding Server Actions in Next.js',
-    description:
-      'A deep dive into how Server Actions are changing the way we handle data mutations in modern React applications.',
-    category: 'Technology',
-    tags: 'React, Nextjs, Web Development',
-    imageUrl:
-      'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=800',
-    content:
-      '<h2>Server Actions are Here</h2><p>With the release of Next.js 14, server actions have become stable...</p>',
+    try {
+      await callAuthorized(updateArticle, {
+        articleId: article.id,
+        ...data,
+      })
+      toast.success('Article updated successfully')
+      await router.invalidate()
+      navigate({ to: '/article/$id', params: { id: article.id } })
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to update article'
+      toast.error(message)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
-    <div className="min-h-screen bg-[#FBFBFA] text-[#111111] font-sans selection:bg-[#f8cb5b]/30 pb-20">
+    <div className="min-h-screen bg-[#FBFBFA] pb-20 font-sans text-[#111111] selection:bg-[#f8cb5b]/30">
       <Navbar />
 
-      <main className="container mx-auto px-6 py-12 max-w-4xl">
+      <main className="container mx-auto max-w-4xl px-6 py-12">
         <div className="mb-10">
-          <h1 className="text-3xl font-serif font-medium mb-2 text-[#0b2226]">
+          <h1 className="mb-2 text-3xl font-serif font-medium text-[#0b2226]">
             Edit Article
           </h1>
           <p className="text-slate-500">
-            Make changes to your published story.
+            Update your article using the same BFF-backed workflow as creation.
           </p>
         </div>
 
-        <div className="bg-white border border-[#EAEAEA] rounded-xl p-6 sm:p-10 shadow-sm">
-          <ArticleEditor mode="edit" initialData={dummyInitialData} />
+        <div className="rounded-xl border border-[#EAEAEA] bg-white p-6 shadow-sm sm:p-10">
+          <ArticleEditor
+            mode="edit"
+            categories={categories}
+            isSubmitting={isSubmitting}
+            initialData={{
+              title: article.title,
+              content: article.content,
+              featuredImage: article.featuredImage ?? '',
+              categoryId: article.category.id,
+            }}
+            onSubmit={handleSubmit}
+          />
         </div>
       </main>
     </div>

@@ -18,7 +18,7 @@ export function SignupForm({ onSwitchToLogin, onSuccess }: SignupFormProps) {
       firstName: '',
       lastName: '',
       phone: '',
-      dob: getDefaultDob(),
+      dateOfBirth: getDefaultDob(),
       email: '',
       password: '',
       confirmPassword: '',
@@ -121,7 +121,7 @@ export function SignupForm({ onSwitchToLogin, onSuccess }: SignupFormProps) {
         />
 
         <form.Field
-          name="dob"
+          name="dateOfBirth"
           children={(field) => (
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-slate-700">Date of Birth</label>
