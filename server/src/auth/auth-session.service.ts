@@ -20,7 +20,7 @@ export class AuthSessionService {
     private readonly userValidationService: UserValidationService,
     private readonly passwordService: PasswordService,
     private readonly tokenService: TokenService,
-  ) {}
+  ) { }
 
   async login(dto: LoginDto) {
     let user = await this.userRepository.findByCredential(dto.credential);

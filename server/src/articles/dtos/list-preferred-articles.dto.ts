@@ -1,4 +1,4 @@
-import { IsIn, IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
+import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
 
 export class ListPreferredArticlesDto {
   @IsString()
@@ -12,4 +12,8 @@ export class ListPreferredArticlesDto {
   @IsInt()
   @IsIn([10, 20, 30])
   limit: number;
+
+  @IsString()
+  @IsOptional()
+  search?: string;
 }

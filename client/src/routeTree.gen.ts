@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArticleCreateRouteImport } from './routes/article.create'
 import { Route as ArticleIdRouteImport } from './routes/article.$id'
+import { Route as ArticleIdIndexRouteImport } from './routes/article.$id.index'
 import { Route as ArticleIdEditRouteImport } from './routes/article.$id.edit'
 
 const SettingsRoute = SettingsRouteImport.update({
@@ -53,6 +54,11 @@ const ArticleIdRoute = ArticleIdRouteImport.update({
   path: '/article/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ArticleIdIndexRoute = ArticleIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ArticleIdRoute,
+} as any)
 const ArticleIdEditRoute = ArticleIdEditRouteImport.update({
   id: '/edit',
   path: '/edit',
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/article/$id': typeof ArticleIdRouteWithChildren
   '/article/create': typeof ArticleCreateRoute
   '/article/$id/edit': typeof ArticleIdEditRoute
+  '/article/$id/': typeof ArticleIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,9 +82,9 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/my-articles': typeof MyArticlesRoute
   '/settings': typeof SettingsRoute
-  '/article/$id': typeof ArticleIdRouteWithChildren
   '/article/create': typeof ArticleCreateRoute
   '/article/$id/edit': typeof ArticleIdEditRoute
+  '/article/$id': typeof ArticleIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +96,7 @@ export interface FileRoutesById {
   '/article/$id': typeof ArticleIdRouteWithChildren
   '/article/create': typeof ArticleCreateRoute
   '/article/$id/edit': typeof ArticleIdEditRoute
+  '/article/$id/': typeof ArticleIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +109,7 @@ export interface FileRouteTypes {
     | '/article/$id'
     | '/article/create'
     | '/article/$id/edit'
+    | '/article/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -108,9 +117,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/my-articles'
     | '/settings'
-    | '/article/$id'
     | '/article/create'
     | '/article/$id/edit'
+    | '/article/$id'
   id:
     | '__root__'
     | '/'
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/article/$id'
     | '/article/create'
     | '/article/$id/edit'
+    | '/article/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -184,6 +194,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArticleIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/article/$id/': {
+      id: '/article/$id/'
+      path: '/'
+      fullPath: '/article/$id/'
+      preLoaderRoute: typeof ArticleIdIndexRouteImport
+      parentRoute: typeof ArticleIdRoute
+    }
     '/article/$id/edit': {
       id: '/article/$id/edit'
       path: '/edit'
@@ -196,10 +213,12 @@ declare module '@tanstack/react-router' {
 
 interface ArticleIdRouteChildren {
   ArticleIdEditRoute: typeof ArticleIdEditRoute
+  ArticleIdIndexRoute: typeof ArticleIdIndexRoute
 }
 
 const ArticleIdRouteChildren: ArticleIdRouteChildren = {
   ArticleIdEditRoute: ArticleIdEditRoute,
+  ArticleIdIndexRoute: ArticleIdIndexRoute,
 }
 
 const ArticleIdRouteWithChildren = ArticleIdRoute._addFileChildren(

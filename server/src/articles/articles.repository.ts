@@ -4,10 +4,13 @@ import {
   count,
   desc,
   eq,
+  ilike,
   inArray,
   isNull,
   ne,
   notInArray,
+  or,
+  SQL,
 } from 'drizzle-orm';
 import {
   type ArticleWithRelations,
@@ -160,34 +163,51 @@ export class ArticlesRepository {
       total: totalResult[0]?.total ?? 0,
     };
   }
+async listByUserPreferences(
+  userId: string,
+  page: number,
+  limit: number,
+  search?: string,
+) {
+  const preferences = await this.db
+    .select({ categoryId: userPreferences.categoryId })
+    .from(userPreferences)
+    .where(eq(userPreferences.userId, userId));
 
-  async listByUserPreferences(userId: string, page: number, limit: number) {
-    const preferences = await this.db
-      .select({ categoryId: userPreferences.categoryId })
-      .from(userPreferences)
-      .where(eq(userPreferences.userId, userId));
+  const categoryIds = preferences.map((preference) => preference.categoryId);
 
-    const categoryIds = preferences.map((preference) => preference.categoryId);
+  if (categoryIds.length === 0) {
+    return {
+      items: [],
+      total: 0,
+    };
+  }
 
-    if (categoryIds.length === 0) {
-      return {
-        items: [],
-        total: 0,
-      };
-    }
+  const blockedArticleIds = await this.getBlockedArticleIds(userId);
+  const conditions: SQL[] = [
+    inArray(articles.categoryId, categoryIds),
+    isNull(articles.deletedAt),
+    ne(articles.authorId, userId),
+  ];
 
-    const blockedArticleIds = await this.getBlockedArticleIds(userId);
-    const conditions = [
-      inArray(articles.categoryId, categoryIds),
-      isNull(articles.deletedAt),
-      ne(articles.authorId, userId),
-    ];
+  if (blockedArticleIds.length > 0) {
+    conditions.push(notInArray(articles.id, blockedArticleIds));
+  }
 
-    if (blockedArticleIds.length > 0) {
-      conditions.push(notInArray(articles.id, blockedArticleIds));
-    }
+  if (search) {
 
-    const whereClause = and(...conditions);
+      const searchCondition = or(
+        ilike(articles.title, `%${search}%`),
+        ilike(articles.description, `%${search}%`),
+      ) 
+
+      if(searchCondition){
+        conditions.push(searchCondition)
+      }
+  }
+
+  const whereClause = and(...conditions);
+
 
     const [items, totalResult] = await Promise.all([
       this.db.query.articles.findMany({

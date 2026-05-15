@@ -144,6 +144,7 @@ export class ArticlesService {
         dto.userId,
         dto.page,
         dto.limit,
+        dto.search,
       );
 
     return {

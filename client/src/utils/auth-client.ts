@@ -1,12 +1,43 @@
-let currentAccessToken: string | null = null
+import type { User } from '@/types/user'
+
+interface AuthSession {
+  user: User | null
+  accessToken: string | null
+}
+
+let hydratedFromBackend = false
+let currentSession: AuthSession = {
+  user: null,
+  accessToken: null,
+}
 
 export const authClient = {
+  setSession(session: AuthSession) {
+    currentSession = session
+    hydratedFromBackend = true
+  },
+  clearSession() {
+    currentSession = {
+      user: null,
+      accessToken: null,
+    }
+    hydratedFromBackend = true
+  },
+  getSession() {
+    return currentSession
+  },
+  hasHydratedSession() {
+    return hydratedFromBackend
+  },
   setAccessToken(token: string | null) {
-    currentAccessToken = token
+    currentSession = {
+      ...currentSession,
+      accessToken: token,
+    }
   },
   getAccessToken() {
-    return currentAccessToken
-  }
+    return currentSession.accessToken
+  },
 }
 
 /**

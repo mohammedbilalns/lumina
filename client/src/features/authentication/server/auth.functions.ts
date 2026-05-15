@@ -1,5 +1,5 @@
 import { createServerFn } from '@tanstack/react-start'
-import { registerSchema } from '../schemas/register.schema'
+import { registerApiSchema } from '../schemas/register.schema'
 import { loginSchema } from '../schemas/login.schema'
 import { authService } from '../services/auth.service'
 import { withServerErrorHandler } from '#/utils/with-server-error-handler'
@@ -24,7 +24,7 @@ export const loginUser = createServerFn({ method: 'POST' })
   }))
 
 export const registerUser = createServerFn({ method: 'POST' })
-  .inputValidator(registerSchema)
+  .inputValidator(registerApiSchema)
   .handler(withServerErrorHandler(async ({ data }) => {
     return await authService.register(data)
   }))

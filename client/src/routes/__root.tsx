@@ -5,6 +5,7 @@ import {
   Scripts,
   createRootRouteWithContext,
 } from '@tanstack/react-router'
+import { useEffect } from 'react'
 import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
 import type { User } from '../types/user'
@@ -19,14 +20,25 @@ interface MyRouterContext {
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   beforeLoad: async () => {
+    // On client-side navigation, reuse the in-memory session cache.
+    // Only fetch from the backend on a full page load / SSR request.
+    if (typeof window !== 'undefined' && authClient.hasHydratedSession()) {
+      return authClient.getSession()
+    }
+
     const { data } = await getMe()
     const accessToken = data?.accessToken || null
-    
-    authClient.setAccessToken(accessToken)
-
-    return {
+    const session = {
       user: data?.user || null,
       accessToken,
+    }
+
+    if (typeof window !== 'undefined') {
+      authClient.setSession(session)
+    }
+
+    return {
+      ...session,
     }
   },
   head: () => ({
@@ -43,6 +55,15 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootDocument() {
+  const { user, accessToken } = Route.useRouteContext()
+
+  useEffect(() => {
+    authClient.setSession({
+      user,
+      accessToken,
+    })
+  }, [accessToken, user])
+
   return (
     <html lang="en">
       <head>
