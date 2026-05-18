@@ -10,8 +10,8 @@ export default defineConfig({
   },
   plugins: [
     tanstackStart(),
-    viteReact(),
     tailwindcss(),
+    viteReact(),
     netlify(),
   ],
 })
