@@ -23,8 +23,10 @@ export class ReactionsRepository {
         ),
       });
 
+      const isToggleOff = existingReaction?.reactionType === reactionType;
+      const nextReactionType = isToggleOff ? undefined : reactionType;
       const likesDelta =
-        this.getReactionWeight(reactionType) -
+        this.getReactionWeight(nextReactionType) -
         this.getReactionWeight(existingReaction?.reactionType);
 
       if (existingReaction) {
@@ -33,20 +35,32 @@ export class ReactionsRepository {
           .where(eq(articleReactions.id, existingReaction.id));
       }
 
-      const [reaction] = await tx
-        .insert(articleReactions)
-        .values({
-          userId,
-          articleId,
-          reactionType,
-        })
-        .returning();
+      let reaction:
+        | {
+            id: string;
+            createdAt: Date;
+            userId: string | null;
+            articleId: string | null;
+            reactionType: 'LIKE' | 'DISLIKE' | 'BLOCKED';
+          }
+        | null = null;
+
+      if (nextReactionType) {
+        [reaction] = await tx
+          .insert(articleReactions)
+          .values({
+            userId,
+            articleId,
+            reactionType: nextReactionType,
+          })
+          .returning();
+      }
 
       if (likesDelta !== 0) {
         await tx
           .update(articles)
           .set({
-            likesCount: sql`${articles.likesCount} + ${likesDelta}`,
+            likesCount: sql`GREATEST(0, ${articles.likesCount} + ${likesDelta})`,
           })
           .where(eq(articles.id, articleId));
       }

@@ -27,13 +27,15 @@ export class PreferencesService {
   }
 
   async checkPreferencesStatus(userId: string): Promise<boolean> {
-    const preferences = await this.preferencesRepository.fetchUserPreferences(userId);
+    const [_, preferences] = await Promise.all([
+      this.userValidationService.validateActiveUserId(userId),
+      this.preferencesRepository.fetchUserPreferences(userId)
+    ]);
     return !!preferences && preferences.length > 0;
   }
 
   async saveUserPreferences(dto: SaveUserPreferencesDto) {
-    const user = await this.userRepository.findById(dto.userId);
-    this.userValidationService.validateActiveUser(user);
+    await this.userValidationService.validateActiveUserId(dto.userId);
 
     await this.preferencesRepository.saveUserPreferences(
       dto.userId,

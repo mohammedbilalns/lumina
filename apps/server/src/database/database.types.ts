@@ -20,4 +20,5 @@ export type UserPreferencesWithCategory = UserPreferences & {
 export type ArticleWithRelations = Article & {
   author: Pick<User, 'id' | 'firstName' | 'lastName'>;
   category: Pick<Category, 'id' | 'name' | 'slug'>;
+  viewerReactionType?: 'LIKE' | 'DISLIKE' | 'BLOCKED' | null;
 };

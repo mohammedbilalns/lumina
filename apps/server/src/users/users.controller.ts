@@ -1,4 +1,6 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import type { UserProfile } from '@lumina/shared-types';
+import type { SuccessResponse } from 'src/common/types/api-response.type';
 import { UsersService } from './users.service';
 import { JwtGuard } from 'src/security/guards/jwt/jwt.guard';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
@@ -15,7 +17,7 @@ export class UsersController {
   async getUserProfile(
     @CurrentUser()
     user: JwtPayload,
-  ) {
+  ): Promise<SuccessResponse<{ user: UserProfile }>> {
     const result = await this.usersService.getUserProfile({
       userId: user.sub,
     });
@@ -36,7 +38,7 @@ export class UsersController {
 
     @Body()
     data: Omit<UpdateProfileDto, 'userId'>,
-  ) {
+  ): Promise<SuccessResponse<{ user: UserProfile }>> {
     const result = await this.usersService.updateUserProfile({
       userId: user.sub,
       ...data,
@@ -58,7 +60,7 @@ export class UsersController {
 
     @Body()
     data: Omit<ChangePasswordDto, 'userId'>,
-  ) {
+  ): Promise<SuccessResponse<void>> {
     await this.usersService.changePassword({
       userId: user.sub,
       ...data,

@@ -75,13 +75,40 @@ export class ArticlesRepository {
   }
 
   async findVisibleById(articleId: string, userId: string) {
-    const isBlocked = await this.isArticleBlockedByUser(articleId, userId);
+    const blockedArticleIdsSubquery = this.db
+      .select({ articleId: articleReactions.articleId })
+      .from(articleReactions)
+      .where(
+        and(
+          eq(articleReactions.userId, userId),
+          eq(articleReactions.reactionType, 'BLOCKED'),
+          eq(articleReactions.articleId, articleId),
+        ),
+      );
 
-    if (isBlocked) {
-      return undefined;
-    }
-
-    return this.findById(articleId);
+    return this.db.query.articles.findFirst({
+      where: and(
+        eq(articles.id, articleId),
+        isNull(articles.deletedAt),
+        notInArray(articles.id, blockedArticleIdsSubquery),
+      ),
+      with: {
+        author: {
+          columns: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+        category: {
+          columns: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    }) as Promise<ArticleWithRelations | undefined>;
   }
 
   async findOwnedById(articleId: string, authorId: string) {
@@ -163,51 +190,50 @@ export class ArticlesRepository {
       total: totalResult[0]?.total ?? 0,
     };
   }
-async listByUserPreferences(
-  userId: string,
-  page: number,
-  limit: number,
-  search?: string,
-) {
-  const preferences = await this.db
-    .select({ categoryId: userPreferences.categoryId })
-    .from(userPreferences)
-    .where(eq(userPreferences.userId, userId));
 
-  const categoryIds = preferences.map((preference) => preference.categoryId);
+  async listByUserPreferences(
+    userId: string,
+    page: number,
+    limit: number,
+    search?: string,
+  ) {
+    const start = Date.now();
+    const categoryIdsSubquery = this.db
+      .select({ categoryId: userPreferences.categoryId })
+      .from(userPreferences)
+      .where(eq(userPreferences.userId, userId));
 
-  if (categoryIds.length === 0) {
-    return {
-      items: [],
-      total: 0,
-    };
-  }
+    const blockedArticleIdsSubquery = this.db
+      .select({ articleId: articleReactions.articleId })
+      .from(articleReactions)
+      .where(
+        and(
+          eq(articleReactions.userId, userId),
+          eq(articleReactions.reactionType, 'BLOCKED'),
+        ),
+      );
 
-  const blockedArticleIds = await this.getBlockedArticleIds(userId);
-  const conditions: SQL[] = [
-    inArray(articles.categoryId, categoryIds),
-    isNull(articles.deletedAt),
-    ne(articles.authorId, userId),
-  ];
+    const conditions: SQL[] = [
+      inArray(articles.categoryId, categoryIdsSubquery),
+      isNull(articles.deletedAt),
+      ne(articles.authorId, userId),
+      notInArray(articles.id, blockedArticleIdsSubquery),
+    ];
 
-  if (blockedArticleIds.length > 0) {
-    conditions.push(notInArray(articles.id, blockedArticleIds));
-  }
-
-  if (search) {
-
+    if (search) {
       const searchCondition = or(
         ilike(articles.title, `%${search}%`),
         ilike(articles.description, `%${search}%`),
-      ) 
-
-      if(searchCondition){
-        conditions.push(searchCondition)
+      );
+      if (searchCondition) {
+        conditions.push(searchCondition);
       }
-  }
+    }
 
-  const whereClause = and(...conditions);
+    const whereClause = and(...conditions);
 
+    console.log(`[ArticlesRepository] Queries built in ${Date.now() - start}ms`);
+    const queryStart = Date.now();
 
     const [items, totalResult] = await Promise.all([
       this.db.query.articles.findMany({
@@ -235,10 +261,50 @@ async listByUserPreferences(
       this.db.select({ total: count() }).from(articles).where(whereClause),
     ]);
 
+    console.log(`[ArticlesRepository] Main query execution took ${Date.now() - queryStart}ms`);
+
     return {
       items,
       total: totalResult[0]?.total ?? 0,
     };
+  }
+
+  async findReactionType(userId: string, articleId: string) {
+    const reaction = await this.db.query.articleReactions.findFirst({
+      where: and(
+        eq(articleReactions.userId, userId),
+        eq(articleReactions.articleId, articleId),
+      ),
+      columns: {
+        reactionType: true,
+      },
+    });
+
+    return reaction?.reactionType ?? null;
+  }
+
+  async findReactionTypes(userId: string, articleIds: string[]) {
+    if (articleIds.length === 0) {
+      return new Map<string, 'LIKE' | 'DISLIKE' | 'BLOCKED'>();
+    }
+
+    const reactions = await this.db.query.articleReactions.findMany({
+      where: and(
+        eq(articleReactions.userId, userId),
+        inArray(articleReactions.articleId, articleIds),
+      ),
+      columns: {
+        articleId: true,
+        reactionType: true,
+      },
+    });
+
+    return new Map(
+      reactions.map((reaction) => [
+        reaction.articleId,
+        reaction.reactionType,
+      ]),
+    );
   }
 
   private async isArticleBlockedByUser(articleId: string, userId: string) {

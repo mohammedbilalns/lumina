@@ -43,6 +43,13 @@
       "when": 1778406614997,
       "tag": "0005_equal_selene",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1778942474578,
+      "tag": "0006_complete_catseye",
+      "breakpoints": true
     }
   ]
 }

@@ -9,6 +9,8 @@ import {
   MinLength,
 } from 'class-validator';
 
+import { MinAge } from 'src/common/decorators/min-age.decorator';
+
 export class SignupDto {
   @IsString()
   @IsNotEmpty()
@@ -37,6 +39,7 @@ export class SignupDto {
   phone: string;
 
   @IsNotEmpty()
+  @MinAge(15)
   @IsDateString()
   dateOfBirth: string;
 

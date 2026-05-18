@@ -6,6 +6,11 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
+import type {
+  AuthResponse,
+  OtpResponse,
+} from '@lumina/shared-types';
+import type { SuccessResponse } from 'src/common/types/api-response.type';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
@@ -26,7 +31,9 @@ export class AuthController {
   ) {}
 
   @Post('signup')
-  async signup(@Body() data: SignupDto) {
+  async signup(
+    @Body() data: SignupDto,
+  ): Promise<SuccessResponse<OtpResponse>> {
     const result = await this.authService.signup(data);
 
     return {
@@ -38,7 +45,7 @@ export class AuthController {
   @Post('signup/verify-otp')
   async verifySignupOtp(
     @Body() data: VerifySignupOtpDto,
-  ) {
+  ): Promise<SuccessResponse<AuthResponse>> {
     const result = await this.authService.verifySignupOtp(data);
 
     return {
@@ -52,7 +59,9 @@ export class AuthController {
   }
 
   @Post('signup/resend-otp')
-  async resendSignupOtp(@Body() data: ResendSignupOtpDto) {
+  async resendSignupOtp(
+    @Body() data: ResendSignupOtpDto,
+  ): Promise<SuccessResponse<OtpResponse>> {
     const result = await this.authService.resendSignupOtp(data);
 
     return {
@@ -62,7 +71,9 @@ export class AuthController {
   }
 
   @Post('forgot-password')
-  async forgotPassword(@Body() data: ForgotPasswordDto) {
+  async forgotPassword(
+    @Body() data: ForgotPasswordDto,
+  ): Promise<SuccessResponse<OtpResponse>> {
     const result = await this.authService.forgotPassword(data);
 
     return {
@@ -72,7 +83,9 @@ export class AuthController {
   }
 
   @Post('forgot-password/resend-otp')
-  async resendForgotPasswordOtp(@Body() data: ResendForgotPasswordOtpDto) {
+  async resendForgotPasswordOtp(
+    @Body() data: ResendForgotPasswordOtpDto,
+  ): Promise<SuccessResponse<OtpResponse>> {
     const result = await this.authService.resendForgotPasswordOtp(data);
 
     return {
@@ -82,7 +95,9 @@ export class AuthController {
   }
 
   @Post('reset-password')
-  async resetPassword(@Body() data: ResetPasswordDto) {
+  async resetPassword(
+    @Body() data: ResetPasswordDto,
+  ): Promise<SuccessResponse<void>> {
     await this.authService.resetPassword(data);
 
     return {
@@ -93,7 +108,7 @@ export class AuthController {
   @Post('login')
   async login(
     @Body() data: LoginDto,
-  ) {
+  ): Promise<SuccessResponse<AuthResponse>> {
     const result = await this.authService.login(data);
 
     return {
@@ -111,7 +126,7 @@ export class AuthController {
   async logout(
     @CurrentUser()
     user: JwtPayload,
-  ) {
+  ): Promise<SuccessResponse<void>> {
     await this.authService.logout({
       userId: user.sub,
     });
@@ -125,7 +140,7 @@ export class AuthController {
     request: Request,
     @Body('refreshToken') 
     bodyRefreshToken?: string,
-  ) {
+  ): Promise<SuccessResponse<AuthResponse>> {
     const refreshToken = bodyRefreshToken || (request.cookies['refreshToken'] as string | undefined);
 
     if (!refreshToken) {

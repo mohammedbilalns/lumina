@@ -1,4 +1,9 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import type {
+  PreferencesStatus,
+  UserPreference,
+} from '@lumina/shared-types';
+import type { SuccessResponse } from 'src/common/types/api-response.type';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { type JwtPayload } from 'src/auth/types/jwt-payload.type';
 import { JwtGuard } from 'src/security/guards/jwt/jwt.guard';
@@ -14,7 +19,7 @@ export class PreferencesController {
   async getUserPreferences(
     @CurrentUser()
     user: JwtPayload,
-  ) {
+  ): Promise<SuccessResponse<{ preferences: UserPreference[] }>> {
     const result = await this.preferencesService.getUserPreferences({
       userId: user.sub,
     });
@@ -32,7 +37,7 @@ export class PreferencesController {
   async checkPreferencesStatus(
     @CurrentUser()
     user: JwtPayload,
-  ) {
+  ): Promise<SuccessResponse<PreferencesStatus>> {
     const isConfigured = await this.preferencesService.checkPreferencesStatus(user.sub);
     return {
       message: 'Preferences status fetched successfully',
@@ -50,7 +55,7 @@ export class PreferencesController {
 
     @Body()
     data: Omit<SaveUserPreferencesDto, 'userId'>,
-  ) {
+  ): Promise<void> {
     await this.preferencesService.saveUserPreferences({
       userId: user.sub,
       categoryids: data.categoryids,

@@ -11,6 +11,11 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import type {
+  Article,
+  ListArticlesData,
+} from '@lumina/shared-types';
+import type { SuccessResponse } from 'src/common/types/api-response.type';
 import { ArticlesService } from './articles.service';
 import { JwtGuard } from 'src/security/guards/jwt/jwt.guard';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
@@ -30,7 +35,7 @@ export class ArticlesController {
 
     @Body()
     data: Omit<CreateArticleDto, 'userId'>,
-  ) {
+  ): Promise<SuccessResponse<{ article: Article }>> {
     const result = await this.articlesService.createArticle({
       userId: user.sub,
       ...data,
@@ -55,7 +60,7 @@ export class ArticlesController {
 
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe)
     limit: number,
-  ) {
+  ): Promise<SuccessResponse<ListArticlesData>> {
     const result = await this.articlesService.listOwnArticles({
       userId: user.sub,
       page,
@@ -82,7 +87,7 @@ export class ArticlesController {
 
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe)
     limit: number,
-  ) {
+  ): Promise<SuccessResponse<ListArticlesData>> {
     const result = await this.articlesService.listPreferredArticles({
       userId: user.sub,
       page,
@@ -106,7 +111,7 @@ export class ArticlesController {
 
     @Param('articleId')
     articleId: string,
-  ) {
+  ): Promise<SuccessResponse<{ article: Article }>> {
     const result = await this.articlesService.getArticle({
       userId: user.sub,
       articleId,
@@ -131,7 +136,7 @@ export class ArticlesController {
 
     @Body()
     data: Omit<UpdateArticleDto, 'userId' | 'articleId'>,
-  ) {
+  ): Promise<SuccessResponse<{ article: Article }>> {
     const result = await this.articlesService.updateArticle({
       userId: user.sub,
       articleId,
@@ -154,7 +159,7 @@ export class ArticlesController {
 
     @Param('articleId')
     articleId: string,
-  ) {
+  ): Promise<SuccessResponse<void>> {
     await this.articlesService.deleteArticle({
       userId: user.sub,
       articleId,

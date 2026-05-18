@@ -45,18 +45,26 @@ export class ArticlesService {
   }
 
   async getArticle(dto: GetArticleDto) {
-    await this.validateActiveUser(dto.userId);
-
-    const article = await this.articlesRepository.findVisibleById(
-      dto.articleId,
-      dto.userId,
-    );
+    const [_, article] = await Promise.all([
+      this.validateActiveUser(dto.userId),
+      this.articlesRepository.findVisibleById(dto.articleId, dto.userId)
+    ]);
 
     if (!article) {
       throw new NotFoundException('Article not found');
     }
 
-    return { article: ArticleMapper.toArticleResponse(article) };
+    const viewerReactionType = await this.articlesRepository.findReactionType(
+      dto.userId,
+      article.id,
+    );
+
+    return {
+      article: ArticleMapper.toArticleResponse({
+        ...article,
+        viewerReactionType,
+      }),
+    };
   }
 
   async updateArticle(dto: UpdateArticleDto) {
@@ -116,17 +124,25 @@ export class ArticlesService {
   }
 
   async listOwnArticles(dto: ListOwnArticlesDto) {
-    await this.validateActiveUser(dto.userId);
     this.validatePagination(dto.page, dto.limit);
 
-    const { items, total } = await this.articlesRepository.listOwnArticles(
+    const [_, { items, total }] = await Promise.all([
+      this.validateActiveUser(dto.userId),
+      this.articlesRepository.listOwnArticles(dto.userId, dto.page, dto.limit)
+    ]);
+
+    const reactionTypes = await this.articlesRepository.findReactionTypes(
       dto.userId,
-      dto.page,
-      dto.limit,
+      items.map((item) => item.id),
     );
 
     return {
-      articles: ArticleMapper.toArticleListResponse(items),
+      articles: ArticleMapper.toArticleListResponse(
+        items.map((item) => ({
+          ...item,
+          viewerReactionType: reactionTypes.get(item.id) ?? null,
+        })),
+      ),
       pagination: ArticleMapper.toPaginationResponse(
         dto.page,
         dto.limit,
@@ -136,19 +152,30 @@ export class ArticlesService {
   }
 
   async listPreferredArticles(dto: ListPreferredArticlesDto) {
-    await this.validateActiveUser(dto.userId);
     this.validatePagination(dto.page, dto.limit);
 
-    const { items, total } =
-      await this.articlesRepository.listByUserPreferences(
+    const [_, { items, total }] = await Promise.all([
+      this.validateActiveUser(dto.userId),
+      this.articlesRepository.listByUserPreferences(
         dto.userId,
         dto.page,
         dto.limit,
         dto.search,
-      );
+      )
+    ]);
+
+    const reactionTypes = await this.articlesRepository.findReactionTypes(
+      dto.userId,
+      items.map((item) => item.id),
+    );
 
     return {
-      articles: ArticleMapper.toArticleListResponse(items),
+      articles: ArticleMapper.toArticleListResponse(
+        items.map((item) => ({
+          ...item,
+          viewerReactionType: reactionTypes.get(item.id) ?? null,
+        })),
+      ),
       pagination: ArticleMapper.toPaginationResponse(
         dto.page,
         dto.limit,
@@ -158,8 +185,7 @@ export class ArticlesService {
   }
 
   private async validateActiveUser(userId: string) {
-    const user = await this.usersRepository.findById(userId);
-    this.userValidationService.validateActiveUser(user);
+    await this.userValidationService.validateActiveUserId(userId);
   }
 
   private async validateCategory(categoryId: string) {

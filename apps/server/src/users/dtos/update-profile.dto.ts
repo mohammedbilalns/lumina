@@ -6,6 +6,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { MinAge } from 'src/common/decorators/min-age.decorator';
 
 export class UpdateProfileDto {
   @IsString()
@@ -30,6 +31,7 @@ export class UpdateProfileDto {
   })
   lastName: string;
 
+  @MinAge(15)
   @IsDateString()
   dateOfBirth: string;
 }

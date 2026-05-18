@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import type { OtpResponse } from '@lumina/shared-types';
 import { UsersRepository } from 'src/users/users.repository';
 import { UserValidationService } from 'src/users/user-validation.service';
 import { PasswordService } from '../security/password.service';
@@ -89,7 +90,7 @@ export class AuthOtpSharedService {
     if (!otpHash || !otpExpiresAt) throw new BadRequestException(message);
   }
 
-  buildOtpResponse(email: string, otpAttempts: number) {
+  buildOtpResponse(email: string, otpAttempts: number): OtpResponse {
     return {
       email,
       attemptsRemaining: Math.max(
