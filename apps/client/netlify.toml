@@ -1,7 +1,7 @@
 [build]
-  command = "vite build"
-  publish = "dist/client"
+  command = "pnpm --filter client build"
+
 [dev]
-  command = "npm run dev"
+  command = "pnpm --filter client dev"
   targetPort = 3000
   port = 8888
