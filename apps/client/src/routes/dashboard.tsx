@@ -1,13 +1,15 @@
-import { Await, Link, createFileRoute, defer, redirect, useNavigate, useRouteContext } from '@tanstack/react-router'
-import { Search, Settings, Sparkles, X } from 'lucide-react'
+import { Await, createFileRoute, defer, redirect, useNavigate } from '@tanstack/react-router'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { Settings, Sparkles } from 'lucide-react'
 import { Suspense, useEffect, useState } from 'react'
 import { Navbar } from '#/components/navbar'
-import { Skeleton } from '#/components/skeleton'
 import { PaginationControls } from '#/features/articles/components/pagination-controls'
 import { articleRouteSearchSchema } from '#/features/articles/schemas/articles.schema'
-import { getPreferredArticles } from '#/features/articles/server/articles.functions'
 import { CategorySelection } from '@/features/preferences/components/category-selection'
 import { checkPreferencesStatus } from '@/features/preferences/server/preferences.functions'
+import { ArticleCard } from '#/features/articles/components/article-card'
+
+import { preferredArticlesQueryOptions } from '#/features/articles/hooks/use-articles-query'
 
 export const Route = createFileRoute('/dashboard')({
   validateSearch: articleRouteSearchSchema,
@@ -18,32 +20,21 @@ export const Route = createFileRoute('/dashboard')({
   },
   loaderDeps: ({ search }) => search,
   loader: async ({ context, deps }) => {
-    if (!context.accessToken) {
-      return {
-        articlesPromise: defer(Promise.resolve({
-          articles: [],
-          pagination: { page: deps.page, limit: deps.limit, total: 0, totalPages: 0 },
-        })),
-        preferencesPromise: defer(Promise.resolve(false)),
-      }
-    }
-
-    const articlesPromise = getPreferredArticles({
-      data: {
-        accessToken: context.accessToken,
+    await context.queryClient.ensureQueryData(
+      preferredArticlesQueryOptions({
+        accessToken: context.accessToken || undefined,
         page: deps.page,
         limit: deps.limit,
         search: deps.search,
-      },
-    }).then(res => res.data)
+      })
+    )
 
     const preferencesPromise = checkPreferencesStatus({
-      data: { accessToken: context.accessToken },
+      data: { accessToken: context.accessToken || undefined },
     }).then(res => res.data?.isConfigured || false)
       .catch(() => true)
 
     return {
-      articlesPromise: defer(articlesPromise),
       preferencesPromise: defer(preferencesPromise),
     }
   },
@@ -53,34 +44,16 @@ export const Route = createFileRoute('/dashboard')({
 export function DashboardPage() {
   const navigate = useNavigate({ from: '/dashboard' })
   const searchParams = Route.useSearch()
-  const { articlesPromise, preferencesPromise } = Route.useLoaderData()
-  const [searchInput, setSearchInput] = useState(searchParams.search || '')
-
-  useEffect(() => {
-    setSearchInput(searchParams.search || '')
-  }, [searchParams.search])
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    navigate({
-      search: (prev) => ({
-        ...prev,
-        search: searchInput || undefined,
-        page: 1,
-      }),
-    })
-  }
-
-  const clearSearch = () => {
-    setSearchInput('')
-    navigate({
-      search: (prev) => ({
-        ...prev,
-        search: undefined,
-        page: 1,
-      }),
-    })
-  }
+  const { accessToken } = Route.useRouteContext()
+  const { preferencesPromise } = Route.useLoaderData()
+  const { data: articlesData } = useSuspenseQuery(
+    preferredArticlesQueryOptions({
+      accessToken: accessToken || undefined,
+      page: searchParams.page,
+      limit: searchParams.limit,
+      search: searchParams.search,
+    }),
+  )
 
   const handlePageChange = (page: number) => {
     navigate({
@@ -92,7 +65,7 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-[#111111] font-sans selection:bg-[#f8cb5b]/30 relative">
+    <div className="min-h-screen bg-[#FBFBFA] text-[#111111] font-sans selection:bg-[#f8cb5b]/30 relative pb-20">
       <Navbar />
 
       <div className="container mx-auto px-6 py-12 flex justify-center">
@@ -110,56 +83,29 @@ export function DashboardPage() {
               <h1 className="text-3xl font-serif font-medium text-[#0b2226]">
                 Recommended for You
               </h1>
-              <div className="flex items-center gap-2">
-                <form onSubmit={handleSearch} className="relative w-full sm:w-64">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                  <input
-                    type="text"
-                    placeholder="Search articles..."
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                    className="w-full rounded-full border border-[#EAEAEA] bg-white py-2 pl-10 pr-10 text-sm focus:border-[#0b2226] focus:outline-none focus:ring-1 focus:ring-[#0b2226] transition-all"
-                  />
-                  {searchInput && (
-                    <button
-                      type="button"
-                      onClick={clearSearch}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
+              <Suspense>
+                <Await promise={preferencesPromise}>
+                  {(isPreferencesConfigured) => (
+                    <DashboardSettingsButton isPreferencesConfigured={isPreferencesConfigured} />
                   )}
-                </form>
-                <Suspense>
-                  <Await promise={preferencesPromise}>
-                    {(isPreferencesConfigured) => (
-                      <DashboardSettingsButton isPreferencesConfigured={isPreferencesConfigured} />
-                    )}
-                  </Await>
-                </Suspense>
-              </div>
+                </Await>
+              </Suspense>
             </div>
             <p className="text-slate-500">
               Personalized articles that match your selected interests. Your own articles are excluded from this feed.
             </p>
           </div>
 
-          <Suspense fallback={<DashboardSkeletonContent />}>
-            <Await promise={articlesPromise}>
-              {({ articles, pagination }) => (
-                <Await promise={preferencesPromise}>
-                  {(isPreferencesConfigured) => (
-                    <DashboardArticlesList 
-                      articles={articles} 
-                      pagination={pagination} 
-                      isPreferencesConfigured={isPreferencesConfigured}
-                      handlePageChange={handlePageChange}
-                    />
-                  )}
-                </Await>
-              )}
-            </Await>
-          </Suspense>
+          <Await promise={preferencesPromise}>
+            {(isPreferencesConfigured) => (
+              <DashboardArticlesList 
+                articles={articlesData.articles} 
+                pagination={articlesData.pagination} 
+                isPreferencesConfigured={isPreferencesConfigured}
+                handlePageChange={handlePageChange}
+              />
+            )}
+          </Await>
         </main>
       </div>
     </div>
@@ -258,59 +204,9 @@ function DashboardArticlesList({
 
   return (
     <>
-      <div className="space-y-8">
-        {articles.map((article) => (
-          <article
-            key={article.id}
-            className="group relative flex flex-col-reverse gap-8 rounded-xl border border-[#EAEAEA] bg-white p-6 transition-all hover:shadow-sm sm:flex-row"
-          >
-            <Link
-              to="/article/$id"
-              params={{ id: article.id }}
-              className="absolute inset-0 z-10"
-            >
-              <span className="sr-only">View article</span>
-            </Link>
-            <div className="flex flex-1 flex-col">
-              <div className="mb-3 flex items-center gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#13383d]">
-                  {article.category.name}
-                </span>
-              </div>
-              <h2 className="mb-3 line-clamp-2 text-2xl leading-tight font-serif font-medium text-[#0b2226] transition-colors group-hover:text-[#13383d]">
-                {article.title}
-              </h2>
-              <p className="mb-6 line-clamp-3 text-sm leading-relaxed text-slate-500">
-                {article.description}
-              </p>
-
-              <div className="mt-auto flex items-center justify-between">
-                <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
-                  <span className="font-medium text-slate-700">
-                    {article.author.firstName} {article.author.lastName}
-                  </span>
-                  <span>•</span>
-                  <span>{new Date(article.createdAt).toLocaleDateString()}</span>
-                  <span>•</span>
-                  <span>{article.likesCount} likes</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="h-48 w-full shrink-0 overflow-hidden rounded-lg border border-[#EAEAEA] bg-[#F7F6F3] sm:h-auto sm:w-56">
-              {article.featuredImage ? (
-                <img
-                  src={article.featuredImage}
-                  alt={article.title}
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-              ) : (
-                <div className="flex h-full min-h-48 items-center justify-center px-6 text-center text-sm text-slate-400">
-                  No cover image
-                </div>
-              )}
-            </div>
-          </article>
+      <div className="space-y-4">
+        {articles.map((article: any) => (
+          <ArticleCard key={article.id} article={article} showReactionActions={false} />
         ))}
       </div>
 
@@ -321,22 +217,9 @@ function DashboardArticlesList({
 
 function DashboardSkeletonContent() {
   return (
-    <div className="space-y-8 mt-4">
+    <div className="space-y-4">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="flex flex-col-reverse gap-8 rounded-xl border border-[#EAEAEA] p-6 sm:flex-row">
-          <div className="flex flex-1 flex-col">
-            <Skeleton className="mb-3 h-4 w-24" />
-            <Skeleton className="mb-3 h-8 w-full" />
-            <Skeleton className="mb-2 h-4 w-full" />
-            <Skeleton className="mb-6 h-4 w-3/4" />
-            <div className="mt-auto flex items-center gap-2">
-              <Skeleton className="h-4 w-32" />
-              <Skeleton className="h-4 w-4 rounded-full" />
-              <Skeleton className="h-4 w-24" />
-            </div>
-          </div>
-          <Skeleton className="h-48 w-full shrink-0 rounded-lg sm:h-40 sm:w-56" />
-        </div>
+        <ArticleCardSkeleton key={i} />
       ))}
     </div>
   )

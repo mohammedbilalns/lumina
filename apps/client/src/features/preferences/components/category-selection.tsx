@@ -1,15 +1,11 @@
 import { useState, useEffect } from 'react'
-import { getCategories, saveUserPreferences } from '../server/preferences.functions'
+import type { Category } from '@lumina/shared-types'
+import { getCategories, saveUserPreferences, getUserPreferences } from '../server/preferences.functions'
 import { toast } from 'sonner'
 import { Check, Loader2 } from 'lucide-react'
 import { useNavigate,useRouter } from '@tanstack/react-router'
+import { Route as RootRoute } from '@/routes/__root'
 import { callAuthorized } from '@/utils/auth-client'
-
-interface Category {
-  id: string
-  name: string
-  slug: string
-}
 
 interface CategorySelectionProps {
   onSuccess?: () => void
@@ -20,22 +16,32 @@ export function CategorySelection({ onSuccess }: CategorySelectionProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const { queryClient } = RootRoute.useRouteContext()
   const navigate = useNavigate()
   const router = useRouter()
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const response = await getCategories()
-        setCategories(response.data.categories)
+        const [categoriesRes, preferencesRes] = await Promise.all([
+          getCategories(),
+          callAuthorized(getUserPreferences, {})
+        ])
+        
+        setCategories(categoriesRes.data.categories)
+        
+        if (preferencesRes.data?.preferences) {
+          const currentIds = preferencesRes.data.preferences.map((p: any) => p.categoryId || p.category?.id)
+          setSelectedIds(currentIds.filter(Boolean))
+        }
       } catch (err) {
-        toast.error('Failed to load categories')
+        toast.error('Failed to load interests')
       } finally {
         setIsLoading(false)
       }
     }
 
-    fetchCategories()
+    fetchData()
   }, [])
 
   const toggleCategory = (id: string) => {
@@ -55,6 +61,8 @@ export function CategorySelection({ onSuccess }: CategorySelectionProps) {
     setIsSaving(true)
     try {
       await callAuthorized(saveUserPreferences, { categoryIds: selectedIds })
+      queryClient.removeQueries({ queryKey: ['articles', 'preferred'] })
+      queryClient.removeQueries({ queryKey: ['articles', 'own'] })
       toast.success('Interests saved successfully!')
 
       await router.invalidate()

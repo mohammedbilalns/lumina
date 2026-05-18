@@ -1,43 +1,11 @@
 import { env } from '@/config/env'
+import type {
+  Article,
+  ListArticlesData,
+} from '@lumina/shared-types'
+export type { Article, ListArticlesData } from '@lumina/shared-types'
 import { fetchWithAuth } from '@/features/authentication/server/api-client.server'
 import { ApiError, type ErrorResponse, type SuccessResponse } from '@/types/response'
-
-export interface ArticleAuthor {
-  id: string
-  firstName: string
-  lastName: string
-}
-
-export interface ArticleCategory {
-  id: string
-  name: string
-  slug: string
-}
-
-export interface Article {
-  id: string
-  title: string
-  description: string
-  content: string
-  featuredImage: string | null
-  likesCount: number
-  createdAt: string
-  updatedAt: string
-  author: ArticleAuthor
-  category: ArticleCategory
-}
-
-export interface PaginationMeta {
-  page: number
-  limit: number
-  total: number
-  totalPages: number
-}
-
-export interface ListArticlesData {
-  articles: Article[]
-  pagination: PaginationMeta
-}
 
 export interface CreateArticleInput {
   title: string
@@ -52,6 +20,15 @@ export interface UpdateArticleInput {
   content?: string
   featuredImage?: string
   categoryId?: string
+}
+
+export interface ReactToArticleInput {
+  articleId: string
+  reactionType: 'LIKE' | 'DISLIKE'
+}
+
+export interface BlockArticleInput {
+  articleId: string
 }
 
 interface ListArticlesParams {
@@ -171,5 +148,43 @@ export const articlesService = {
     )
 
     return parseResponse<void>(response, 'Failed to delete article')
+  },
+
+  async reactToArticle(
+    data: ReactToArticleInput,
+    accessToken?: string | null,
+  ): Promise<SuccessResponse<void>> {
+    const response = await fetchWithAuth(
+      `${env.API_URL}/reactions/articles/react`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      },
+      accessToken,
+    )
+
+    return parseResponse<void>(response, 'Failed to save reaction')
+  },
+
+  async blockArticle(
+    data: BlockArticleInput,
+    accessToken?: string | null,
+  ): Promise<SuccessResponse<void>> {
+    const response = await fetchWithAuth(
+      `${env.API_URL}/reactions/articles/block`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      },
+      accessToken,
+    )
+
+    return parseResponse<void>(response, 'Failed to block article')
   },
 }

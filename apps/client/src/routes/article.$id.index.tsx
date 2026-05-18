@@ -1,11 +1,12 @@
-import { Await, Link, createFileRoute, defer, redirect, useRouteContext } from '@tanstack/react-router'
+import { Link, createFileRoute, redirect, useRouteContext } from '@tanstack/react-router'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { ArrowLeft, Edit2, MoreHorizontal, ThumbsUp } from 'lucide-react'
-import { Suspense } from 'react'
+import { ArrowLeft, Edit2, ThumbsUp } from 'lucide-react'
 import { Navbar } from '#/components/navbar'
-import { ArticleDetailSkeleton } from '#/components/page-skeletons'
-import { getArticle } from '#/features/articles/server/articles.functions'
+import { ArticleReactionActions } from '#/features/articles/components/article-reaction-actions'
+import { articleDetailQueryOptions } from '#/features/articles/hooks/use-articles-query'
+import type { Article, UserProfile } from '@lumina/shared-types'
 
 export const Route = createFileRoute('/article/$id/')({
   beforeLoad: ({ context }) => {
@@ -18,37 +19,36 @@ export const Route = createFileRoute('/article/$id/')({
       throw redirect({ to: '/auth' })
     }
 
-    const articlePromise = getArticle({
-      data: {
+    await context.queryClient.ensureQueryData(
+      articleDetailQueryOptions({
         articleId: params.id,
         accessToken: context.accessToken,
-      },
-    })
-
-    return {
-      articleData: defer(articlePromise),
-    }
+      }),
+    )
+    return {}
   },
   component: ArticleDetailedComponent,
 })
 
 function ArticleDetailedComponent() {
-  const { articleData } = Route.useLoaderData()
-  const { user } = useRouteContext({ from: '__root__' })
+  const { user, accessToken } = useRouteContext({ from: '__root__' })
+  const { id } = Route.useParams()
+  const { data } = useSuspenseQuery(
+    articleDetailQueryOptions({
+      articleId: id,
+      accessToken: accessToken || undefined,
+    }),
+  )
 
   return (
     <div className="min-h-screen bg-white pb-20 font-sans text-[#111111] selection:bg-[#f8cb5b]/30">
       <Navbar />
-      <Suspense fallback={<ArticleDetailSkeleton />}>
-        <Await promise={articleData}>
-          {({ data: { article } }) => <ArticleContent article={article} user={user} />}
-        </Await>
-      </Suspense>
+      <ArticleContent article={data.article} user={user} />
     </div>
   )
 }
 
-function ArticleContent({ article, user }: { article: any; user: any }) {
+function ArticleContent({ article, user }: { article: Article; user: UserProfile | null }) {
   const editor = useEditor({
     extensions: [StarterKit],
     content: article.content,
@@ -121,9 +121,9 @@ function ArticleContent({ article, user }: { article: any; user: any }) {
               <ThumbsUp className="h-4 w-4" />
               <span className="text-sm font-medium">{article.likesCount}</span>
             </div>
-            <div className="flex items-center gap-1.5 rounded-md px-3 py-2 text-slate-400">
-              <MoreHorizontal className="h-4 w-4" />
-            </div>
+            {!isAuthor && (
+              <ArticleReactionActions article={article} articleId={article.id} />
+            )}
           </div>
         </div>
       </header>

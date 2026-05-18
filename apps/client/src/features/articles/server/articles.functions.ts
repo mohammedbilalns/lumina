@@ -8,6 +8,10 @@ import {
   getArticlesSchema,
   updateArticleSchema,
 } from '../schemas/articles.schema'
+import {
+  blockArticleSchema as blockArticleActionSchema,
+  reactToArticleSchema as reactToArticleActionSchema,
+} from '../schemas/article-reactions.schema'
 
 export const getPreferredArticles = createServerFn({ method: 'GET' })
   .inputValidator(getArticlesSchema)
@@ -42,7 +46,7 @@ export const createArticle = createServerFn({ method: 'POST' })
     }),
   )
 
-export const updateArticle = createServerFn({ method: 'PATCH' })
+export const updateArticle = createServerFn({ method: 'POST' })
   .inputValidator(updateArticleSchema)
   .handler(
     withServerErrorHandler(async ({ data }) => {
@@ -51,10 +55,28 @@ export const updateArticle = createServerFn({ method: 'PATCH' })
     }),
   )
 
-export const deleteArticle = createServerFn({ method: 'DELETE' })
+export const deleteArticle = createServerFn({ method: 'POST' })
   .inputValidator(deleteArticleSchema)
   .handler(
     withServerErrorHandler(async ({ data }) => {
       return await articlesService.deleteArticle(data.articleId, data.accessToken)
+    }),
+  )
+
+export const reactToArticle = createServerFn({ method: 'POST' })
+  .inputValidator(reactToArticleActionSchema)
+  .handler(
+    withServerErrorHandler(async ({ data }) => {
+      const { accessToken, ...payload } = data
+      return await articlesService.reactToArticle(payload, accessToken)
+    }),
+  )
+
+export const blockArticle = createServerFn({ method: 'POST' })
+  .inputValidator(blockArticleActionSchema)
+  .handler(
+    withServerErrorHandler(async ({ data }) => {
+      const { accessToken, ...payload } = data
+      return await articlesService.blockArticle(payload, accessToken)
     }),
   )

@@ -1,9 +1,11 @@
 import { createFileRoute, redirect, useNavigate, useRouter } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Navbar } from '#/components/navbar'
 import { ArticleEditor } from '#/features/articles/components/article-editor'
 import { createArticle } from '#/features/articles/server/articles.functions'
+import { upsertOwnArticleCaches } from '#/features/articles/utils/article-reaction-cache'
 import { getCategories } from '#/features/preferences/server/preferences.functions'
 import { callAuthorized } from '#/utils/auth-client'
 
@@ -23,6 +25,7 @@ export const Route = createFileRoute('/article/create')({
 export function CreateArticleComponent() {
   const navigate = useNavigate()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const { categories } = Route.useLoaderData()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -36,6 +39,8 @@ export function CreateArticleComponent() {
 
     try {
       const response = await callAuthorized(createArticle, data)
+      upsertOwnArticleCaches(queryClient, response.data.article, 'create')
+      await queryClient.invalidateQueries({ queryKey: ['articles', 'own'] })
       toast.success('Article created successfully')
       await router.invalidate()
       navigate({ to: '/article/$id', params: { id: response.data.article.id } })

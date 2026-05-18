@@ -38,7 +38,7 @@ export function Landing() {
               Looking for top-tier reading resources?
             </h1>
             <p className="text-lg text-emerald-50/70 mb-10">
-              Download insightful guides written from an expert's perspective.
+              Insightful guides written from an expert's perspective.
             </p>
             <Link
               to="/dashboard"
@@ -62,7 +62,7 @@ export function Landing() {
                 Configure preferences
               </h3>
               <p className="text-sm leading-6 text-slate-500">
-                Pick categories once and the dashboard will fetch matching articles through the BFF layer.
+                Pick categories once and the dashboard will surface matching articles for you.
               </p>
             </article>
             <article className="rounded-2xl border border-[#EAEAEA] bg-[#FBFBFA] p-6">
@@ -84,7 +84,7 @@ export function Landing() {
                 Manage your own writing
               </h3>
               <p className="text-sm leading-6 text-slate-500">
-                Create, edit, delete, and paginate your own articles from one place without browser-direct API calls.
+                Create, edit, delete, and paginate your own articles from one place.
               </p>
             </article>
           </div>
@@ -93,134 +93,17 @@ export function Landing() {
 
       {/* Footer */}
       <footer className="bg-[#0b2226] text-white py-20 border-t border-[#0b2226]">
-        <div className="container mx-auto px-6 max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-16">
-          {/* Subscribe Section */}
-          <div className="max-w-md">
-            <h2 className="text-3xl font-serif font-medium mb-4">
-              Subscribe to Lumina Dispatch
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="max-w-2xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
+              Lumina
+            </p>
+            <h2 className="mt-4 text-3xl font-serif font-medium">
+              Thoughtful reading, curated around what matters to you.
             </h2>
-            <p className="text-slate-400 mb-8">
-              A weekly digest of latest news, articles and resources
+            <p className="mt-4 max-w-xl text-sm leading-7 text-slate-400">
+              Explore personalized articles, follow your interests, and manage your writing in one focused space.
             </p>
-
-            <form
-              className="flex gap-4 mb-6"
-              onSubmit={(e) => e.preventDefault()}
-            >
-              <input
-                type="email"
-                placeholder="Your Email Address"
-                className="flex-1 bg-white border border-transparent rounded-md py-3 px-4 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#f8cb5b]"
-              />
-              <button className="bg-[#f8cb5b] text-[#0b2226] font-semibold px-6 py-3 rounded-md hover:bg-[#f2c94c] transition-colors whitespace-nowrap">
-                Subscribe
-              </button>
-            </form>
-
-            <p className="text-xs text-slate-500 leading-relaxed">
-              By continuing, you agree to Lumina's{' '}
-              <a
-                href="#"
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                Terms of Use
-              </a>{' '}
-              and{' '}
-              <a
-                href="#"
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                Privacy Policy
-              </a>
-            </p>
-          </div>
-
-          {/* Links Section */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 lg:pl-12">
-            <div>
-              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-6 flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-indigo-500/30 border border-indigo-400"></span>
-                Topics
-              </h4>
-              <ul className="space-y-4 text-sm text-slate-300">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Technology
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Design
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Psychology
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Science
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-6 flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-emerald-500/30 border border-emerald-400"></span>
-                Platform
-              </h4>
-              <ul className="space-y-4 text-sm text-slate-300">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Writers
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Readers
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Guidelines
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    FAQ
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-6 flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-amber-500/30 border border-amber-400"></span>
-                Company
-              </h4>
-              <ul className="space-y-4 text-sm text-slate-300">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    About
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Careers
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Contact
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Blog
-                  </a>
-                </li>
-              </ul>
-            </div>
           </div>
         </div>
       </footer>

@@ -20,3 +20,9 @@ export const checkPreferencesStatus = createServerFn({ method: 'GET' })
   .handler(withServerErrorHandler(async ({ data }) => {
     return await preferencesService.checkPreferencesStatus(data?.accessToken)
   }))
+
+export const getUserPreferences = createServerFn({ method: 'GET' })
+  .inputValidator(checkPreferencesStatusSchema)
+  .handler(withServerErrorHandler(async ({ data }) => {
+    return await preferencesService.getUserPreferences(data?.accessToken)
+  }))

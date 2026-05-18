@@ -1,7 +1,7 @@
-import type { User } from '@/types/user'
+import type { UserProfile } from '@lumina/shared-types'
 
 interface AuthSession {
-  user: User | null
+  user: UserProfile | null
   accessToken: string | null
 }
 

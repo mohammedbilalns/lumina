@@ -1,4 +1,4 @@
-import { BookOpen, Search, Settings, LogOut } from 'lucide-react'
+import { BookOpen, Settings, LogOut } from 'lucide-react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Route } from '../routes/__root'
 import { logoutUser } from '../features/authentication/server/auth.functions'
@@ -42,15 +42,6 @@ export function Navbar() {
             </Link>
           </nav>
         )}
-
-        <div className="hidden lg:flex flex-1 max-w-md mx-8 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search stories, topics, or writers..."
-            className="w-full bg-[#F7F6F3] border border-transparent rounded-full py-2 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none focus:border-[#EAEAEA] focus:bg-white transition-all"
-          />
-        </div>
 
         <div className="flex items-center gap-4">
           {user ? (

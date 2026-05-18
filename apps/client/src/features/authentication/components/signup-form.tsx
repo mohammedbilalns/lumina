@@ -68,7 +68,7 @@ export function SignupForm({ onSwitchToLogin, onSuccess }: SignupFormProps) {
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder="e.g. Elena"
+                  placeholder="e.g. John"
                   className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
                 />
                 {field.state.meta.isTouched && field.state.meta.errors[0] ? (
@@ -88,7 +88,7 @@ export function SignupForm({ onSwitchToLogin, onSuccess }: SignupFormProps) {
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder="e.g. Rodriguez"
+                  placeholder="e.g. Doe"
                   className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
                 />
                 {field.state.meta.isTouched && field.state.meta.errors[0] ? (
@@ -151,7 +151,7 @@ export function SignupForm({ onSwitchToLogin, onSuccess }: SignupFormProps) {
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
-                placeholder="elena.rodriguez@example.com"
+                placeholder="john.doe@example.com"
                 className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
               />
               {field.state.meta.isTouched && field.state.meta.errors[0] ? (

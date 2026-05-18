@@ -14,6 +14,7 @@ export async function fetchWithAuth(
   options: RequestInit = {},
   accessToken?: string | null
 ): Promise<Response> {
+  const start = Date.now()
   let currentToken = accessToken
   
   if (!currentToken) {
@@ -24,7 +25,6 @@ export async function fetchWithAuth(
     }
   }
 
-  // Helper to apply the current token to headers
   const applyToken = (opts: RequestInit, token: string | undefined | null) => {
     const headers = new Headers(opts.headers)
     if (token) {
@@ -33,10 +33,8 @@ export async function fetchWithAuth(
     return { ...opts, headers }
   }
 
-  // 1. Try with current access token
   let response = await fetch(url, applyToken(options, currentToken))
 
-  // 2. If unauthorized or no token provided, try to refresh using the refresh cookie
   if (response.status === 401 || !currentToken) {
     const refreshToken = getCookie('refreshToken')
     
@@ -50,12 +48,16 @@ export async function fetchWithAuth(
           maxAge: 60 * 60 * 24 * 7
         })
 
-        // 3. Retry original request with new token
         response = await fetch(url, applyToken(options, newAccessToken))
       } catch (err) {
         deleteCookie('refreshToken')
       }
     }
+  }
+
+  const duration = Date.now() - start
+  if (duration > 200) {
+    console.log(`[fetchWithAuth] SLOW REQUEST: ${url} (${duration}ms)`)
   }
 
   return response

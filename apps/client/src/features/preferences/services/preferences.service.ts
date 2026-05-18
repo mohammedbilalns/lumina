@@ -1,16 +1,11 @@
 import { env } from '@/config/env'
+import type {
+  Category,
+  PreferencesStatus,
+} from '@lumina/shared-types'
+export type { Category, PreferencesStatus } from '@lumina/shared-types'
 import { type SuccessResponse, type ErrorResponse, ApiError } from '@/types/response'
 import { fetchWithAuth } from '@/features/authentication/server/api-client.server'
-
-export interface Category {
-  id: string
-  name: string
-  slug: string
-}
-
-export interface PreferencesStatus {
-  isConfigured: boolean
-}
 
 export const preferencesService = {
   async getCategories(): Promise<SuccessResponse<{ categories: Category[] }>> {
@@ -66,5 +61,21 @@ export const preferencesService = {
     }
 
     return result as SuccessResponse<PreferencesStatus>
+  },
+
+  async getUserPreferences(accessToken?: string | null): Promise<SuccessResponse<{ preferences: { category: { id: string } }[] }>> {
+    const response = await fetchWithAuth(`${env.API_URL}/preferences`, {}, accessToken)
+    const result = await response.json().catch(() => null)
+
+    if (!response.ok) {
+      const error = result as ErrorResponse | null
+      throw new ApiError(
+        error?.message || "Failed to fetch user preferences",
+        response.status,
+        error?.error
+      )
+    }
+
+    return result as SuccessResponse<{ preferences: { category: { id: string } }[] }>
   }
 }
