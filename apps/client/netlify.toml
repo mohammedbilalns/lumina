@@ -1,6 +1,5 @@
 [build]
   command = "pnpm --filter client build"
-  publish = "apps/client/.output/public"
 
 [dev]
   command = "pnpm --filter client dev"
