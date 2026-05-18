@@ -1,0 +1,10 @@
+[build]
+  base = "apps/client"
+  command = "pnpm --filter client build"
+  publish = "dist/client"
+  functions = ".netlify/v1/functions"
+
+[dev]
+  command = "pnpm --filter client dev"
+  targetPort = 3000
+  port = 8888

@@ -7,7 +7,7 @@ import {
   createRootRouteWithContext,
 } from '@tanstack/react-router'
 import { useEffect } from 'react'
-import appCss from '../styles.css'
+import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
 import type { UserProfile } from '@lumina/shared-types'
 import { getMe } from '../features/authentication/server/auth.functions'
