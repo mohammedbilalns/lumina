@@ -1,5 +1,7 @@
 [build]
   command = "pnpm --filter client build"
+  publish = "dist/client"
+  functions = ".netlify/v1/functions"
 
 [dev]
   command = "pnpm --filter client dev"
