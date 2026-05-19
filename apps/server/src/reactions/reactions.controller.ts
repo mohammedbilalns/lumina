@@ -11,6 +11,7 @@ import { JwtGuard } from 'src/security/guards/jwt/jwt.guard';
 import { ReactionsService } from './reactions.service';
 import { ReactToArticleDto } from './dtos/react-to-article.dto';
 import { BlockArticleDto } from './dtos/block-article.dto';
+import { ReactionResponseMessages } from './constants/response-messages';
 
 @ApiTags('reactions')
 @ApiBearerAuth()
@@ -39,7 +40,7 @@ export class ReactionsController {
     });
 
     return {
-      message: 'Article reaction saved successfully',
+      message: ReactionResponseMessages.SAVED,
     };
   }
 
@@ -64,7 +65,7 @@ export class ReactionsController {
     });
 
     return {
-      message: 'Article blocked successfully',
+      message: ReactionResponseMessages.BLOCKED,
     };
   }
 }

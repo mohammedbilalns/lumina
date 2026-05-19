@@ -30,7 +30,7 @@ import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { type JwtPayload } from 'src/auth/types/jwt-payload.type';
 import { CreateArticleDto } from './dtos/create-article.dto';
 import { UpdateArticleDto } from './dtos/update-article.dto';
-import { ArticleResponseMessages } from './constants/successMessages';
+import { ArticleResponseMessages } from './constants/response-messages';
 
 @ApiTags('articles')
 @ApiBearerAuth()
@@ -218,7 +218,7 @@ export class ArticlesController {
     });
 
     return {
-      message:ArticleResponseMessages.UPDATED ,
+      message: ArticleResponseMessages.UPDATED,
       data: {
         article: result.article,
       },

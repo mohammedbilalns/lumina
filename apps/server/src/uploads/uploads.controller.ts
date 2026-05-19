@@ -10,6 +10,7 @@ import { type JwtPayload } from 'src/auth/types/jwt-payload.type';
 import { JwtGuard } from 'src/security/guards/jwt/jwt.guard';
 import { CreatePresignedUploadUrlDto } from './dtos/create-presigned-upload-url.dto';
 import { UploadsService } from './uploads.service';
+import { UploadResponseMessages } from './constants/response-messages';
 
 @ApiTags('uploads')
 @ApiBearerAuth()
@@ -38,7 +39,7 @@ export class UploadsController {
     );
 
     return {
-      message: 'Presigned upload URL generated successfully',
+      message: UploadResponseMessages.PRESIGNED_URL_CREATED,
       data: result,
     };
   }

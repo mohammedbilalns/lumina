@@ -15,6 +15,7 @@ import { type JwtPayload } from 'src/auth/types/jwt-payload.type';
 import { JwtGuard } from 'src/security/guards/jwt/jwt.guard';
 import { PreferencesService } from './preferences.service';
 import { SaveUserPreferencesDto } from './dto/save-user-preferences.dto';
+import { PreferencesResponseMessages } from './constants/response-messages';
 
 @ApiTags('preferences')
 @ApiBearerAuth()
@@ -38,7 +39,7 @@ export class PreferencesController {
     });
 
     return {
-      message: 'User preferences fetched successfully',
+      message: PreferencesResponseMessages.FETCHED,
       data: {
         preferences: result.preferences,
       },
@@ -58,7 +59,7 @@ export class PreferencesController {
   ): Promise<SuccessResponse<PreferencesStatus>> {
     const isConfigured = await this.preferencesService.checkPreferencesStatus(user.sub);
     return {
-      message: 'Preferences status fetched successfully',
+      message: PreferencesResponseMessages.STATUS_FETCHED,
       data: {
         isConfigured,
       },

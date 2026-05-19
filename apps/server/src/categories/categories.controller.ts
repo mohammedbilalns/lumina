@@ -3,6 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Category } from '@lumina/shared-types';
 import type { SuccessResponse } from 'src/common/types/api-response.type';
 import { CategoriesService } from './categories.service';
+import { CategoryResponseMessages } from './constants/response-messages';
 
 @ApiTags('categories')
 @Controller('categories')
@@ -18,7 +19,7 @@ export class CategoriesController {
     const result = await this.CategoriesService.getCategories();
 
     return {
-      message: 'Categories fetched successfully',
+      message: CategoryResponseMessages.FETCHED,
       data: {
         categories: result.categories,
       },

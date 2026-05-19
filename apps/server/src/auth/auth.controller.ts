@@ -30,7 +30,7 @@ import { ResendSignupOtpDto } from './dto/resend-signup-otp.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResendForgotPasswordOtpDto } from './dto/resend-forgot-password-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { AuthResponseMessages } from './constants/ResponseMessages';
+import { AuthResponseMessages } from './constants/response-messages';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @ApiTags('auth')
