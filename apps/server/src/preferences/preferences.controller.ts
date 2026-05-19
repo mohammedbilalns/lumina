@@ -1,4 +1,10 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import type {
   PreferencesStatus,
   UserPreference,
@@ -10,12 +16,19 @@ import { JwtGuard } from 'src/security/guards/jwt/jwt.guard';
 import { PreferencesService } from './preferences.service';
 import { SaveUserPreferencesDto } from './dto/save-user-preferences.dto';
 
+@ApiTags('preferences')
+@ApiBearerAuth()
 @Controller('preferences')
 export class PreferencesController {
   constructor(private readonly preferencesService: PreferencesService) {}
 
   @Get()
   @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary: 'Get user preferences',
+    description:
+      'Returns the categories currently selected by the authenticated user.',
+  })
   async getUserPreferences(
     @CurrentUser()
     user: JwtPayload,
@@ -34,6 +47,11 @@ export class PreferencesController {
 
   @Get('status')
   @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary: 'Get preferences status',
+    description:
+      'Checks whether the authenticated user has completed preference setup.',
+  })
   async checkPreferencesStatus(
     @CurrentUser()
     user: JwtPayload,
@@ -49,6 +67,12 @@ export class PreferencesController {
 
   @Post()
   @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary: 'Save user preferences',
+    description:
+      'Replaces the authenticated user category preferences with the submitted category UUID list.',
+  })
+  @ApiBody({ type: SaveUserPreferencesDto })
   async saveUserPreferences(
     @CurrentUser()
     user: JwtPayload,

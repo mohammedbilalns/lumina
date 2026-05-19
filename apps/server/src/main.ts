@@ -19,8 +19,15 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Article Feed')
-    .setDescription('Article Feed API')
+    .setDescription(
+      'Article Feed API with request validation details for authentication, articles, preferences, uploads, reactions, and user profile endpoints.',
+    )
     .setVersion('1.0')
+    .addBearerAuth()
+    .addCookieAuth('refreshToken', {
+      type: 'apiKey',
+      in: 'cookie',
+    })
     .addTag('articles')
     .build();
 

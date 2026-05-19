@@ -11,6 +11,14 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import type {
   Article,
   ListArticlesData,
@@ -22,13 +30,21 @@ import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { type JwtPayload } from 'src/auth/types/jwt-payload.type';
 import { CreateArticleDto } from './dtos/create-article.dto';
 import { UpdateArticleDto } from './dtos/update-article.dto';
+import { ArticleResponseMessages } from './constants/successMessages';
 
+@ApiTags('articles')
+@ApiBearerAuth()
 @Controller('articles')
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
   @Post()
   @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary: 'Create article',
+    description: 'Creates a new article for the authenticated user.',
+  })
+  @ApiBody({ type: CreateArticleDto })
   async createArticle(
     @CurrentUser()
     user: JwtPayload,
@@ -42,7 +58,7 @@ export class ArticlesController {
     });
 
     return {
-      message: 'Article created successfully',
+      message: ArticleResponseMessages.CREATED,
       data: {
         article: result.article,
       },
@@ -51,6 +67,25 @@ export class ArticlesController {
 
   @Get('me')
   @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary: 'List my articles',
+    description: 'Returns paginated articles created by the authenticated user.',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number. Minimum 1.',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    example: 10,
+    enum: [10, 20, 30],
+    description: 'Page size.',
+  })
   async listOwnArticles(
     @CurrentUser()
     user: JwtPayload,
@@ -68,7 +103,7 @@ export class ArticlesController {
     });
 
     return {
-      message: 'Own articles fetched successfully',
+      message: ArticleResponseMessages.FETCHED_OWN,
       data: {
         articles: result.articles,
         pagination: result.pagination,
@@ -78,6 +113,26 @@ export class ArticlesController {
 
   @Get('preferences')
   @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary: 'List preferred articles',
+    description:
+      'Returns paginated articles matched to the authenticated user preferences.',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number. Minimum 1.',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    example: 10,
+    enum: [10, 20, 30],
+    description: 'Page size.',
+  })
   async listPreferredArticles(
     @CurrentUser()
     user: JwtPayload,
@@ -95,7 +150,7 @@ export class ArticlesController {
     });
 
     return {
-      message: 'Preferred articles fetched successfully',
+      message: ArticleResponseMessages.FETCHED_PREFERRED,
       data: {
         articles: result.articles,
         pagination: result.pagination,
@@ -105,6 +160,15 @@ export class ArticlesController {
 
   @Get(':articleId')
   @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary: 'Get article',
+    description: 'Fetches a single article by UUID for the authenticated user.',
+  })
+  @ApiParam({
+    name: 'articleId',
+    description: 'Article UUID.',
+    example: '55de50b8-27e6-44d0-a3ec-a851f6cb3659',
+  })
   async getArticle(
     @CurrentUser()
     user: JwtPayload,
@@ -118,7 +182,7 @@ export class ArticlesController {
     });
 
     return {
-      message: 'Article fetched successfully',
+      message: ArticleResponseMessages.FETCHED_ONE,
       data: {
         article: result.article,
       },
@@ -127,6 +191,16 @@ export class ArticlesController {
 
   @Patch(':articleId')
   @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary: 'Update article',
+    description: 'Updates one or more editable article fields.',
+  })
+  @ApiParam({
+    name: 'articleId',
+    description: 'Article UUID.',
+    example: '55de50b8-27e6-44d0-a3ec-a851f6cb3659',
+  })
+  @ApiBody({ type: UpdateArticleDto })
   async updateArticle(
     @CurrentUser()
     user: JwtPayload,
@@ -144,7 +218,7 @@ export class ArticlesController {
     });
 
     return {
-      message: 'Article updated successfully',
+      message:ArticleResponseMessages.UPDATED ,
       data: {
         article: result.article,
       },
@@ -153,6 +227,15 @@ export class ArticlesController {
 
   @Delete(':articleId')
   @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary: 'Delete article',
+    description: 'Deletes the specified article owned by the authenticated user.',
+  })
+  @ApiParam({
+    name: 'articleId',
+    description: 'Article UUID.',
+    example: '55de50b8-27e6-44d0-a3ec-a851f6cb3659',
+  })
   async deleteArticle(
     @CurrentUser()
     user: JwtPayload,
@@ -166,7 +249,7 @@ export class ArticlesController {
     });
 
     return {
-      message: 'Article deleted successfully',
+      message: ArticleResponseMessages.DELETED,
     };
   }
 }
