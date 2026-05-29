@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowRight, Compass } from 'lucide-react'
 import { Navbar } from '#/components/navbar'
+import { ROUTES } from '@/constants/routes'
 
 export const Route = createFileRoute('/')({ component: Landing })
 
@@ -41,7 +42,7 @@ export function Landing() {
               Insightful guides written from an expert's perspective.
             </p>
             <Link
-              to="/dashboard"
+              to={ROUTES.dashboard}
               className="inline-flex items-center gap-2 bg-white text-[#13383d] font-medium px-6 py-3 rounded-md hover:bg-slate-100 transition-colors"
             >
               Explore <ArrowRight className="w-4 h-4" />

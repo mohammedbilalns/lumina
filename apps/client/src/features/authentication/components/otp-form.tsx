@@ -4,6 +4,7 @@ import { verifySignupOtp, resendSignupOtp } from '../server/auth.functions'
 import { useNavigate } from '@tanstack/react-router'
 import { Loader2 } from 'lucide-react'
 import { authClient } from '@/utils/auth-client'
+import { ROUTES } from '@/constants/routes'
 
 interface OtpFormProps {
   email: string
@@ -51,7 +52,7 @@ export function OtpForm({ email, onSwitchToLogin, onSuccess }: OtpFormProps) {
         onSuccess()
       } else {
         setTimeout(() => {
-          navigate({ to: '/dashboard', replace: true })
+          navigate({ to: ROUTES.dashboard, replace: true })
         }, 50)
       }
     } catch (err: any) {
@@ -102,7 +103,7 @@ export function OtpForm({ email, onSwitchToLogin, onSuccess }: OtpFormProps) {
               onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
               placeholder="000000"
               maxLength={6}
-              className="w-full max-w-[200px] bg-white border border-[#EAEAEA] rounded-md py-3 px-3 text-center text-3xl tracking-[0.2em] font-mono text-[#0b2226] placeholder:text-slate-200 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
+              className="w-full max-w-50 bg-white border border-[#EAEAEA] rounded-md py-3 px-3 text-center text-3xl tracking-[0.2em] font-mono text-[#0b2226] placeholder:text-slate-200 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all"
             />
           </div>
           <p className="text-xs text-slate-500 text-center">

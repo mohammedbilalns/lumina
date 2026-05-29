@@ -12,6 +12,7 @@ import { removeArticleFromCaches } from '#/features/articles/utils/article-react
 import { callAuthorized } from '#/utils/auth-client'
 import { ArticleCard, ArticleCardSkeleton } from '#/features/articles/components/article-card'
 import type { Article } from '@lumina/shared-types'
+import { ROUTES } from '@/constants/routes'
 
 import { ownArticlesQueryOptions } from '#/features/articles/hooks/use-articles-query'
 
@@ -19,7 +20,7 @@ export const Route = createFileRoute('/my-articles')({
   validateSearch: articleRouteSearchSchema,
   beforeLoad: ({ context }) => {
     if (!context.user) {
-      throw redirect({ to: '/auth' })
+      throw redirect({ to: ROUTES.auth })
     }
   },
   loaderDeps: ({ search }) => search,
@@ -38,7 +39,7 @@ export const Route = createFileRoute('/my-articles')({
 })
 
 export function MyArticlesPage() {
-  const navigate = useNavigate({ from: '/my-articles' })
+  const navigate = useNavigate({ from: ROUTES.myArticles })
   const router = useRouter()
   const queryClient = useQueryClient()
   const searchParams = Route.useSearch()
@@ -109,7 +110,7 @@ export function MyArticlesPage() {
             </p>
           </div>
           <Link
-            to="/article/create"
+            to={ROUTES.article.create}
             className="flex shrink-0 items-center justify-center gap-2 rounded-md bg-[#f8cb5b] px-5 py-2.5 font-medium text-[#0b2226] transition-colors hover:bg-[#f2c94c]"
           >
             <PenTool className="h-4 w-4" />
@@ -126,7 +127,7 @@ export function MyArticlesPage() {
                     Start writing to publish your first article.
                   </p>
                   <Link
-                    to="/article/create"
+                    to={ROUTES.article.create}
                     className="inline-flex items-center gap-2 rounded-xl bg-[#0b2226] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#13383d]"
                   >
                     <PenTool className="h-4 w-4" />

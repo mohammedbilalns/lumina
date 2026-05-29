@@ -12,6 +12,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import type { UserProfile } from '@lumina/shared-types'
 import { getMe } from '../features/authentication/server/auth.functions'
 import { authClient } from '../utils/auth-client'
+import { ROUTES } from '@/constants/routes'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -60,7 +61,7 @@ function NotFound() {
       <h1 className="mb-4 text-6xl font-serif font-bold text-[#0b2226]">404</h1>
       <h2 className="mb-8 text-2xl font-serif text-slate-600">Page not found</h2>
       <Link
-        to="/"
+        to={ROUTES.home}
         className="rounded-xl bg-[#0b2226] px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-[#13383d]"
       >
         Go back home

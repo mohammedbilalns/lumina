@@ -3,19 +3,23 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { Settings, Sparkles } from 'lucide-react'
 import { Suspense, useEffect, useState } from 'react'
 import { Navbar } from '#/components/navbar'
+import { Skeleton } from '#/components/skeleton'
 import { PaginationControls } from '#/features/articles/components/pagination-controls'
 import { articleRouteSearchSchema } from '#/features/articles/schemas/articles.schema'
 import { CategorySelection } from '@/features/preferences/components/category-selection'
 import { checkPreferencesStatus } from '@/features/preferences/server/preferences.functions'
-import { ArticleCard } from '#/features/articles/components/article-card'
+import { ArticleCard, ArticleCardSkeleton } from '#/features/articles/components/article-card'
+import { ROUTES } from '@/constants/routes'
 
 import { preferredArticlesQueryOptions } from '#/features/articles/hooks/use-articles-query'
 
 export const Route = createFileRoute('/dashboard')({
   validateSearch: articleRouteSearchSchema,
+  pendingMs: 0,
+  pendingComponent: DashboardPending,
   beforeLoad: ({ context }) => {
     if (!context.user) {
-      throw redirect({ to: '/auth' })
+      throw redirect({ to: ROUTES.auth })
     }
   },
   loaderDeps: ({ search }) => search,
@@ -31,7 +35,7 @@ export const Route = createFileRoute('/dashboard')({
 
     const preferencesPromise = checkPreferencesStatus({
       data: { accessToken: context.accessToken || undefined },
-    }).then(res => res.data?.isConfigured || false)
+    }).then(res => Boolean(res.data.isConfigured))
       .catch(() => true)
 
     return {
@@ -42,7 +46,7 @@ export const Route = createFileRoute('/dashboard')({
 })
 
 export function DashboardPage() {
-  const navigate = useNavigate({ from: '/dashboard' })
+  const navigate = useNavigate({ from: ROUTES.dashboard })
   const searchParams = Route.useSearch()
   const { accessToken } = Route.useRouteContext()
   const { preferencesPromise } = Route.useLoaderData()
@@ -121,7 +125,7 @@ function DashboardPreferenceSection({ isPreferencesConfigured }: { isPreferences
     }
   }, [isPreferencesConfigured])
 
-  if (isPreferencesConfigured || showPreferenceModal) return null
+  if (isPreferencesConfigured) return null
 
   return (
     <div className="mb-12 flex flex-col items-center justify-between gap-6 rounded-2xl border border-[#0b2226]/20 bg-[#0b2226]/5 p-6 text-center sm:flex-row sm:text-left">
@@ -221,6 +225,28 @@ function DashboardSkeletonContent() {
       {[1, 2, 3].map((i) => (
         <ArticleCardSkeleton key={i} />
       ))}
+    </div>
+  )
+}
+
+function DashboardPending() {
+  return (
+    <div className="min-h-screen bg-[#FBFBFA] font-sans text-[#111111] selection:bg-[#f8cb5b]/30">
+      <Navbar />
+
+      <div className="container mx-auto flex justify-center px-6 py-12">
+        <main className="w-full max-w-4xl">
+          <div className="mb-10">
+            <div className="mb-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <Skeleton className="h-9 w-64" />
+              <Skeleton className="h-9 w-9 rounded-lg" />
+            </div>
+            <Skeleton className="h-5 w-full max-w-md" />
+          </div>
+
+          <DashboardSkeletonContent />
+        </main>
+      </div>
     </div>
   )
 }

@@ -31,7 +31,7 @@ export function ConfirmationDialog({
       : 'bg-[#0b2226] text-white hover:bg-[#13383d]'
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#0b2226]/40 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-120 flex items-center justify-center bg-[#0b2226]/40 p-4 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-2xl border border-[#EAEAEA] bg-white p-6 shadow-2xl">
         <h3 className="text-lg font-serif font-medium text-[#0b2226]">{title}</h3>
         <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>

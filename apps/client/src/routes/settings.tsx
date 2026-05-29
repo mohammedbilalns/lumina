@@ -11,11 +11,12 @@ import { ConfirmationDialog } from '#/features/articles/components/confirmation-
 import { useForm } from '@tanstack/react-form'
 import { z } from 'zod'
 import { updateProfileSchema, changePasswordSchema } from '#/features/profile/schemas/profile.schema'
+import { ROUTES } from '@/constants/routes'
 
 export const Route = createFileRoute('/settings')({
   beforeLoad: ({ context }) => {
     if (!context.user) {
-      throw redirect({ to: '/auth' })
+      throw redirect({ to: ROUTES.auth })
     }
   },
   component: SettingsPage,

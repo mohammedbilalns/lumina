@@ -6,6 +6,7 @@ import { Check, Loader2 } from 'lucide-react'
 import { useNavigate,useRouter } from '@tanstack/react-router'
 import { Route as RootRoute } from '@/routes/__root'
 import { callAuthorized } from '@/utils/auth-client'
+import { ROUTES } from '@/constants/routes'
 
 interface CategorySelectionProps {
   onSuccess?: () => void
@@ -30,7 +31,7 @@ export function CategorySelection({ onSuccess }: CategorySelectionProps) {
         
         setCategories(categoriesRes.data.categories)
         
-        if (preferencesRes.data?.preferences) {
+        if (preferencesRes.data.preferences) {
           const currentIds = preferencesRes.data.preferences.map((p: any) => p.categoryId || p.category?.id)
           setSelectedIds(currentIds.filter(Boolean))
         }
@@ -71,7 +72,7 @@ export function CategorySelection({ onSuccess }: CategorySelectionProps) {
         onSuccess()
       } else {
         setTimeout(() => {
-          navigate({ to: '/dashboard', replace: true })
+          navigate({ to: ROUTES.dashboard, replace: true })
         }, 50)
       }
     } catch (err) {

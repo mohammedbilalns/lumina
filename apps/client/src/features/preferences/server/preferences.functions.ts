@@ -3,7 +3,6 @@ import { preferencesService } from '../services/preferences.service'
 import { withServerErrorHandler } from '#/utils/with-server-error-handler'
 import { savePreferencesSchema, checkPreferencesStatusSchema } from '../schemas/preferences.schema'
 
-
 export const getCategories = createServerFn({ method: 'GET' })
   .handler(withServerErrorHandler(async () => {
     return await preferencesService.getCategories()

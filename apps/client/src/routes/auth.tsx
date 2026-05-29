@@ -7,11 +7,12 @@ import { OtpForm } from '@/features/authentication/components/otp-form'
 import { ForgotPasswordForm } from '@/features/authentication/components/forgot-password-form'
 import { ResetPasswordForm } from '@/features/authentication/components/reset-password-form'
 import { CategorySelection } from '@/features/preferences/components/category-selection'
+import { ROUTES } from '@/constants/routes'
 
 export const Route = createFileRoute('/auth')({
   beforeLoad: ({ context }) => {
     if (context.user) {
-      throw redirect({ to: '/dashboard' })
+      throw redirect({ to: ROUTES.dashboard })
     }
   },
   component: AuthComponent,
@@ -58,7 +59,7 @@ function AuthComponent() {
   return (
     <div className="min-h-screen bg-[#FBFBFA] font-sans selection:bg-[#f8cb5b]/30 flex flex-col items-center justify-center p-6">
       <Link
-        to="/"
+        to={ROUTES.home}
         className="absolute top-8 left-8 flex items-center gap-2 text-slate-500 hover:text-[#0b2226] transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />

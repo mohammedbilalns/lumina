@@ -8,16 +8,17 @@ import { getArticle, updateArticle } from '#/features/articles/server/articles.f
 import { upsertOwnArticleCaches } from '#/features/articles/utils/article-reaction-cache'
 import { getCategories } from '#/features/preferences/server/preferences.functions'
 import { callAuthorized } from '#/utils/auth-client'
+import { ROUTES } from '@/constants/routes'
 
 export const Route = createFileRoute('/article/$id/edit')({
   beforeLoad: ({ context }) => {
     if (!context.user) {
-      throw redirect({ to: '/auth' })
+      throw redirect({ to: ROUTES.auth })
     }
   },
   loader: async ({ params, context }) => {
     if (!context.accessToken) {
-      throw redirect({ to: '/auth' })
+      throw redirect({ to: ROUTES.auth })
     }
 
     const [articleResponse, categoriesResponse] = await Promise.all([
@@ -31,7 +32,7 @@ export const Route = createFileRoute('/article/$id/edit')({
     ])
 
     if (articleResponse.data.article.author.id !== context.user?.id) {
-      throw redirect({ to: '/my-articles' })
+      throw redirect({ to: ROUTES.myArticles })
     }
 
     return {
@@ -66,7 +67,7 @@ function EditArticleComponent() {
       await queryClient.invalidateQueries({ queryKey: ['articles', 'own'] })
       toast.success('Article updated successfully')
       await router.invalidate()
-      navigate({ to: '/article/$id', params: { id: article.id } })
+      navigate({ to: ROUTES.article.detail, params: { id: article.id } })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to update article'
       toast.error(message)

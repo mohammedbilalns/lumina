@@ -9,6 +9,7 @@ import { removeArticleFromCaches, updateArticleReactionCaches } from '../utils/a
 import { ApiError } from '@/types/response'
 import type { Article } from '@lumina/shared-types'
 import { ConfirmationDialog } from './confirmation-dialog'
+import { ROUTES } from '@/constants/routes'
 
 interface ArticleReactionActionsProps {
   article: Pick<Article, 'id' | 'reactionType'>
@@ -36,7 +37,7 @@ export function ArticleReactionActions({
   const handleMissingArticle = async () => {
     removeArticleFromCaches(queryClient, articleId, ['preferred'])
     toast.error('This article is no longer available')
-    await navigate({ to: '/dashboard', replace: true })
+    await navigate({ to: ROUTES.dashboard, replace: true })
   }
 
   const handleLikeToggle = () => {
@@ -82,7 +83,7 @@ export function ArticleReactionActions({
       removeArticleFromCaches(queryClient, articleId, ['preferred'])
       toast.success('Article blocked successfully')
 
-      await navigate({ to: '/dashboard', replace: true })
+      await navigate({ to: ROUTES.dashboard, replace: true })
     } catch (error) {
       if (error instanceof ApiError && error.statusCode === 404) {
         await handleMissingArticle()

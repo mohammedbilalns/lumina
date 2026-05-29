@@ -7,16 +7,17 @@ import { Navbar } from '#/components/navbar'
 import { ArticleReactionActions } from '#/features/articles/components/article-reaction-actions'
 import { articleDetailQueryOptions } from '#/features/articles/hooks/use-articles-query'
 import type { Article, UserProfile } from '@lumina/shared-types'
+import { ROUTES } from '@/constants/routes'
 
 export const Route = createFileRoute('/article/$id/')({
   beforeLoad: ({ context }) => {
     if (!context.user) {
-      throw redirect({ to: '/auth' })
+      throw redirect({ to: ROUTES.auth })
     }
   },
   loader: async ({ params, context }) => {
     if (!context.accessToken) {
-      throw redirect({ to: '/auth' })
+      throw redirect({ to: ROUTES.auth })
     }
 
     await context.queryClient.ensureQueryData(
@@ -68,7 +69,7 @@ function ArticleContent({ article, user }: { article: Article; user: UserProfile
       <header className="mb-12">
         <div className="mb-8">
           <Link
-            to={isAuthor ? '/my-articles' : '/dashboard'}
+            to={isAuthor ? ROUTES.myArticles : ROUTES.dashboard}
             className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-[#0b2226]"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -82,7 +83,7 @@ function ArticleContent({ article, user }: { article: Article; user: UserProfile
           </span>
           {isAuthor && (
             <Link
-              to="/article/$id/edit"
+              to={ROUTES.article.edit}
               params={{ id: article.id }}
               className="flex items-center gap-1.5 rounded-md border border-[#EAEAEA] px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
             >

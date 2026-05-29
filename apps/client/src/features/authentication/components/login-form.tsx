@@ -6,6 +6,7 @@ import { loginUser } from '../server/auth.functions'
 import { useNavigate } from '@tanstack/react-router'
 import { Loader2 } from 'lucide-react'
 import { authClient } from '@/utils/auth-client'
+import { ROUTES } from '@/constants/routes'
 
 interface LoginFormProps {
   onSwitchToSignup: () => void
@@ -35,7 +36,7 @@ export function LoginForm({ onSwitchToSignup, onForgotPassword }: LoginFormProps
         toast.success('Signed in successfully')
         
         setTimeout(() => {
-          navigate({ to: '/dashboard', replace: true })
+          navigate({ to: ROUTES.dashboard, replace: true })
         }, 50)
       } catch (err: any) {
         const message = err.message || 'Invalid credentials'

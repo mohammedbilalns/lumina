@@ -17,7 +17,7 @@ export function preferredArticlesQueryOptions(params: { page: number, limit: 10 
       })
       return response.data
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5, 
   })
 }
 
@@ -34,7 +34,7 @@ export function ownArticlesQueryOptions(params: { page: number, limit: 10 | 20 |
       })
       return response.data
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5, 
   })
 }
 

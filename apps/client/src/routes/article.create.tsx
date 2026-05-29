@@ -8,11 +8,12 @@ import { createArticle } from '#/features/articles/server/articles.functions'
 import { upsertOwnArticleCaches } from '#/features/articles/utils/article-reaction-cache'
 import { getCategories } from '#/features/preferences/server/preferences.functions'
 import { callAuthorized } from '#/utils/auth-client'
+import { ROUTES } from '@/constants/routes'
 
 export const Route = createFileRoute('/article/create')({
   beforeLoad: ({ context }) => {
     if (!context.user) {
-      throw redirect({ to: '/auth' })
+      throw redirect({ to: ROUTES.auth })
     }
   },
   loader: async () => {
@@ -43,7 +44,7 @@ export function CreateArticleComponent() {
       await queryClient.invalidateQueries({ queryKey: ['articles', 'own'] })
       toast.success('Article created successfully')
       await router.invalidate()
-      navigate({ to: '/article/$id', params: { id: response.data.article.id } })
+      navigate({ to: ROUTES.article.detail, params: { id: response.data.article.id } })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to create article'
       toast.error(message)

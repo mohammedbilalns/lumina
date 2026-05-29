@@ -22,23 +22,23 @@ export const articleRouteSearchSchema = z.object({
 })
 
 export const articleIdSchema = z.object({
-  articleId: z.string().uuid(),
+  articleId: z.uuid(),
   accessToken: z.string().optional(),
 })
 
 export const createArticleSchema = z.object({
   title: z.string().trim().min(5).max(255),
   content: z.string().trim().min(20),
-  featuredImage: z.string().trim().url().or(z.literal('')).optional(),
-  categoryId: z.string().uuid(),
+  featuredImage: z.url().or(z.literal('')).optional(),
+  categoryId: z.uuid(),
   accessToken: z.string().optional(),
 })
 
 export const updateArticleSchema = createArticleSchema.extend({
-  articleId: z.string().uuid(),
+  articleId: z.uuid(),
 })
 
 export const deleteArticleSchema = z.object({
-  articleId: z.string().uuid(),
+  articleId: z.uuid(),
   accessToken: z.string().optional(),
 })

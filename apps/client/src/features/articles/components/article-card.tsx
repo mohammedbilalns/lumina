@@ -3,6 +3,7 @@ import { BookOpen, Edit2, Trash2, ThumbsUp } from 'lucide-react'
 import type { Article } from '@lumina/shared-types'
 import { Skeleton } from '#/components/skeleton'
 import { ArticleReactionActions } from './article-reaction-actions'
+import { ROUTES } from '@/constants/routes'
 
 interface ArticleCardProps {
   article: Article
@@ -25,7 +26,7 @@ export function ArticleCard({
         <div className="mb-2 flex items-center gap-3">
           <h2 className="line-clamp-1 text-xl font-serif font-medium text-[#0b2226]">
             <Link
-              to="/article/$id"
+              to={ROUTES.article.detail}
               params={{ id: article.id }}
               className="transition-colors hover:text-[#13383d]"
             >
@@ -64,7 +65,7 @@ export function ArticleCard({
 
         <div className="relative z-10 flex flex-wrap items-center gap-2">
           <Link
-            to="/article/$id"
+            to={ROUTES.article.detail}
             params={{ id: article.id }}
             className="flex items-center gap-2 rounded-md border border-[#EAEAEA] bg-white px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
           >
@@ -75,7 +76,7 @@ export function ArticleCard({
           {isAuthor && (
             <>
               <Link
-                to="/article/$id/edit"
+                to={ROUTES.article.edit}
                 params={{ id: article.id }}
                 className="flex items-center gap-2 rounded-md border border-[#EAEAEA] bg-white px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
               >
