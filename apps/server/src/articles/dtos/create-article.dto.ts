@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsNotEmpty,
   IsOptional,
@@ -7,6 +8,9 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+
+const trimString = ({ value }: { value: unknown }) =>
+  typeof value === 'string' ? value.trim() : value;
 
 export class CreateArticleDto {
   @ApiProperty({
@@ -24,6 +28,7 @@ export class CreateArticleDto {
     minLength: 5,
     maxLength: 255,
   })
+  @Transform(trimString)
   @IsString()
   @IsNotEmpty()
   @MinLength(5)
@@ -32,12 +37,15 @@ export class CreateArticleDto {
 
   @ApiProperty({
     description: 'Full article content.',
-    example: 'This article explains how to structure typography, spacing, and content hierarchy...',
+    example:
+      'This article explains how to structure typography, spacing, and content hierarchy...',
     minLength: 20,
   })
+  @Transform(trimString)
   @IsString()
   @IsNotEmpty()
   @MinLength(20)
+  @MaxLength(50000)
   content: string;
 
   @ApiPropertyOptional({

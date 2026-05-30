@@ -1,4 +1,5 @@
-import { type ChangeEvent, type FormEvent, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { ChangeEvent, FormEvent } from 'react'
 import {
   Bold,
   Heading1,
@@ -24,6 +25,8 @@ import { createPresignedUploadUrl } from '@/features/uploads/server/uploads.func
 import { uploadsService } from '@/features/uploads/services/uploads.service'
 import { callAuthorized } from '@/utils/auth-client'
 import { toast } from 'sonner'
+import type { ZodIssue } from 'zod'
+import { createArticleSchema } from '../schemas/articles.schema'
 
 interface ArticleEditorProps {
   mode: 'create' | 'edit'
@@ -63,6 +66,21 @@ interface DragState {
   initialRect: CropRect
 }
 
+const articleEditorSchema = createArticleSchema.omit({ accessToken: true })
+
+type ArticleEditorErrors = Partial<Record<'title' | 'content' | 'categoryId', string>>
+
+const getFieldErrors = (issues: ZodIssue[]) =>
+  issues.reduce<ArticleEditorErrors>((accumulator, issue) => {
+    const fieldName = issue.path[0]
+
+    if (fieldName === 'title' || fieldName === 'content' || fieldName === 'categoryId') {
+      accumulator[fieldName] = issue.message
+    }
+
+    return accumulator
+  }, {})
+
 export function ArticleEditor({
   mode,
   initialData,
@@ -76,7 +94,7 @@ export function ArticleEditor({
   const [title, setTitle] = useState(initialData?.title ?? '')
   const [featuredImage, setFeaturedImage] = useState(initialData?.featuredImage ?? '')
   const [categoryId, setCategoryId] = useState(initialData?.categoryId ?? '')
-  const [content, setContent] = useState(initialData?.content ?? '<p>Start writing your story here...</p>')
+  const [content, setContent] = useState(initialData?.content ?? '')
   const [isUploadingImage, setIsUploadingImage] = useState(false)
   const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null)
   const [pendingImageSrc, setPendingImageSrc] = useState<string | null>(null)
@@ -92,12 +110,14 @@ export function ArticleEditor({
     height: 70 / CROP_ASPECT_RATIO, // enforced 16:9
   })
   const [dragState, setDragState] = useState<DragState | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<ArticleEditorErrors>({})
 
   useEffect(() => {
     setTitle(initialData?.title ?? '')
     setFeaturedImage(initialData?.featuredImage ?? '')
     setCategoryId(initialData?.categoryId ?? '')
-    setContent(initialData?.content ?? '<p>Start writing your story here...</p>')
+    setContent(initialData?.content ?? '')
+    setFieldErrors({})
   }, [initialData])
 
   const editor = useEditor({
@@ -106,6 +126,9 @@ export function ArticleEditor({
     immediatelyRender: false,
     onUpdate: ({ editor: currentEditor }) => {
       setContent(currentEditor.getHTML())
+      setFieldErrors((current) =>
+        current.content ? { ...current, content: undefined } : current,
+      )
     },
     editorProps: {
       attributes: {
@@ -124,12 +147,24 @@ export function ArticleEditor({
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    await onSubmit({
+    const payload = {
       title,
       content: editor?.getHTML() ?? content,
       featuredImage,
       categoryId,
-    })
+    }
+
+    const validationResult = articleEditorSchema.safeParse(payload)
+
+    if (!validationResult.success) {
+      const nextFieldErrors = getFieldErrors(validationResult.error.issues)
+      setFieldErrors(nextFieldErrors)
+      toast.error(validationResult.error.issues[0]?.message ?? 'Please fix the highlighted fields')
+      return
+    }
+
+    setFieldErrors({})
+    await onSubmit(validationResult.data)
   }
 
   const resetCropState = () => {
@@ -434,7 +469,7 @@ export function ArticleEditor({
     'inline-flex h-10 w-10 items-center justify-center rounded-lg border border-[#EAEAEA] text-slate-600 transition-colors hover:bg-slate-50 data-[active=true]:border-[#0b2226] data-[active=true]:bg-[#0b2226] data-[active=true]:text-white'
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
+    <form className="space-y-6" onSubmit={handleSubmit} noValidate>
       {/* Title */}
       <div className="space-y-2">
         <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
@@ -443,13 +478,22 @@ export function ArticleEditor({
         <input
           type="text"
           value={title}
-          onChange={(event) => setTitle(event.target.value)}
+          onChange={(event) => {
+            setTitle(event.target.value)
+            if (fieldErrors.title) {
+              setFieldErrors((current) => ({ ...current, title: undefined }))
+            }
+          }}
           placeholder="Enter a captivating title..."
-          minLength={5}
-          maxLength={255}
-          required
-          className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 px-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all font-serif text-lg"
+          className={`w-full bg-white border rounded-md py-2.5 px-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 transition-all font-serif text-lg ${
+            fieldErrors.title
+              ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+              : 'border-[#EAEAEA] focus:border-[#0b2226] focus:ring-[#0b2226]'
+          }`}
         />
+        {fieldErrors.title ? (
+          <p className="text-xs text-red-500">{fieldErrors.title}</p>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -460,9 +504,17 @@ export function ArticleEditor({
           </label>
           <select
             value={categoryId}
-            onChange={(event) => setCategoryId(event.target.value)}
-            required
-            className="w-full bg-white border border-[#EAEAEA] rounded-md py-2.5 px-4 text-slate-900 focus:outline-none focus:border-[#0b2226] focus:ring-1 focus:ring-[#0b2226] transition-all appearance-none cursor-pointer"
+            onChange={(event) => {
+              setCategoryId(event.target.value)
+              if (fieldErrors.categoryId) {
+                setFieldErrors((current) => ({ ...current, categoryId: undefined }))
+              }
+            }}
+            className={`w-full bg-white border rounded-md py-2.5 px-4 text-slate-900 focus:outline-none focus:ring-1 transition-all appearance-none cursor-pointer ${
+              fieldErrors.categoryId
+                ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                : 'border-[#EAEAEA] focus:border-[#0b2226] focus:ring-[#0b2226]'
+            }`}
           >
             <option value="" disabled>
               Select a category
@@ -473,6 +525,9 @@ export function ArticleEditor({
               </option>
             ))}
           </select>
+          {fieldErrors.categoryId ? (
+            <p className="text-xs text-red-500">{fieldErrors.categoryId}</p>
+          ) : null}
         </div>
       </div>
 
@@ -615,7 +670,17 @@ export function ArticleEditor({
             <Redo2 className="h-4 w-4" />
           </button>
         </div>
-        <EditorContent editor={editor} />
+        <div className="relative">
+          <EditorContent editor={editor} />
+          {(editor?.isEmpty ?? content.trim().length === 0) ? (
+            <div className="pointer-events-none absolute left-4 top-4 text-slate-400">
+              Start writing your story here...
+            </div>
+          ) : null}
+        </div>
+        {fieldErrors.content ? (
+          <p className="text-xs text-red-500">{fieldErrors.content}</p>
+        ) : null}
       </div>
 
       {/* Submit */}

@@ -8,6 +8,10 @@ import {
   MinLength,
 } from 'class-validator';
 import { MinAge } from 'src/common/decorators/min-age.decorator';
+import { Transform } from 'class-transformer';
+
+const trimString = ({ value }: { value: unknown }) =>
+  typeof value === 'string' ? value.trim() : value;
 
 export class UpdateProfileDto {
   @ApiProperty({
@@ -25,6 +29,7 @@ export class UpdateProfileDto {
     minLength: 2,
     maxLength: 30,
   })
+  @Transform(trimString)
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
@@ -40,6 +45,7 @@ export class UpdateProfileDto {
     minLength: 2,
     maxLength: 30,
   })
+  @Transform(trimString)
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
@@ -50,7 +56,8 @@ export class UpdateProfileDto {
   lastName: string;
 
   @ApiProperty({
-    description: 'Date of birth in ISO 8601 format. User must remain at least 15 years old.',
+    description:
+      'Date of birth in ISO 8601 format. User must remain at least 15 years old.',
     example: '2000-05-15',
     format: 'date',
   })

@@ -1,8 +1,18 @@
 import { z } from 'zod'
 
 export const updateProfileSchema = z.object({
-  firstName: z.string().min(2, 'First name is too short'),
-  lastName: z.string().min(2, 'Last name is too short'),
+  firstName: z
+    .string()
+    .trim()
+    .min(2, 'First name must be at least 2 characters')
+    .max(30, 'First name must be at most 30 characters')
+    .regex(/^[a-zA-Z\s]+$/, 'First name can only contain letters'),
+  lastName: z
+    .string()
+    .trim()
+    .min(2, 'Last name must be at least 2 characters')
+    .max(30, 'Last name must be at most 30 characters')
+    .regex(/^[a-zA-Z\s]+$/, 'Last name can only contain letters'),
   dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format (YYYY-MM-DD)'),
   accessToken: z.string().optional(),
 }).refine(

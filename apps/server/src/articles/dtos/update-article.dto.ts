@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsNotEmpty,
   IsOptional,
@@ -7,6 +8,9 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+
+const trimString = ({ value }: { value: unknown }) =>
+  typeof value === 'string' ? value.trim() : value;
 
 export class UpdateArticleDto {
   @ApiProperty({
@@ -19,7 +23,8 @@ export class UpdateArticleDto {
   userId: string;
 
   @ApiProperty({
-    description: 'Article UUID. Passed as a route parameter in public requests.',
+    description:
+      'Article UUID. Passed as a route parameter in public requests.',
     example: '55de50b8-27e6-44d0-a3ec-a851f6cb3659',
     format: 'uuid',
     readOnly: true,
@@ -33,6 +38,7 @@ export class UpdateArticleDto {
     minLength: 5,
     maxLength: 255,
   })
+  @Transform(trimString)
   @IsString()
   @IsOptional()
   @MinLength(5)
@@ -41,12 +47,15 @@ export class UpdateArticleDto {
 
   @ApiPropertyOptional({
     description: 'Updated article content.',
-    example: 'An updated article body with clearer sections, examples, and structure...',
+    example:
+      'An updated article body with clearer sections, examples, and structure...',
     minLength: 20,
   })
+  @Transform(trimString)
   @IsString()
   @IsOptional()
   @MinLength(20)
+  @MaxLength(50000)
   content?: string;
 
   @ApiPropertyOptional({

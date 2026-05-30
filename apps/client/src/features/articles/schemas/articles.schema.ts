@@ -27,8 +27,16 @@ export const articleIdSchema = z.object({
 })
 
 export const createArticleSchema = z.object({
-  title: z.string().trim().min(5).max(255),
-  content: z.string().trim().min(20),
+  title: z
+    .string()
+    .trim()
+    .min(5, 'Article title must be at least 5 characters')
+    .max(255, 'Article title must be at most 255 characters'),
+  content: z
+    .string()
+    .trim()
+    .min(20, 'Article content must be at least 20 characters')
+    .max(50000, 'Article content must be at most 50000 characters'),
   featuredImage: z.url().or(z.literal('')).optional(),
   categoryId: z.uuid(),
   accessToken: z.string().optional(),
