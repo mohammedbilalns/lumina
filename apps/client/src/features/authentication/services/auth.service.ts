@@ -1,6 +1,7 @@
 import { env } from '@/config/env'
 import type { AuthResponse } from '@lumina/shared-types'
-import { type SuccessResponse, type ErrorResponse, ApiError } from '@/types/response'
+import { ApiError } from '@/types/response'
+import type { ErrorResponse, SuccessResponse } from '@/types/response'
 
 export const authService = {
    async handleResponse<T>(response: Response): Promise<SuccessResponse<T>> {

@@ -1,14 +1,6 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
-import type {
-  PreferencesStatus,
-  UserPreference,
-} from '@lumina/shared-types';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import type { PreferencesStatus, UserPreference } from '@lumina/shared-types';
 import type { SuccessResponse } from 'src/common/types/api-response.type';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { type JwtPayload } from 'src/auth/types/jwt-payload.type';
@@ -57,7 +49,9 @@ export class PreferencesController {
     @CurrentUser()
     user: JwtPayload,
   ): Promise<SuccessResponse<PreferencesStatus>> {
-    const isConfigured = await this.preferencesService.checkPreferencesStatus(user.sub);
+    const isConfigured = await this.preferencesService.checkPreferencesStatus(
+      user.sub,
+    );
     return {
       message: PreferencesResponseMessages.STATUS_FETCHED,
       data: {

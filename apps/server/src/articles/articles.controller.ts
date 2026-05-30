@@ -19,10 +19,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import type {
-  Article,
-  ListArticlesData,
-} from '@lumina/shared-types';
+import type { Article, ListArticlesData } from '@lumina/shared-types';
 import type { SuccessResponse } from 'src/common/types/api-response.type';
 import { ArticlesService } from './articles.service';
 import { JwtGuard } from 'src/security/guards/jwt/jwt.guard';
@@ -69,7 +66,8 @@ export class ArticlesController {
   @UseGuards(JwtGuard)
   @ApiOperation({
     summary: 'List my articles',
-    description: 'Returns paginated articles created by the authenticated user.',
+    description:
+      'Returns paginated articles created by the authenticated user.',
   })
   @ApiQuery({
     name: 'page',
@@ -229,7 +227,8 @@ export class ArticlesController {
   @UseGuards(JwtGuard)
   @ApiOperation({
     summary: 'Delete article',
-    description: 'Deletes the specified article owned by the authenticated user.',
+    description:
+      'Deletes the specified article owned by the authenticated user.',
   })
   @ApiParam({
     name: 'articleId',

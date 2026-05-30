@@ -45,9 +45,9 @@ export class ArticlesService {
   }
 
   async getArticle(dto: GetArticleDto) {
-    const [_, article] = await Promise.all([
+    const [, article] = await Promise.all([
       this.validateActiveUser(dto.userId),
-      this.articlesRepository.findVisibleById(dto.articleId, dto.userId)
+      this.articlesRepository.findVisibleById(dto.articleId, dto.userId),
     ]);
 
     if (!article) {
@@ -126,9 +126,9 @@ export class ArticlesService {
   async listOwnArticles(dto: ListOwnArticlesDto) {
     this.validatePagination(dto.page, dto.limit);
 
-    const [_, { items, total }] = await Promise.all([
+    const [, { items, total }] = await Promise.all([
       this.validateActiveUser(dto.userId),
-      this.articlesRepository.listOwnArticles(dto.userId, dto.page, dto.limit)
+      this.articlesRepository.listOwnArticles(dto.userId, dto.page, dto.limit),
     ]);
 
     const reactionTypes = await this.articlesRepository.findReactionTypes(
@@ -154,14 +154,14 @@ export class ArticlesService {
   async listPreferredArticles(dto: ListPreferredArticlesDto) {
     this.validatePagination(dto.page, dto.limit);
 
-    const [_, { items, total }] = await Promise.all([
+    const [, { items, total }] = await Promise.all([
       this.validateActiveUser(dto.userId),
       this.articlesRepository.listByUserPreferences(
         dto.userId,
         dto.page,
         dto.limit,
         dto.search,
-      )
+      ),
     ]);
 
     const reactionTypes = await this.articlesRepository.findReactionTypes(

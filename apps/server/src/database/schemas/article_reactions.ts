@@ -11,12 +11,19 @@ export const reactionTypeEnum = pgEnum('reaction_type', [
   'BLOCKED',
 ]);
 
-export const articleReactions = pgTable('article_reactions', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id').references(() => users.id),
-  articleId: uuid('article_id').references(() => articles.id),
-  reactionType: reactionTypeEnum('reaction_type').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-}, (table) => ({
-  userIdReactionIdx: index('article_reactions_user_id_reaction_idx').on(table.userId, table.reactionType),
-}));
+export const articleReactions = pgTable(
+  'article_reactions',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id').references(() => users.id),
+    articleId: uuid('article_id').references(() => articles.id),
+    reactionType: reactionTypeEnum('reaction_type').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    userIdReactionIdx: index('article_reactions_user_id_reaction_idx').on(
+      table.userId,
+      table.reactionType,
+    ),
+  }),
+);

@@ -1,7 +1,5 @@
 import { queryOptions, useQuery } from '@tanstack/react-query'
-import { getPreferredArticles, getOwnArticles } from '../server/articles.functions'
-import type { Article } from '@lumina/shared-types'
-import { getArticle } from '../server/articles.functions'
+import { getArticle, getOwnArticles, getPreferredArticles } from '../server/articles.functions'
 
 export function preferredArticlesQueryOptions(params: { page: number, limit: 10 | 20 | 30, search?: string, accessToken: string | undefined }) {
   return queryOptions({
@@ -17,7 +15,7 @@ export function preferredArticlesQueryOptions(params: { page: number, limit: 10 
       })
       return response.data
     },
-    staleTime: 1000 * 60 * 5, 
+    staleTime: 1000 * 60 * 5,
   })
 }
 
@@ -34,7 +32,7 @@ export function ownArticlesQueryOptions(params: { page: number, limit: 10 | 20 |
       })
       return response.data
     },
-    staleTime: 1000 * 60 * 5, 
+    staleTime: 1000 * 60 * 5,
   })
 }
 
@@ -48,7 +46,7 @@ export function articleDetailQueryOptions(params: { articleId: string, accessTok
           accessToken: params.accessToken,
         },
       })
-      return response.data as { article: Article }
+      return response.data
     },
     staleTime: 1000 * 60 * 5,
   })

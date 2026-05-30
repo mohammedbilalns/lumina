@@ -35,15 +35,13 @@ export class ReactionsRepository {
           .where(eq(articleReactions.id, existingReaction.id));
       }
 
-      let reaction:
-        | {
-            id: string;
-            createdAt: Date;
-            userId: string | null;
-            articleId: string | null;
-            reactionType: 'LIKE' | 'DISLIKE' | 'BLOCKED';
-          }
-        | null = null;
+      let reaction: {
+        id: string;
+        createdAt: Date;
+        userId: string | null;
+        articleId: string | null;
+        reactionType: 'LIKE' | 'DISLIKE' | 'BLOCKED';
+      } | null = null;
 
       if (nextReactionType) {
         [reaction] = await tx

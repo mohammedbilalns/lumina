@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import type { Category } from '@lumina/shared-types'
 import { getCategories, saveUserPreferences, getUserPreferences } from '../server/preferences.functions'
 import { toast } from 'sonner'
 import { Check, Loader2 } from 'lucide-react'
-import { useNavigate,useRouter } from '@tanstack/react-router'
+import { useNavigate, useRouter } from '@tanstack/react-router'
 import { Route as RootRoute } from '@/routes/__root'
 import { callAuthorized } from '@/utils/auth-client'
 import { ROUTES } from '@/constants/routes'
@@ -31,10 +31,8 @@ export function CategorySelection({ onSuccess }: CategorySelectionProps) {
         
         setCategories(categoriesRes.data.categories)
         
-        if (preferencesRes.data.preferences) {
-          const currentIds = preferencesRes.data.preferences.map((p: any) => p.categoryId || p.category?.id)
-          setSelectedIds(currentIds.filter(Boolean))
-        }
+        const currentIds = preferencesRes.data.preferences.map((p: any) => p.categoryId || p.category?.id)
+        setSelectedIds(currentIds.filter(Boolean))
       } catch (err) {
         toast.error('Failed to load interests')
       } finally {
@@ -108,6 +106,7 @@ export function CategorySelection({ onSuccess }: CategorySelectionProps) {
           return (
             <button
               key={category.id}
+              type="button"
               onClick={() => toggleCategory(category.id)}
               className={`
 px-6 py-3 rounded-full border text-sm font-medium transition-all duration-300

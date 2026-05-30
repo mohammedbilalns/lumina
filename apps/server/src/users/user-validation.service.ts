@@ -10,13 +10,16 @@ import { UsersRepository } from 'src/users/users.repository';
 export class UserValidationService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  private validationCache = new Map<string, { user: User, timestamp: number }>();
+  private validationCache = new Map<
+    string,
+    { user: User; timestamp: number }
+  >();
   private readonly CACHE_TTL = 30 * 1000; // 30 seconds
 
   async validateActiveUserId(userId: string): Promise<User> {
     // Check cache
     const cached = this.validationCache.get(userId);
-    if (cached && (Date.now() - cached.timestamp < this.CACHE_TTL)) {
+    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
       this.checkUserStatus(cached.user);
       return cached.user;
     }

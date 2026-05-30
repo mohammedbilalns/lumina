@@ -13,7 +13,8 @@ export class CategoriesController {
   @Get()
   @ApiOperation({
     summary: 'List categories',
-    description: 'Returns all available article categories. This endpoint does not require request input.',
+    description:
+      'Returns all available article categories. This endpoint does not require request input.',
   })
   async getCategories(): Promise<SuccessResponse<{ categories: Category[] }>> {
     const result = await this.CategoriesService.getCategories();

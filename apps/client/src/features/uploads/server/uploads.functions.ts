@@ -2,7 +2,8 @@ import { createServerFn } from '@tanstack/react-start'
 import { withServerErrorHandler } from '#/utils/with-server-error-handler'
 import { env } from '@/config/env'
 import { fetchWithAuth } from '@/features/authentication/server/api-client.server'
-import { ApiError, type ErrorResponse, type SuccessResponse } from '@/types/response'
+import { ApiError } from '@/types/response'
+import type { ErrorResponse, SuccessResponse } from '@/types/response'
 import { createPresignedUploadUrlSchema } from '../schemas/uploads.schema'
 
 interface PresignedUploadData {

@@ -1,5 +1,6 @@
 import { env } from '@/config/env'
-import { type SuccessResponse, type ErrorResponse, ApiError } from '@/types/response'
+import { ApiError } from '@/types/response'
+import type { ErrorResponse, SuccessResponse } from '@/types/response'
 import { fetchWithAuth } from '@/features/authentication/server/api-client.server'
 import type { UserProfile } from '@lumina/shared-types'
 import type { UpdateProfileInput, ChangePasswordInput } from '../schemas/profile.schema'

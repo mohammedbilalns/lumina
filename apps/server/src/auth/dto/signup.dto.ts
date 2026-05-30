@@ -60,7 +60,8 @@ export class SignupDto {
   phone: string;
 
   @ApiProperty({
-    description: 'Date of birth in ISO 8601 format. User must be at least 15 years old.',
+    description:
+      'Date of birth in ISO 8601 format. User must be at least 15 years old.',
     example: '2000-05-15',
     format: 'date',
   })
@@ -70,7 +71,8 @@ export class SignupDto {
   dateOfBirth: string;
 
   @ApiProperty({
-    description: 'Password with uppercase, lowercase, number, and special character.',
+    description:
+      'Password with uppercase, lowercase, number, and special character.',
     example: 'Password@123',
     minLength: 8,
     maxLength: 32,

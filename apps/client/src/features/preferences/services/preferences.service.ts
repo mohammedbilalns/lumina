@@ -1,11 +1,13 @@
 import { env } from '@/config/env'
+import { ApiError } from '@/types/response'
+import type { ErrorResponse, SuccessResponse } from '@/types/response'
+import { fetchWithAuth } from '@/features/authentication/server/api-client.server'
 import type {
   Category,
   PreferencesStatus,
 } from '@lumina/shared-types'
+
 export type { Category, PreferencesStatus } from '@lumina/shared-types'
-import { type SuccessResponse, type ErrorResponse, ApiError } from '@/types/response'
-import { fetchWithAuth } from '@/features/authentication/server/api-client.server'
 
 export const preferencesService = {
   async getCategories(): Promise<SuccessResponse<{ categories: Category[] }>> {

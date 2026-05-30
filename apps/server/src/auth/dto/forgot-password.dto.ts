@@ -3,7 +3,8 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class ForgotPasswordDto {
   @ApiProperty({
-    description: 'Email address of the account requesting a password reset OTP.',
+    description:
+      'Email address of the account requesting a password reset OTP.',
     example: 'jane@example.com',
   })
   @IsEmail()

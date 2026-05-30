@@ -136,7 +136,7 @@ function ArticleContent({ article, user }: { article: Article; user: UserProfile
             alt={article.title}
             className="aspect-video h-auto w-full object-cover"
             onError={(e) => {
-              ;(e.currentTarget as HTMLImageElement).style.display = 'none'
+              e.currentTarget.style.display = 'none'
               const parent = e.currentTarget.parentElement
               if (parent) parent.style.display = 'none'
             }}

@@ -232,7 +232,9 @@ export class ArticlesRepository {
 
     const whereClause = and(...conditions);
 
-    console.log(`[ArticlesRepository] Queries built in ${Date.now() - start}ms`);
+    console.log(
+      `[ArticlesRepository] Queries built in ${Date.now() - start}ms`,
+    );
     const queryStart = Date.now();
 
     const [items, totalResult] = await Promise.all([
@@ -261,7 +263,9 @@ export class ArticlesRepository {
       this.db.select({ total: count() }).from(articles).where(whereClause),
     ]);
 
-    console.log(`[ArticlesRepository] Main query execution took ${Date.now() - queryStart}ms`);
+    console.log(
+      `[ArticlesRepository] Main query execution took ${Date.now() - queryStart}ms`,
+    );
 
     return {
       items,
@@ -300,10 +304,7 @@ export class ArticlesRepository {
     });
 
     return new Map(
-      reactions.map((reaction) => [
-        reaction.articleId,
-        reaction.reactionType,
-      ]),
+      reactions.map((reaction) => [reaction.articleId, reaction.reactionType]),
     );
   }
 

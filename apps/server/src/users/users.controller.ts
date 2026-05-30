@@ -1,10 +1,5 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { UserProfile } from '@lumina/shared-types';
 import type { SuccessResponse } from 'src/common/types/api-response.type';
 import { UsersService } from './users.service';

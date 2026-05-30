@@ -30,7 +30,8 @@ export class ResetPasswordDto {
   otp: string;
 
   @ApiProperty({
-    description: 'New password with uppercase, lowercase, number, and special character.',
+    description:
+      'New password with uppercase, lowercase, number, and special character.',
     example: 'Password@123',
     minLength: 8,
     maxLength: 32,

@@ -7,7 +7,7 @@ export class TokenService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   async generateTokens(userId: string) {
     const [accessToken, refreshToken] = await Promise.all([

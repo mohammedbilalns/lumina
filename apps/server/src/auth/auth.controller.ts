@@ -13,10 +13,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import type {
-  AuthResponse,
-  OtpResponse,
-} from '@lumina/shared-types';
+import type { AuthResponse, OtpResponse } from '@lumina/shared-types';
 import type { SuccessResponse } from 'src/common/types/api-response.type';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
@@ -36,19 +33,16 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
   @ApiOperation({
     summary: 'Start signup',
-    description: 'Creates a pending signup and sends a 6-digit OTP to the provided email address.',
+    description:
+      'Creates a pending signup and sends a 6-digit OTP to the provided email address.',
   })
   @ApiBody({ type: SignupDto })
-  async signup(
-    @Body() data: SignupDto,
-  ): Promise<SuccessResponse<OtpResponse>> {
+  async signup(@Body() data: SignupDto): Promise<SuccessResponse<OtpResponse>> {
     const result = await this.authService.signup(data);
 
     return {
@@ -60,7 +54,8 @@ export class AuthController {
   @Post('signup/verify-otp')
   @ApiOperation({
     summary: 'Verify signup OTP',
-    description: 'Validates the email OTP and returns access and refresh tokens for the new account.',
+    description:
+      'Validates the email OTP and returns access and refresh tokens for the new account.',
   })
   @ApiBody({ type: VerifySignupOtpDto })
   async verifySignupOtp(
@@ -81,7 +76,8 @@ export class AuthController {
   @Post('signup/resend-otp')
   @ApiOperation({
     summary: 'Resend signup OTP',
-    description: 'Sends a fresh signup OTP to the email address used during registration.',
+    description:
+      'Sends a fresh signup OTP to the email address used during registration.',
   })
   @ApiBody({ type: ResendSignupOtpDto })
   async resendSignupOtp(
@@ -115,7 +111,8 @@ export class AuthController {
   @Post('forgot-password/resend-otp')
   @ApiOperation({
     summary: 'Resend password reset OTP',
-    description: 'Sends a new password reset OTP to the provided email address.',
+    description:
+      'Sends a new password reset OTP to the provided email address.',
   })
   @ApiBody({ type: ResendForgotPasswordOtpDto })
   async resendForgotPasswordOtp(
@@ -132,7 +129,8 @@ export class AuthController {
   @Post('reset-password')
   @ApiOperation({
     summary: 'Reset password',
-    description: 'Resets the account password using the email address, OTP, and a new password.',
+    description:
+      'Resets the account password using the email address, OTP, and a new password.',
   })
   @ApiBody({ type: ResetPasswordDto })
   async resetPassword(
@@ -151,9 +149,7 @@ export class AuthController {
     description: 'Authenticates a user with email or phone plus password.',
   })
   @ApiBody({ type: LoginDto })
-  async login(
-    @Body() data: LoginDto,
-  ): Promise<SuccessResponse<AuthResponse>> {
+  async login(@Body() data: LoginDto): Promise<SuccessResponse<AuthResponse>> {
     const result = await this.authService.login(data);
 
     return {

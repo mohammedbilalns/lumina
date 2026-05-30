@@ -1,12 +1,12 @@
-import { getRequest, getCookie, setCookie, deleteCookie } from "@tanstack/react-start/server"
-import { env } from "#/config/env"
-import { authService } from "../services/auth.service"
+import { deleteCookie, getCookie, getRequest, setCookie } from '@tanstack/react-start/server'
+import { env } from '#/config/env'
+import { authService } from '../services/auth.service'
 
 const AUTH_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: env.NODE_ENV === "production",
-  sameSite: "lax" as const,
-  path: "/",
+  secure: env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+  path: '/',
 }
 
 export async function fetchWithAuth(
@@ -16,11 +16,11 @@ export async function fetchWithAuth(
 ): Promise<Response> {
   const start = Date.now()
   let currentToken = accessToken
-  
+
   if (!currentToken) {
     const request = getRequest()
-    const authHeader = request?.headers.get('Authorization')
-    if (authHeader?.startsWith('Bearer ')) {
+    const authHeader = request.headers.get('Authorization')
+    if (authHeader.startsWith('Bearer ')) {
       currentToken = authHeader.substring(7)
     }
   }
@@ -37,7 +37,7 @@ export async function fetchWithAuth(
 
   if (response.status === 401 || !currentToken) {
     const refreshToken = getCookie('refreshToken')
-    
+
     if (refreshToken) {
       try {
         const refreshResponse = await authService.refreshToken(refreshToken)
@@ -45,7 +45,7 @@ export async function fetchWithAuth(
 
         setCookie('refreshToken', newRefreshToken, {
           ...AUTH_COOKIE_OPTIONS,
-          maxAge: 60 * 60 * 24 * 7
+          maxAge: 60 * 60 * 24 * 7,
         })
 
         response = await fetch(url, applyToken(options, newAccessToken))

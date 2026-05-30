@@ -8,18 +8,29 @@ import {
 
 @ValidatorConstraint({ name: 'minAge', async: false })
 export class MinAgeConstraint implements ValidatorConstraintInterface {
-  validate(value: any, args: ValidationArguments) {
+  validate(value: unknown, args: ValidationArguments) {
     if (!value) return false;
-    const minAge = args.constraints[0];
+    const minAge = args.constraints[0] as number;
+    if (
+      typeof value !== 'string' &&
+      typeof value !== 'number' &&
+      !(value instanceof Date)
+    ) {
+      return false;
+    }
+
     const birthDate = new Date(value);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
       age--;
     }
-    
+
     return age >= minAge;
   }
 
@@ -29,9 +40,15 @@ export class MinAgeConstraint implements ValidatorConstraintInterface {
 }
 
 export function MinAge(age: number, validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
+    const target = (
+      object as {
+        constructor: new (...args: never[]) => object;
+      }
+    ).constructor;
+
     registerDecorator({
-      target: object.constructor,
+      target,
       propertyName: propertyName,
       options: validationOptions,
       constraints: [age],

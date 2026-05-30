@@ -27,9 +27,9 @@ export class PreferencesService {
   }
 
   async checkPreferencesStatus(userId: string): Promise<boolean> {
-    const [_, preferences] = await Promise.all([
+    const [, preferences] = await Promise.all([
       this.userValidationService.validateActiveUserId(userId),
-      this.preferencesRepository.fetchUserPreferences(userId)
+      this.preferencesRepository.fetchUserPreferences(userId),
     ]);
     return !!preferences && preferences.length > 0;
   }

@@ -27,9 +27,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     }
 
     const { data } = await getMe()
-    const accessToken = data?.accessToken || null
+    const { user, accessToken } = data
     const session = {
-      user: data?.user || null,
+      user,
       accessToken,
     }
 

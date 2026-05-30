@@ -9,7 +9,7 @@ export class OtpMailService {
 
   constructor(private readonly configService: ConfigService) {
     const apiKey = this.configService.getOrThrow<string>('BREVO_API_KEY');
-    
+
     this.brevoClient = new BrevoClient({ apiKey });
     this.from = this.configService.getOrThrow<string>('MAIL_FROM');
   }

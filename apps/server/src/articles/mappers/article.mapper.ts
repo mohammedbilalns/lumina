@@ -11,7 +11,8 @@ export class ArticleMapper {
       featuredImage: article.featuredImage,
       likesCount: article.likesCount,
       reactionType:
-        article.viewerReactionType === 'LIKE' || article.viewerReactionType === 'DISLIKE'
+        article.viewerReactionType === 'LIKE' ||
+        article.viewerReactionType === 'DISLIKE'
           ? article.viewerReactionType
           : null,
       isLiked: article.viewerReactionType === 'LIKE',
