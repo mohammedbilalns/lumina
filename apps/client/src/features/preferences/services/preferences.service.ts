@@ -1,4 +1,4 @@
-import { env } from '@/config/env'
+import { API_ROUTES } from '@/constants/api-routes'
 import { ApiError } from '@/types/response'
 import type { ErrorResponse, SuccessResponse } from '@/types/response'
 import { fetchWithAuth } from '@/features/authentication/server/api-client.server'
@@ -11,7 +11,7 @@ export type { Category, PreferencesStatus } from '@lumina/shared-types'
 
 export const preferencesService = {
   async getCategories(): Promise<SuccessResponse<{ categories: Category[] }>> {
-    const response = await fetch(`${env.API_URL}/categories`)
+    const response = await fetch(API_ROUTES.categories)
     const result = await response.json().catch(() => null)
 
     if (!response.ok) {
@@ -27,7 +27,7 @@ export const preferencesService = {
   },
 
   async savePreferences(categoryIds: string[], accessToken?: string | null): Promise<SuccessResponse<void>> {
-    const response = await fetchWithAuth(`${env.API_URL}/preferences`, {
+    const response = await fetchWithAuth(API_ROUTES.preferences.root, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ export const preferencesService = {
   },
 
   async checkPreferencesStatus(accessToken?: string | null): Promise<SuccessResponse<PreferencesStatus>> {
-    const response = await fetchWithAuth(`${env.API_URL}/preferences/status`, {}, accessToken)
+    const response = await fetchWithAuth(API_ROUTES.preferences.status, {}, accessToken)
     const result = await response.json().catch(() => null)
 
     if (!response.ok) {
@@ -66,7 +66,7 @@ export const preferencesService = {
   },
 
   async getUserPreferences(accessToken?: string | null): Promise<SuccessResponse<{ preferences: { category: { id: string } }[] }>> {
-    const response = await fetchWithAuth(`${env.API_URL}/preferences`, {}, accessToken)
+    const response = await fetchWithAuth(API_ROUTES.preferences.root, {}, accessToken)
     const result = await response.json().catch(() => null)
 
     if (!response.ok) {

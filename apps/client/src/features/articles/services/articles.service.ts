@@ -1,4 +1,4 @@
-import { env } from '@/config/env'
+import { API_ROUTES } from '@/constants/api-routes'
 import { fetchWithAuth } from '@/features/authentication/server/api-client.server'
 import { ApiError } from '@/types/response'
 import type { ErrorResponse, SuccessResponse } from '@/types/response'
@@ -61,7 +61,7 @@ export const articlesService = {
     limit = 10,
   }: ListArticlesParams): Promise<SuccessResponse<ListArticlesData>> {
     const response = await fetchWithAuth(
-      `${env.API_URL}/articles/preferences?page=${page}&limit=${limit}`,
+      API_ROUTES.articles.preferred(page, limit),
       {},
       accessToken,
     )
@@ -75,7 +75,7 @@ export const articlesService = {
     limit = 10,
   }: ListArticlesParams): Promise<SuccessResponse<ListArticlesData>> {
     const response = await fetchWithAuth(
-      `${env.API_URL}/articles/me?page=${page}&limit=${limit}`,
+      API_ROUTES.articles.own(page, limit),
       {},
       accessToken,
     )
@@ -88,7 +88,7 @@ export const articlesService = {
     accessToken?: string | null,
   ): Promise<SuccessResponse<{ article: Article }>> {
     const response = await fetchWithAuth(
-      `${env.API_URL}/articles/${articleId}`,
+      API_ROUTES.articles.byId(articleId),
       {},
       accessToken,
     )
@@ -101,7 +101,7 @@ export const articlesService = {
     accessToken?: string | null,
   ): Promise<SuccessResponse<{ article: Article }>> {
     const response = await fetchWithAuth(
-      `${env.API_URL}/articles`,
+      API_ROUTES.articles.root,
       {
         method: 'POST',
         headers: {
@@ -120,7 +120,7 @@ export const articlesService = {
     accessToken?: string | null,
   ): Promise<SuccessResponse<{ article: Article }>> {
     const response = await fetchWithAuth(
-      `${env.API_URL}/articles/${articleId}`,
+      API_ROUTES.articles.byId(articleId),
       {
         method: 'PATCH',
         headers: {
@@ -139,7 +139,7 @@ export const articlesService = {
     accessToken?: string | null,
   ): Promise<SuccessResponse<void>> {
     const response = await fetchWithAuth(
-      `${env.API_URL}/articles/${articleId}`,
+      API_ROUTES.articles.byId(articleId),
       {
         method: 'DELETE',
       },
@@ -154,7 +154,7 @@ export const articlesService = {
     accessToken?: string | null,
   ): Promise<SuccessResponse<void>> {
     const response = await fetchWithAuth(
-      `${env.API_URL}/reactions/articles/react`,
+      API_ROUTES.reactions.react,
       {
         method: 'POST',
         headers: {
@@ -173,7 +173,7 @@ export const articlesService = {
     accessToken?: string | null,
   ): Promise<SuccessResponse<void>> {
     const response = await fetchWithAuth(
-      `${env.API_URL}/reactions/articles/block`,
+      API_ROUTES.reactions.block,
       {
         method: 'POST',
         headers: {

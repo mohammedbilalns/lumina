@@ -1,4 +1,4 @@
-import { env } from '@/config/env'
+import { API_ROUTES } from '@/constants/api-routes'
 import { ApiError } from '@/types/response'
 import type { ErrorResponse, SuccessResponse } from '@/types/response'
 import { fetchWithAuth } from '@/features/authentication/server/api-client.server'
@@ -7,7 +7,7 @@ import type { UpdateProfileInput, ChangePasswordInput } from '../schemas/profile
 
 export const profileService = {
   async getProfile(accessToken?: string | null): Promise<SuccessResponse<{ user: UserProfile }>> {
-    const response = await fetchWithAuth(`${env.API_URL}/users/profile`, {}, accessToken)
+    const response = await fetchWithAuth(API_ROUTES.users.profile, {}, accessToken)
     const result = await response.json().catch(() => null)
 
     if (!response.ok) {
@@ -23,7 +23,7 @@ export const profileService = {
   },
 
   async updateProfile(data: UpdateProfileInput, accessToken?: string | null): Promise<SuccessResponse<{ user: UserProfile }>> {
-    const response = await fetchWithAuth(`${env.API_URL}/users/profile`, {
+    const response = await fetchWithAuth(API_ROUTES.users.profile, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ export const profileService = {
   },
 
   async changePassword(data: ChangePasswordInput, accessToken?: string | null): Promise<SuccessResponse<void>> {
-    const response = await fetchWithAuth(`${env.API_URL}/users/change-password`, {
+    const response = await fetchWithAuth(API_ROUTES.users.changePassword, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { withServerErrorHandler } from '#/utils/with-server-error-handler'
-import { env } from '@/config/env'
+import { API_ROUTES } from '@/constants/api-routes'
 import { fetchWithAuth } from '@/features/authentication/server/api-client.server'
 import { ApiError } from '@/types/response'
 import type { ErrorResponse, SuccessResponse } from '@/types/response'
@@ -21,7 +21,7 @@ export const createPresignedUploadUrl = createServerFn({ method: 'POST' })
     withServerErrorHandler(async ({ data }) => {
       const { accessToken, ...payload } = data
       const response = await fetchWithAuth(
-        `${env.API_URL}/uploads/presigned-url`,
+        API_ROUTES.uploads.presignedUrl,
         {
           method: 'POST',
           headers: {
