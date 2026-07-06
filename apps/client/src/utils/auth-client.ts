@@ -1,33 +1,55 @@
 import type { UserProfile } from '@lumina/shared-types'
 
+export type AuthMode = 'anonymous' | 'guest' | 'authenticated'
+
 interface AuthSession {
   user: UserProfile | null
   accessToken: string | null
+  authMode: AuthMode
 }
 
-let hydratedFromBackend = false
+const GUEST_COOKIE_NAME = 'lumina_guest_mode'
+
+let sessionHydrated = false
 let currentSession: AuthSession = {
   user: null,
   accessToken: null,
+  authMode: 'anonymous',
+}
+
+function setGuestCookie(enabled: boolean) {
+  if (typeof document === 'undefined') {
+    return
+  }
+
+  document.cookie = `${GUEST_COOKIE_NAME}=${enabled ? '1' : ''}; path=/; max-age=${enabled ? 60 * 60 * 24 * 7 : 0}; samesite=lax`
 }
 
 export const authClient = {
   setSession(session: AuthSession) {
     currentSession = session
-    hydratedFromBackend = true
+    sessionHydrated = true
+
+    if (session.authMode === 'guest') {
+      setGuestCookie(true)
+    } else {
+      setGuestCookie(false)
+    }
   },
   clearSession() {
     currentSession = {
       user: null,
       accessToken: null,
+      authMode: 'anonymous',
     }
-    hydratedFromBackend = true
+    sessionHydrated = true
+    setGuestCookie(false)
   },
   getSession() {
     return currentSession
   },
   hasHydratedSession() {
-    return hydratedFromBackend
+    return sessionHydrated
   },
   setAccessToken(token: string | null) {
     currentSession = {

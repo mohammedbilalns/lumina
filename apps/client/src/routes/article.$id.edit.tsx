@@ -12,7 +12,7 @@ import { ROUTES } from '@/constants/routes'
 
 export const Route = createFileRoute('/article/$id/edit')({
   beforeLoad: ({ context }) => {
-    if (!context.user) {
+    if (context.authMode !== 'authenticated') {
       throw redirect({ to: ROUTES.auth })
     }
   },

@@ -11,26 +11,34 @@ import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
 import type { UserProfile } from '@lumina/shared-types'
 import { getMe } from '../features/authentication/server/auth.functions'
-import { authClient } from '../utils/auth-client'
+import { authClient, type AuthMode } from '../utils/auth-client'
 import { ROUTES } from '@/constants/routes'
 
 interface MyRouterContext {
   queryClient: QueryClient
   user: UserProfile | null
   accessToken: string | null
+  authMode: AuthMode
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   beforeLoad: async () => {
     if (typeof window !== 'undefined' && authClient.hasHydratedSession()) {
-      return authClient.getSession()
+      const session = authClient.getSession()
+      return {
+        ...session,
+        authMode:
+          session.authMode ??
+          (session.user && session.accessToken ? 'authenticated' : 'anonymous'),
+      }
     }
 
     const { data } = await getMe()
-    const { user, accessToken } = data
+    const { user, accessToken, authMode } = data
     const session = {
       user,
       accessToken,
+      authMode,
     }
 
     if (typeof window !== 'undefined') {
@@ -71,14 +79,15 @@ function NotFound() {
 }
 
 function RootDocument() {
-  const { user, accessToken } = Route.useRouteContext()
+  const { user, accessToken, authMode } = Route.useRouteContext()
 
   useEffect(() => {
     authClient.setSession({
       user,
       accessToken,
+      authMode: authMode ?? (user && accessToken ? 'authenticated' : 'anonymous'),
     })
-  }, [accessToken, user])
+  }, [accessToken, authMode, user])
 
   return (
     <html lang="en">

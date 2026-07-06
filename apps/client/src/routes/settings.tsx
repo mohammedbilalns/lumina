@@ -15,7 +15,7 @@ import { ROUTES } from '@/constants/routes'
 
 export const Route = createFileRoute('/settings')({
   beforeLoad: ({ context }) => {
-    if (!context.user) {
+    if (context.authMode !== 'authenticated') {
       throw redirect({ to: ROUTES.auth })
     }
   },
@@ -47,6 +47,7 @@ export function SettingsPage() {
         authClient.setSession({
           user: response.data.user,
           accessToken,
+          authMode: 'authenticated',
         })
         toast.success('Profile updated successfully')
         await router.invalidate()

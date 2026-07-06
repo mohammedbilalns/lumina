@@ -11,34 +11,47 @@ import { checkPreferencesStatus } from '@/features/preferences/server/preference
 import { ArticleCard, ArticleCardSkeleton } from '#/features/articles/components/article-card'
 import { ROUTES } from '@/constants/routes'
 
-import { preferredArticlesQueryOptions } from '#/features/articles/hooks/use-articles-query'
+import { preferredArticlesQueryOptions, publicArticlesQueryOptions } from '#/features/articles/hooks/use-articles-query'
 
 export const Route = createFileRoute('/dashboard')({
   validateSearch: articleRouteSearchSchema,
   pendingMs: 0,
   pendingComponent: DashboardPending,
   beforeLoad: ({ context }) => {
-    if (!context.user) {
+    if (context.authMode === 'anonymous') {
       throw redirect({ to: ROUTES.auth })
     }
   },
   loaderDeps: ({ search }) => search,
   loader: async ({ context, deps }) => {
+    const isAuthenticated = context.authMode === 'authenticated'
+
     await context.queryClient.ensureQueryData(
-      preferredArticlesQueryOptions({
-        accessToken: context.accessToken || undefined,
-        page: deps.page,
-        limit: deps.limit,
-        search: deps.search,
-      })
+      isAuthenticated
+        ? preferredArticlesQueryOptions({
+            accessToken: context.accessToken || undefined,
+            page: deps.page,
+            limit: deps.limit,
+            search: deps.search,
+            authMode: context.authMode,
+          })
+        : publicArticlesQueryOptions({
+            page: deps.page,
+            limit: deps.limit,
+            search: deps.search,
+            authMode: context.authMode,
+          })
     )
 
-    const preferencesPromise = checkPreferencesStatus({
-      data: { accessToken: context.accessToken || undefined },
-    }).then(res => Boolean(res.data.isConfigured))
-      .catch(() => true)
+    const preferencesPromise = isAuthenticated
+      ? checkPreferencesStatus({
+          data: { accessToken: context.accessToken || undefined },
+        }).then(res => Boolean(res.data.isConfigured))
+        .catch(() => true)
+      : Promise.resolve(true)
 
     return {
+      isGuest: !isAuthenticated,
       preferencesPromise: defer(preferencesPromise),
     }
   },
@@ -48,15 +61,24 @@ export const Route = createFileRoute('/dashboard')({
 export function DashboardPage() {
   const navigate = useNavigate({ from: ROUTES.dashboard })
   const searchParams = Route.useSearch()
-  const { accessToken } = Route.useRouteContext()
-  const { preferencesPromise } = Route.useLoaderData()
+  const { user, accessToken } = Route.useRouteContext()
+  const { preferencesPromise, isGuest } = Route.useLoaderData()
+  const isSignedIn = Boolean(user && accessToken)
   const { data: articlesData } = useSuspenseQuery(
-    preferredArticlesQueryOptions({
-      accessToken: accessToken || undefined,
-      page: searchParams.page,
-      limit: searchParams.limit,
-      search: searchParams.search,
-    }),
+    isSignedIn
+      ? preferredArticlesQueryOptions({
+          accessToken: accessToken || undefined,
+          page: searchParams.page,
+          limit: searchParams.limit,
+          search: searchParams.search,
+          authMode: 'authenticated',
+        })
+      : publicArticlesQueryOptions({
+          page: searchParams.page,
+          limit: searchParams.limit,
+          search: searchParams.search,
+          authMode: 'guest',
+        }),
   )
 
   const handlePageChange = (page: number) => {
@@ -74,47 +96,64 @@ export function DashboardPage() {
 
       <div className="container mx-auto px-6 py-12 flex justify-center">
         <main className="w-full max-w-4xl">
-          <Suspense>
-            <Await promise={preferencesPromise}>
-              {(isPreferencesConfigured) => (
-                <DashboardPreferenceSection isPreferencesConfigured={isPreferencesConfigured} />
-              )}
-            </Await>
-          </Suspense>
+          {(
+            <Suspense>
+              <Await promise={preferencesPromise}>
+                {(isPreferencesConfigured) => (
+                  <DashboardPreferenceSection isPreferencesConfigured={isPreferencesConfigured} />
+                )}
+              </Await>
+            </Suspense>
+          )}
 
           <div className="mb-10">
             <div className="mb-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <h1 className="text-3xl font-serif font-medium text-[#0b2226]">
-                Recommended for You
+                {isGuest ? 'Explore Articles' : 'Recommended for You'}
               </h1>
-              <Suspense>
-                <Await promise={preferencesPromise}>
-                  {(isPreferencesConfigured) => (
-                    <DashboardSettingsButton isPreferencesConfigured={isPreferencesConfigured} />
-                  )}
-                </Await>
-              </Suspense>
+              {!isGuest && (
+                <Suspense>
+                  <Await promise={preferencesPromise}>
+                    {() => <DashboardSettingsButton />}
+                  </Await>
+                </Suspense>
+              )}
             </div>
             <p className="text-slate-500">
-              Personalized articles that match your selected interests. Your own articles are excluded from this feed.
+              {isGuest
+                ? 'Browse public articles in guest mode. Sign in to personalize your feed and save preferences.'
+                : 'Personalized articles that match your selected interests. Your own articles are excluded from this feed.'}
             </p>
           </div>
 
-          <Await promise={preferencesPromise}>
-            {(isPreferencesConfigured) => (
-              <DashboardArticlesList 
-                articles={articlesData.articles} 
-                pagination={articlesData.pagination} 
-                isPreferencesConfigured={isPreferencesConfigured}
-                handlePageChange={handlePageChange}
-              />
-            )}
-          </Await>
+          {isGuest ? (
+            <DashboardArticlesList 
+              articles={articlesData.articles} 
+              pagination={articlesData.pagination} 
+              isPreferencesConfigured={true}
+              handlePageChange={handlePageChange}
+              showReactionActions={false}
+            />
+          ) : (
+            <Await promise={preferencesPromise}>
+              {(isPreferencesConfigured) => (
+                <DashboardArticlesList 
+                  articles={articlesData.articles} 
+                  pagination={articlesData.pagination} 
+                  isPreferencesConfigured={isPreferencesConfigured}
+                  handlePageChange={handlePageChange}
+                  showReactionActions={true}
+                />
+              )}
+            </Await>
+          )}
         </main>
       </div>
     </div>
   )
 }
+
+
 
 function DashboardPreferenceSection({ isPreferencesConfigured }: { isPreferencesConfigured: boolean }) {
   const [showPreferenceModal, setShowPreferenceModal] = useState(!isPreferencesConfigured)
@@ -156,7 +195,7 @@ function DashboardPreferenceSection({ isPreferencesConfigured }: { isPreferences
   )
 }
 
-function DashboardSettingsButton({ isPreferencesConfigured }: { isPreferencesConfigured: boolean }) {
+function DashboardSettingsButton() {
   const [showModal, setShowModal] = useState(false)
 
   return (
@@ -184,12 +223,14 @@ function DashboardArticlesList({
   articles, 
   pagination, 
   isPreferencesConfigured,
-  handlePageChange
+  handlePageChange,
+  showReactionActions,
 }: { 
   articles: any[], 
   pagination: any, 
   isPreferencesConfigured: boolean,
-  handlePageChange: (page: number) => void
+  handlePageChange: (page: number) => void,
+  showReactionActions: boolean,
 }) {
   if (articles.length === 0) {
     return (
@@ -210,7 +251,7 @@ function DashboardArticlesList({
     <>
       <div className="space-y-4">
         {articles.map((article: any) => (
-          <ArticleCard key={article.id} article={article} showReactionActions={false} />
+          <ArticleCard key={article.id} article={article} showReactionActions={showReactionActions} />
         ))}
       </div>
 
