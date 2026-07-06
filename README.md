@@ -73,7 +73,6 @@ Lumina combines authentication, personalized article recommendations, rich-text 
 │       │   ├── users/
 │       │   ├── app.module.ts
 │       │   └── main.ts
-│       ├── test/                    # E2E tests
 │       └── package.json
 ├── packages
 │   └── shared-types
