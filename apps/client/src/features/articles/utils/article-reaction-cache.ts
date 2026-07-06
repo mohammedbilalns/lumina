@@ -134,8 +134,8 @@ export function upsertOwnArticleCaches(
     },
   )
 
-  queryClient.setQueryData<{ article: Article }>(
-    ['articles', 'detail', article.id],
-    { article },
+  queryClient.setQueriesData<{ article: Article }>(
+    { queryKey: ['articles', 'detail', article.id] },
+    () => ({ article }),
   )
 }

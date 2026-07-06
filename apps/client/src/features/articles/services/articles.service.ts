@@ -34,6 +34,7 @@ interface ListArticlesParams {
   accessToken?: string | null
   page?: number
   limit?: number
+  search?: string
 }
 
 async function parseResponse<T>(
@@ -59,11 +60,24 @@ export const articlesService = {
     accessToken,
     page = 1,
     limit = 10,
+    search,
   }: ListArticlesParams): Promise<SuccessResponse<ListArticlesData>> {
     const response = await fetchWithAuth(
-      API_ROUTES.articles.preferred(page, limit),
+      API_ROUTES.articles.preferred(page, limit, search),
       {},
       accessToken,
+    )
+
+    return parseResponse<ListArticlesData>(response, 'Failed to fetch articles')
+  },
+
+  async getPublicArticles({
+    page = 1,
+    limit = 10,
+    search,
+  }: Omit<ListArticlesParams, 'accessToken'>): Promise<SuccessResponse<ListArticlesData>> {
+    const response = await fetch(
+      API_ROUTES.articles.public(page, limit, search),
     )
 
     return parseResponse<ListArticlesData>(response, 'Failed to fetch articles')

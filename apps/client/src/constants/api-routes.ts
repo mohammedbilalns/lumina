@@ -23,7 +23,8 @@ export const API_ROUTES = {
   },
   articles: {
     root: `${env.API_URL}/articles`,
-    preferred: (page = 1, limit = 10) => `${env.API_URL}/articles/preferences?page=${page}&limit=${limit}`,
+    preferred: (page = 1, limit = 10, search?: string) => `${env.API_URL}/articles/preferences?page=${page}&limit=${limit}${search ? `&search=${encodeURIComponent(search)}` : ''}`,
+    public: (page = 1, limit = 10, search?: string) => `${env.API_URL}/articles/public?page=${page}&limit=${limit}${search ? `&search=${encodeURIComponent(search)}` : ''}`,
     own: (page = 1, limit = 10) => `${env.API_URL}/articles/me?page=${page}&limit=${limit}`,
     byId: (articleId: string) => `${env.API_URL}/articles/${articleId}`,
   },

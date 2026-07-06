@@ -21,6 +21,14 @@ export const getPreferredArticles = createServerFn({ method: 'GET' })
     }),
   )
 
+export const getPublicArticles = createServerFn({ method: 'GET' })
+  .inputValidator(getArticlesSchema.omit({ accessToken: true }))
+  .handler(
+    withServerErrorHandler(async ({ data }) => {
+      return await articlesService.getPublicArticles(data)
+    }),
+  )
+
 export const getOwnArticles = createServerFn({ method: 'GET' })
   .inputValidator(getArticlesSchema)
   .handler(
