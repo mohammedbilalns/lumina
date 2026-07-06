@@ -45,19 +45,20 @@ export class ArticlesService {
   }
 
   async getArticle(dto: GetArticleDto) {
-    const [, article] = await Promise.all([
-      this.validateActiveUser(dto.userId),
-      this.articlesRepository.findVisibleById(dto.articleId, dto.userId),
-    ]);
+    const article = dto.userId
+      ? await Promise.all([
+          this.validateActiveUser(dto.userId),
+          this.articlesRepository.findVisibleById(dto.articleId, dto.userId),
+        ]).then(([, foundArticle]) => foundArticle)
+      : await this.articlesRepository.findById(dto.articleId);
 
     if (!article) {
       throw new NotFoundException('Article not found');
     }
 
-    const viewerReactionType = await this.articlesRepository.findReactionType(
-      dto.userId,
-      article.id,
-    );
+    const viewerReactionType = dto.userId
+      ? await this.articlesRepository.findReactionType(dto.userId, article.id)
+      : null;
 
     return {
       article: ArticleMapper.toArticleResponse({
@@ -176,6 +177,29 @@ export class ArticlesService {
           viewerReactionType: reactionTypes.get(item.id) ?? null,
         })),
       ),
+      pagination: ArticleMapper.toPaginationResponse(
+        dto.page,
+        dto.limit,
+        total,
+      ),
+    };
+  }
+
+  async listPublicArticles(dto: {
+    page: number;
+    limit: number;
+    search?: string;
+  }) {
+    this.validatePagination(dto.page, dto.limit);
+
+    const { items, total } = await this.articlesRepository.listPublicArticles(
+      dto.page,
+      dto.limit,
+      dto.search,
+    );
+
+    return {
+      articles: ArticleMapper.toArticleListResponse(items),
       pagination: ArticleMapper.toPaginationResponse(
         dto.page,
         dto.limit,

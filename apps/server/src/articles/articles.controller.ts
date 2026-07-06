@@ -156,11 +156,57 @@ export class ArticlesController {
     };
   }
 
+  @Get('public')
+  @ApiOperation({
+    summary: 'List public articles',
+    description:
+      'Returns paginated public articles for guest browsing without requiring authentication.',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number. Minimum 1.',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    example: 10,
+    enum: [10, 20, 30],
+    description: 'Page size.',
+  })
+  async listPublicArticles(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe)
+    page: number,
+
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe)
+    limit: number,
+
+    @Query('search')
+    search?: string,
+  ): Promise<SuccessResponse<ListArticlesData>> {
+    const result = await this.articlesService.listPublicArticles({
+      page,
+      limit,
+      search,
+    });
+
+    return {
+      message: ArticleResponseMessages.FETCHED_PUBLIC,
+      data: {
+        articles: result.articles,
+        pagination: result.pagination,
+      },
+    };
+  }
+
   @Get(':articleId')
-  @UseGuards(JwtGuard)
   @ApiOperation({
     summary: 'Get article',
-    description: 'Fetches a single article by UUID for the authenticated user.',
+    description:
+      'Fetches a single article by UUID. Authenticated users still see blocked-article filtering.',
   })
   @ApiParam({
     name: 'articleId',
@@ -169,13 +215,13 @@ export class ArticlesController {
   })
   async getArticle(
     @CurrentUser()
-    user: JwtPayload,
+    user: JwtPayload | undefined,
 
     @Param('articleId')
     articleId: string,
   ): Promise<SuccessResponse<{ article: Article }>> {
     const result = await this.articlesService.getArticle({
-      userId: user.sub,
+      userId: user?.sub,
       articleId,
     });
 
