@@ -11,9 +11,10 @@ import { ROUTES } from '@/constants/routes'
 interface LoginFormProps {
   onSwitchToSignup: () => void
   onForgotPassword?: () => void
+  onTryAsGuest?: () => void
 }
 
-export function LoginForm({ onSwitchToSignup, onForgotPassword }: LoginFormProps) {
+export function LoginForm({ onSwitchToSignup, onForgotPassword, onTryAsGuest }: LoginFormProps) {
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
 
@@ -32,6 +33,7 @@ export function LoginForm({ onSwitchToSignup, onForgotPassword }: LoginFormProps
         authClient.setSession({
           user: response.data.user,
           accessToken: response.data.accessToken,
+          authMode: 'authenticated',
         })
         toast.success('Signed in successfully')
         
@@ -122,6 +124,14 @@ export function LoginForm({ onSwitchToSignup, onForgotPassword }: LoginFormProps
             </button>
           )}
         />
+
+        <button
+          type="button"
+          onClick={onTryAsGuest}
+          className="w-full rounded-xl border border-[#EAEAEA] bg-[#FBFBFA] py-3.5 font-medium text-[#0b2226] transition-colors hover:bg-slate-50"
+        >
+          Try as Guest
+        </button>
 
 
         <p className="text-center text-sm text-slate-500 pt-4">

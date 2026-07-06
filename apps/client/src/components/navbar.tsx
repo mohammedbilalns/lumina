@@ -1,16 +1,29 @@
 import { BookOpen, Settings, LogOut } from 'lucide-react'
 import { Link, useNavigate } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 import { Route } from '../routes/__root'
 import { logoutUser } from '../features/authentication/server/auth.functions'
-import { authClient } from '../utils/auth-client'
+import { authClient, type AuthMode } from '../utils/auth-client'
 import { ROUTES } from '@/constants/routes'
 
 export function Navbar() {
-  const { user } = Route.useRouteContext()
+  const { user, accessToken } = Route.useRouteContext()
   const navigate = useNavigate()
+  const [sessionMode, setSessionMode] = useState<AuthMode>(
+    user && accessToken ? 'authenticated' : 'anonymous',
+  )
+
+  useEffect(() => {
+    setSessionMode(authClient.getSession().authMode)
+  }, [accessToken, user])
 
   const handleLogout = async () => {
     await logoutUser()
+    authClient.clearSession()
+    navigate({ to: ROUTES.auth })
+  }
+
+  const handleExitGuestMode = () => {
     authClient.clearSession()
     navigate({ to: ROUTES.auth })
   }
@@ -66,6 +79,24 @@ export function Navbar() {
                   <LogOut className="w-5 h-5" />
                 </button>
               </div>
+            </>
+          ) : sessionMode === 'guest' ? (
+            <>
+              <span className="hidden sm:inline-flex rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-amber-700">
+                Guest
+              </span>
+              <Link
+                to={ROUTES.auth}
+                className="hidden sm:inline-flex text-sm font-medium text-slate-600 hover:text-[#0b2226] px-4 py-2 border border-[#EAEAEA] rounded-md transition-colors"
+              >
+                Sign In
+              </Link>
+              <button
+                onClick={handleExitGuestMode}
+                className="text-sm font-medium bg-[#0b2226] text-white px-5 py-2 rounded-md hover:bg-[#13383d] transition-colors"
+              >
+                Exit Guest
+              </button>
             </>
           ) : (
             <>
