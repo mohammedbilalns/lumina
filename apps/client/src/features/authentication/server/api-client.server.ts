@@ -20,7 +20,7 @@ export async function fetchWithAuth(
   if (!currentToken) {
     const request = getRequest()
     const authHeader = request.headers.get('Authorization')
-    if (authHeader.startsWith('Bearer ')) {
+    if (authHeader?.startsWith('Bearer ')) {
       currentToken = authHeader.substring(7)
     }
   }

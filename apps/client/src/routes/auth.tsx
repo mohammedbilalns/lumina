@@ -8,10 +8,12 @@ import { ForgotPasswordForm } from '@/features/authentication/components/forgot-
 import { ResetPasswordForm } from '@/features/authentication/components/reset-password-form'
 import { CategorySelection } from '@/features/preferences/components/category-selection'
 import { ROUTES } from '@/constants/routes'
+import { authClient } from '@/utils/auth-client'
+import { useNavigate } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/auth')({
   beforeLoad: ({ context }) => {
-    if (context.user) {
+    if (context.authMode === 'authenticated') {
       throw redirect({ to: ROUTES.dashboard })
     }
   },
@@ -23,6 +25,7 @@ type AuthMode = 'login' | 'signup' | 'otp' | 'interests' | 'forgot-password' | '
 function AuthComponent() {
   const [mode, setMode] = useState<AuthMode>('login')
   const [emailForOtp, setEmailForOtp] = useState<string>('')
+  const navigate = useNavigate()
 
   const titles = {
     login: 'Welcome back',
@@ -84,6 +87,15 @@ function AuthComponent() {
             <LoginForm 
               onSwitchToSignup={() => setMode('signup')} 
               onForgotPassword={() => setMode('forgot-password')}
+              onTryAsGuest={() => {
+                authClient.setSession({
+                  user: null,
+                  accessToken: null,
+                  authMode: 'guest',
+                })
+
+                navigate({ to: ROUTES.dashboard, replace: true })
+              }}
             />
           )}
           {mode === 'signup' && (

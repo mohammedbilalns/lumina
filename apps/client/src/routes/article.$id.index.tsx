@@ -11,19 +11,16 @@ import { ROUTES } from '@/constants/routes'
 
 export const Route = createFileRoute('/article/$id/')({
   beforeLoad: ({ context }) => {
-    if (!context.user) {
+    if (context.authMode === 'anonymous') {
       throw redirect({ to: ROUTES.auth })
     }
   },
   loader: async ({ params, context }) => {
-    if (!context.accessToken) {
-      throw redirect({ to: ROUTES.auth })
-    }
-
     await context.queryClient.ensureQueryData(
       articleDetailQueryOptions({
         articleId: params.id,
-        accessToken: context.accessToken,
+        accessToken: context.accessToken || undefined,
+        authMode: context.authMode === 'authenticated' ? 'authenticated' : 'guest',
       }),
     )
     return {}
@@ -38,6 +35,7 @@ function ArticleDetailedComponent() {
     articleDetailQueryOptions({
       articleId: id,
       accessToken: accessToken || undefined,
+      authMode: user && accessToken ? 'authenticated' : 'guest',
     }),
   )
 
@@ -122,7 +120,7 @@ function ArticleContent({ article, user }: { article: Article; user: UserProfile
               <ThumbsUp className="h-4 w-4" />
               <span className="text-sm font-medium">{article.likesCount}</span>
             </div>
-            {!isAuthor && (
+            {!isAuthor && user && accessToken && (
               <ArticleReactionActions article={article} articleId={article.id} />
             )}
           </div>

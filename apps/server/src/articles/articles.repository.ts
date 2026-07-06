@@ -197,7 +197,6 @@ export class ArticlesRepository {
     limit: number,
     search?: string,
   ) {
-    const start = Date.now();
     const categoryIdsSubquery = this.db
       .select({ categoryId: userPreferences.categoryId })
       .from(userPreferences)
@@ -232,11 +231,6 @@ export class ArticlesRepository {
 
     const whereClause = and(...conditions);
 
-    console.log(
-      `[ArticlesRepository] Queries built in ${Date.now() - start}ms`,
-    );
-    const queryStart = Date.now();
-
     const [items, totalResult] = await Promise.all([
       this.db.query.articles.findMany({
         where: whereClause,
@@ -263,9 +257,52 @@ export class ArticlesRepository {
       this.db.select({ total: count() }).from(articles).where(whereClause),
     ]);
 
-    console.log(
-      `[ArticlesRepository] Main query execution took ${Date.now() - queryStart}ms`,
-    );
+    return {
+      items,
+      total: totalResult[0]?.total ?? 0,
+    };
+  }
+
+  async listPublicArticles(page: number, limit: number, search?: string) {
+    const conditions: SQL[] = [isNull(articles.deletedAt)];
+
+    if (search) {
+      const searchCondition = or(
+        ilike(articles.title, `%${search}%`),
+        ilike(articles.description, `%${search}%`),
+      );
+
+      if (searchCondition) {
+        conditions.push(searchCondition);
+      }
+    }
+
+    const whereClause = and(...conditions);
+    const [items, totalResult] = await Promise.all([
+      this.db.query.articles.findMany({
+        where: whereClause,
+        with: {
+          author: {
+            columns: {
+              id: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+          category: {
+            columns: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+        },
+        orderBy: [desc(articles.createdAt)],
+        limit,
+        offset: (page - 1) * limit,
+      }) as Promise<ArticleWithRelations[]>,
+      this.db.select({ total: count() }).from(articles).where(whereClause),
+    ]);
 
     return {
       items,

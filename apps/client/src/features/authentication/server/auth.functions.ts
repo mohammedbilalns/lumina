@@ -55,10 +55,16 @@ export const resendSignupOtp = createServerFn({ method: 'POST' })
 export const getMe = createServerFn({ method: 'GET' })
   .handler(withServerErrorHandler(async () => {
     const { getCookie, setCookie, deleteCookie, AUTH_COOKIE_OPTIONS } = await import('./auth-cookies.server')
+    const guestMode = getCookie('lumina_guest_mode')
+
+    if (guestMode === '1') {
+      return { data: { user: null, accessToken: null, authMode: 'guest' as const } }
+    }
+
     const refreshToken = getCookie('refreshToken')
     
     if (!refreshToken) {
-      return { data: { user: null, accessToken: null } }
+      return { data: { user: null, accessToken: null, authMode: 'anonymous' as const } }
     }
 
     try {
@@ -70,10 +76,10 @@ export const getMe = createServerFn({ method: 'GET' })
         maxAge: 60 * 60 * 24 * 7
       })
 
-      return { data: { user, accessToken: newAccessToken } }
+      return { data: { user, accessToken: newAccessToken, authMode: 'authenticated' as const } }
     } catch (err: any) {
       deleteCookie('refreshToken')
-      return { data: { user: null, accessToken: null } }
+      return { data: { user: null, accessToken: null, authMode: 'anonymous' as const } }
     }
   }))
 

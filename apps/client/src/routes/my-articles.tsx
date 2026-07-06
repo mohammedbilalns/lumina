@@ -19,7 +19,7 @@ import { ownArticlesQueryOptions } from '#/features/articles/hooks/use-articles-
 export const Route = createFileRoute('/my-articles')({
   validateSearch: articleRouteSearchSchema,
   beforeLoad: ({ context }) => {
-    if (!context.user) {
+    if (context.authMode !== 'authenticated') {
       throw redirect({ to: ROUTES.auth })
     }
   },
@@ -30,6 +30,7 @@ export const Route = createFileRoute('/my-articles')({
         accessToken: context.accessToken || undefined,
         page: deps.page,
         limit: deps.limit,
+        authMode: context.authMode,
       })
     )
 
@@ -43,12 +44,13 @@ export function MyArticlesPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const searchParams = Route.useSearch()
-  const { accessToken } = Route.useRouteContext()
+  const { accessToken, authMode } = Route.useRouteContext()
   const { data: articlesData } = useSuspenseQuery(
     ownArticlesQueryOptions({
       accessToken: accessToken || undefined,
       page: searchParams.page,
       limit: searchParams.limit,
+      authMode,
     }),
   )
   const [deletingId, setDeletingId] = useState<string | null>(null)

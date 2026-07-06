@@ -45,6 +45,7 @@ export function OtpForm({ email, onSwitchToLogin, onSuccess }: OtpFormProps) {
       authClient.setSession({
         user: response.data.user,
         accessToken: response.data.accessToken,
+        authMode: 'authenticated',
       })
       toast.success('Verification successful!')
       
