@@ -42,12 +42,20 @@ function ArticleDetailedComponent() {
   return (
     <div className="min-h-screen bg-white pb-20 font-sans text-[#111111] selection:bg-[#f8cb5b]/30">
       <Navbar />
-      <ArticleContent article={data.article} user={user} />
+      <ArticleContent article={data.article} user={user} hasAccessToken={Boolean(accessToken)} />
     </div>
   )
 }
 
-function ArticleContent({ article, user }: { article: Article; user: UserProfile | null }) {
+function ArticleContent({
+  article,
+  user,
+  hasAccessToken,
+}: {
+  article: Article
+  user: UserProfile | null
+  hasAccessToken: boolean
+}) {
   const editor = useEditor({
     extensions: [StarterKit],
     content: article.content,
@@ -120,7 +128,7 @@ function ArticleContent({ article, user }: { article: Article; user: UserProfile
               <ThumbsUp className="h-4 w-4" />
               <span className="text-sm font-medium">{article.likesCount}</span>
             </div>
-            {!isAuthor && user && accessToken && (
+            {!isAuthor && user && hasAccessToken && (
               <ArticleReactionActions article={article} articleId={article.id} />
             )}
           </div>
