@@ -110,7 +110,7 @@ export class ArticlesController {
   }
 
   @Get('preferences')
-  // @UseGuards(JwtGuard) // Temporarily disabled for testing
+  @UseGuards(JwtGuard) 
   @ApiOperation({
     summary: 'List preferred articles',
     description:
