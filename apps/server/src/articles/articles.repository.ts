@@ -153,11 +153,14 @@ export class ArticlesRepository {
       .where(and(eq(articles.id, articleId), isNull(articles.deletedAt)));
   }
 
-  async listOwnArticles(authorId: string, page: number, limit: number, categoryId?: string) {
+  async listOwnArticles(
+    authorId: string,
+    page: number,
+    limit: number,
+  ) {
     const whereClause = and(
       eq(articles.authorId, authorId),
       isNull(articles.deletedAt),
-      categoryId ? eq(articles.categoryId, categoryId): undefined
     );
 
     const [items, totalResult] = await Promise.all([
@@ -197,12 +200,8 @@ export class ArticlesRepository {
     page: number,
     limit: number,
     search?: string,
+    categoryId?: string,
   ) {
-    const categoryIdsSubquery = this.db
-      .select({ categoryId: userPreferences.categoryId })
-      .from(userPreferences)
-      .where(eq(userPreferences.userId, userId));
-
     const blockedArticleIdsSubquery = this.db
       .select({ articleId: articleReactions.articleId })
       .from(articleReactions)
@@ -213,24 +212,52 @@ export class ArticlesRepository {
         ),
       );
 
-    const conditions: SQL[] = [
-      inArray(articles.categoryId, categoryIdsSubquery),
-      isNull(articles.deletedAt),
-      ne(articles.authorId, userId),
-      notInArray(articles.id, blockedArticleIdsSubquery),
-    ];
+    let whereClause: SQL;
 
-    if (search) {
-      const searchCondition = or(
-        ilike(articles.title, `%${search}%`),
-        ilike(articles.description, `%${search}%`),
-      );
-      if (searchCondition) {
-        conditions.push(searchCondition);
+    if (categoryId) {
+      const conditions: SQL[] = [
+        eq(articles.categoryId, categoryId),
+        isNull(articles.deletedAt),
+        ne(articles.authorId, userId),
+        notInArray(articles.id, blockedArticleIdsSubquery),
+      ];
+
+      if (search) {
+        const searchCondition = or(
+          ilike(articles.title, `%${search}%`),
+          ilike(articles.description, `%${search}%`),
+        );
+        if (searchCondition) {
+          conditions.push(searchCondition);
+        }
       }
-    }
 
-    const whereClause = and(...conditions);
+      whereClause = and(...conditions) as SQL;
+    } else {
+      const categoryIdsSubquery = this.db
+        .select({ categoryId: userPreferences.categoryId })
+        .from(userPreferences)
+        .where(eq(userPreferences.userId, userId));
+
+      const conditions: SQL[] = [
+        inArray(articles.categoryId, categoryIdsSubquery),
+        isNull(articles.deletedAt),
+        ne(articles.authorId, userId),
+        notInArray(articles.id, blockedArticleIdsSubquery),
+      ];
+
+      if (search) {
+        const searchCondition = or(
+          ilike(articles.title, `%${search}%`),
+          ilike(articles.description, `%${search}%`),
+        );
+        if (searchCondition) {
+          conditions.push(searchCondition);
+        }
+      }
+
+      whereClause = and(...conditions) as SQL;
+    }
 
     const [items, totalResult] = await Promise.all([
       this.db.query.articles.findMany({

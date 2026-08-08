@@ -129,7 +129,7 @@ export class ArticlesService {
 
     const [, { items, total }] = await Promise.all([
       this.validateActiveUser(dto.userId),
-      this.articlesRepository.listOwnArticles(dto.userId, dto.page, dto.limit, dto.categoryId),
+      this.articlesRepository.listOwnArticles(dto.userId, dto.page, dto.limit),
     ]);
 
     const reactionTypes = await this.articlesRepository.findReactionTypes(
@@ -162,6 +162,7 @@ export class ArticlesService {
         dto.page,
         dto.limit,
         dto.search,
+        dto.categoryId,
       ),
     ]);
 

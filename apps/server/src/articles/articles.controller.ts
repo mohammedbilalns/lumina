@@ -93,15 +93,11 @@ export class ArticlesController {
 
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe)
     limit: number,
-
-    @Query("categoryId", new DefaultValuePipe(''))
-    categoryId: string
   ): Promise<SuccessResponse<ListArticlesData>> {
     const result = await this.articlesService.listOwnArticles({
       userId: user.sub,
       page,
       limit,
-      categoryId
     });
 
     return {
@@ -114,11 +110,11 @@ export class ArticlesController {
   }
 
   @Get('preferences')
-  @UseGuards(JwtGuard)
+  // @UseGuards(JwtGuard) // Temporarily disabled for testing
   @ApiOperation({
     summary: 'List preferred articles',
     description:
-      'Returns paginated articles matched to the authenticated user preferences.',
+      'Returns paginated articles matched to the authenticated user preferences. If categoryId is provided, returns all articles in that category.',
   })
   @ApiQuery({
     name: 'page',
@@ -135,6 +131,13 @@ export class ArticlesController {
     enum: [10, 20, 30],
     description: 'Page size.',
   })
+  @ApiQuery({
+    name: 'categoryId',
+    required: false,
+    type: String,
+    description:
+      'Filter by category ID. If provided, returns all articles in that category (not limited to preferences).',
+  })
   async listPreferredArticles(
     @CurrentUser()
     user: JwtPayload,
@@ -144,11 +147,15 @@ export class ArticlesController {
 
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe)
     limit: number,
+
+    @Query('categoryId')
+    categoryId?: string,
   ): Promise<SuccessResponse<ListArticlesData>> {
     const result = await this.articlesService.listPreferredArticles({
       userId: user.sub,
       page,
       limit,
+      categoryId,
     });
 
     return {

@@ -23,4 +23,8 @@ export class ListPreferredArticlesDto {
   @IsString()
   @IsOptional()
   search?: string;
+
+  @IsString()
+  @IsOptional()
+  categoryId?: string;
 }
