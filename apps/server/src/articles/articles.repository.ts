@@ -153,10 +153,11 @@ export class ArticlesRepository {
       .where(and(eq(articles.id, articleId), isNull(articles.deletedAt)));
   }
 
-  async listOwnArticles(authorId: string, page: number, limit: number) {
+  async listOwnArticles(authorId: string, page: number, limit: number, categoryId?: string) {
     const whereClause = and(
       eq(articles.authorId, authorId),
       isNull(articles.deletedAt),
+      categoryId ? eq(articles.categoryId, categoryId): undefined
     );
 
     const [items, totalResult] = await Promise.all([

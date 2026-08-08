@@ -93,11 +93,15 @@ export class ArticlesController {
 
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe)
     limit: number,
+
+    @Query("categoryId", new DefaultValuePipe(''))
+    categoryId: string
   ): Promise<SuccessResponse<ListArticlesData>> {
     const result = await this.articlesService.listOwnArticles({
       userId: user.sub,
       page,
       limit,
+      categoryId
     });
 
     return {
